@@ -2272,7 +2272,31 @@
       }
     }
 
-    // Baixa os dados da nuvem e atualiza a tela (e o meus_dados.json no PC)
+    // Reconstrói listas vazias que o Firebase omite automaticamente
+    function normalizeCloudData(data) {
+      if (!data || typeof data !== 'object') return getDefaultState();
+      
+      data.settings = data.settings || { dailyGoalMinutes: 120, focusMinutes: 25, youtubeUrl: '' };
+      data.sessions = Array.isArray(data.sessions) ? data.sessions : [];
+      data.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+      data.schedule = data.schedule || {
+        'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': ''
+      };
+      data.subjects = Array.isArray(data.subjects) ? data.subjects : [];
+
+      data.subjects.forEach(sub => {
+        sub.prompts = Array.isArray(sub.prompts) ? sub.prompts : [];
+        sub.formulas = Array.isArray(sub.formulas) ? sub.formulas : [];
+        sub.units = Array.isArray(sub.units) ? sub.units : [];
+        sub.units.forEach(u => {
+          u.lessons = Array.isArray(u.lessons) ? u.lessons : [];
+        });
+      });
+
+      return data;
+    }
+
+    // Baixa os dados da nuvem com proteção contra falhas de listas vazias
     async function pullStateFromCloud(isInitialSetup = false) {
       const endpoint = getCleanCloudUrl();
       if (!endpoint) {
@@ -2286,26 +2310,36 @@
         if (!res.ok) throw new Error('Status ' + res.status);
         const cloudData = await res.json();
 
-        if (cloudData && cloudData.subjects) {
+        if (cloudData && (cloudData.subjects || cloudData.settings)) {
           isSyncingFromCloud = true;
-          appState = cloudData;
+          appState = normalizeCloudData(cloudData);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
           
-          // Se estiver no PC com a pasta conectada, já atualiza o meus_dados.json local!
-          if (typeof saveToLocalFolder === 'function') {
-            saveToLocalFolder();
+          try {
+            if (typeof writeToLinkedFile === 'function' && typeof fileHandle !== 'undefined' && fileHandle) {
+              await writeToLinkedFile();
+            }
+          } catch (fileErr) {
+            console.warn('Aviso ao atualizar arquivo local:', fileErr);
           }
 
-          updateAllUI();
-          if (typeof refreshCharts === 'function') refreshCharts();
-          if (typeof renderScheduleUI === 'function') renderScheduleUI();
+          try {
+            updateAllUI();
+            if (typeof refreshCharts === 'function') refreshCharts();
+            if (typeof renderScheduleUI === 'function') renderScheduleUI();
+          } catch (uiErr) {
+            console.warn('Aviso na interface:', uiErr);
+          }
+
           isSyncingFromCloud = false;
           updateCloudUIStatus('connected');
         } else if (isInitialSetup) {
-          // Banco na nuvem ainda está vazio: envia os dados atuais do PC pela primeira vez
           await pushStateToCloud();
+        } else {
+          updateCloudUIStatus('connected');
         }
       } catch (err) {
+        isSyncingFromCloud = false;
         console.error('Erro ao puxar dados da nuvem:', err);
         updateCloudUIStatus('error');
       }
