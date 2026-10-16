@@ -47,7 +47,6 @@
       overflow-x: hidden;
     }
 
-    /* Topbar Fixa */
     .nexus-header {
       background: rgba(16, 19, 31, 0.88);
       backdrop-filter: blur(12px);
@@ -57,7 +56,6 @@
       z-index: 1020;
     }
 
-    /* Cards e Containers */
     .nexus-card {
       background-color: var(--bg-card);
       border: 1px solid var(--border-subtle);
@@ -65,9 +63,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
       transition: border-color 0.2s ease, transform 0.2s ease;
     }
-    .nexus-card:hover {
-      border-color: #313b61;
-    }
+    .nexus-card:hover { border-color: #313b61; }
 
     .gradient-text {
       background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple-bright));
@@ -79,7 +75,6 @@
       background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
     }
 
-    /* Botões Customizados */
     .btn-nexus {
       background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
       border: none;
@@ -88,11 +83,7 @@
       border-radius: 10px;
       transition: opacity 0.2s, transform 0.15s;
     }
-    .btn-nexus:hover {
-      opacity: 0.92;
-      color: #fff;
-      transform: translateY(-1px);
-    }
+    .btn-nexus:hover { opacity: 0.92; color: #fff; transform: translateY(-1px); }
 
     .btn-outline-nexus {
       background: rgba(59, 130, 246, 0.08);
@@ -101,27 +92,24 @@
       border-radius: 10px;
       font-size: 0.85rem;
     }
-    .btn-outline-nexus:hover {
+    .btn-outline-nexus:hover, .btn-outline-nexus.active {
       border-color: var(--accent-purple);
-      background: rgba(139, 92, 246, 0.15);
+      background: rgba(139, 92, 246, 0.2);
       color: #fff;
     }
 
-    /* Navegação por Abas */
     .nav-pills .nav-link {
       color: var(--text-muted);
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-radius: 10px;
       margin-right: 8px;
+      margin-bottom: 6px;
       font-weight: 500;
-      padding: 0.55rem 1.1rem;
+      padding: 0.5rem 1rem;
       transition: all 0.2s;
     }
-    .nav-pills .nav-link:hover {
-      color: #fff;
-      border-color: var(--accent-blue);
-    }
+    .nav-pills .nav-link:hover { color: #fff; border-color: var(--accent-blue); }
     .nav-pills .nav-link.active {
       background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
       color: #fff;
@@ -129,7 +117,6 @@
       box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
     }
 
-    /* Inputs Editáveis Inline (Unidades e Aulas) */
     .editable-input {
       background: transparent;
       border: 1px solid transparent;
@@ -139,16 +126,9 @@
       width: 100%;
       transition: all 0.15s;
     }
-    .editable-input:hover {
-      border-color: var(--border-subtle);
-      background: rgba(255, 255, 255, 0.03);
-    }
-    .editable-input:focus {
-      outline: none;
-      border-color: var(--accent-purple);
-      background: var(--bg-input);
-    }
-    /* Estilo para o Modal de Anotações da Aula */
+    .editable-input:hover { border-color: var(--border-subtle); background: rgba(255, 255, 255, 0.03); }
+    .editable-input:focus { outline: none; border-color: var(--accent-purple); background: var(--bg-input); }
+
     .lesson-note-btn {
       background: transparent;
       border: 1px solid var(--border-subtle);
@@ -163,12 +143,8 @@
       color: var(--accent-purple-bright);
       background: rgba(139, 92, 246, 0.1);
     }
-    .lesson-done {
-      text-decoration: line-through;
-      color: var(--text-muted) !important;
-    }
+    .lesson-done { text-decoration: line-through; color: var(--text-muted) !important; }
 
-    /* Heatmap Estilo GitHub */
     .heatmap-grid {
       display: grid;
       grid-template-rows: repeat(7, 14px);
@@ -186,35 +162,98 @@
       border: 1px solid rgba(255,255,255,0.03);
       transition: transform 0.1s;
     }
-    .heat-cell:hover {
-      transform: scale(1.3);
-      z-index: 2;
-      border-color: #fff;
-    }
+    .heat-cell:hover { transform: scale(1.3); z-index: 2; border-color: #fff; }
     .heat-l1 { background-color: #1e3a8a; }
     .heat-l2 { background-color: #2563eb; }
     .heat-l3 { background-color: #7c3aed; }
     .heat-l4 { background-color: #a855f7; box-shadow: 0 0 6px rgba(168, 85, 247, 0.6); }
 
-    /* Display do Pomodoro */
     .pomodoro-display {
       font-size: 5.5rem;
       font-weight: 800;
       letter-spacing: 3px;
       font-variant-numeric: tabular-nums;
       text-shadow: 0 0 25px rgba(59, 130, 246, 0.45);
+      transition: font-size 0.3s ease;
     }
 
-    /* Modo Foco (Tela Cheia Interna) */
     body.focus-mode .nexus-header,
-    body.focus-mode #mainNavTabs {
-      display: none !important;
+    body.focus-mode #mainNavTabs { display: none !important; }
+    body.focus-mode #tab-pomodoro { padding-top: 4vh; }
+
+    body.oled-mode { background: #000000 !important; background-image: none !important; }
+    body.oled-mode .nexus-header,
+    body.oled-mode #mainNavTabs,
+    body.oled-mode #pomoRightCol { display: none !important; }
+    body.oled-mode #pomoLeftCol { width: 100% !important; max-width: 760px; margin: 0 auto; }
+    body.oled-mode .nexus-card { background: #000000 !important; border-color: #111111 !important; box-shadow: none !important; }
+    body.oled-mode .pomodoro-display { font-size: clamp(4.8rem, 16vw, 9rem); text-shadow: none !important; }
+
+    .flashcard-box {
+      min-height: 230px;
+      background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.14), #0b0e18 70%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+      transition: border-color 0.2s, transform 0.15s;
+      user-select: none;
     }
-    body.focus-mode #tab-pomodoro {
-      padding-top: 4vh;
+    .flashcard-box:hover { border-color: var(--accent-purple); transform: translateY(-2px); }
+
+    /* Janela Atmosférica Noturna / Chuva CSS */
+    .ambient-scene {
+      height: 95px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #050711 0%, #10172a 100%);
+      border: 1px solid var(--border-subtle);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 10px 16px;
+    }
+    .ambient-rain-layer {
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(15deg, transparent, transparent 14px, rgba(56, 189, 248, 0.18) 15px, transparent 16px);
+      background-size: 100% 40px;
+      animation: rainFall 0.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes rainFall {
+      from { background-position: 0 0; }
+      to { background-position: -12px 40px; }
     }
 
-    /* Status da Sincronização */
+    /* Mural de 100 Conquistas & Insígnias */
+    .badge-item {
+      background: #0b0e18;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px;
+      transition: all 0.2s ease;
+    }
+    .badge-item.unlocked {
+      border-color: var(--accent-purple);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.15));
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12);
+    }
+    .badge-item.unlocked:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-cyan);
+    }
+    .badge-item.locked {
+      opacity: 0.38;
+      filter: grayscale(1);
+    }
+
     .sync-badge {
       cursor: pointer;
       padding: 6px 12px;
@@ -231,7 +270,14 @@
     .sync-pending { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border-color: rgba(245, 158, 11, 0.4); }
     .sync-connected { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.4); }
 
-    /* Custom Scrollbar */
+    /* Estilos de Impressão / Exportação PDF ABNT Limpo */
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .nexus-header, #mainNavTabs, .btn, .no-print { display: none !important; }
+      .nexus-card { border: 1px solid #ccc !important; box-shadow: none !important; background: #fff !important; color: #000 !important; break-inside: avoid; }
+      .text-secondary, .text-white, .text-info { color: #111 !important; }
+    }
+
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-deep); }
     ::-webkit-scrollbar-thumb { background: #262f4d; border-radius: 4px; }
@@ -253,7 +299,7 @@
           <div class="flex-grow-1">
             <div class="d-flex justify-content-between align-items-center">
               <span class="fw-bold text-white" id="uiRankTitle">Iniciante</span>
-              <small class="text-secondary" id="uiXpText">0 / 200 XP</small>
+              <small class="text-secondary" id="uiXpText">0 / 250 XP</small>
             </div>
             <div class="progress mt-1" style="height: 7px; background-color: #191f35;">
               <div id="uiXpBar" class="progress-bar bg-gradient-primary" style="width: 0%"></div>
@@ -261,8 +307,8 @@
           </div>
         </div>
 
-        <!-- Centro: Streak & Meta Diária -->
-        <div class="col-12 col-lg-4 d-flex justify-content-lg-center align-items-center gap-4">
+        <!-- Centro: Streak, Hidratação Rápida & Meta Diária -->
+        <div class="col-12 col-lg-4 d-flex justify-content-lg-center align-items-center gap-3 flex-wrap">
           <div class="d-flex align-items-center gap-2" title="Dias consecutivos estudando">
             <i class="bi bi-fire fs-4 text-warning"></i>
             <div>
@@ -271,11 +317,19 @@
             </div>
           </div>
 
-          <div class="flex-grow-1" style="max-width: 220px;">
+          <div class="d-flex align-items-center gap-2" style="cursor:pointer;" onclick="addWaterMl(250)" title="Clique para registrar +250ml de água">
+            <i class="bi bi-droplet-half fs-5 text-info"></i>
+            <div>
+              <div class="fw-bold lh-1 text-info" style="font-size:0.85rem;"><span id="uiHeaderWater">0</span>ml</div>
+              <small class="text-secondary" style="font-size:0.7rem;">+250ml</small>
+            </div>
+          </div>
+
+          <div class="flex-grow-1" style="max-width: 190px;">
             <div class="d-flex justify-content-between align-items-center">
               <small class="text-secondary" style="font-size:0.75rem;">Meta Diária</small>
               <small class="fw-semibold text-info" style="font-size:0.75rem; cursor:pointer;" onclick="changeDailyGoal()" title="Clique para alterar sua meta diária">
-                <span id="uiTodayMins">0</span>/<span id="uiDailyGoal">120</span> min <i class="bi bi-pencil-square"></i>
+                <span id="uiTodayMins">0</span>/<span id="uiDailyGoal">120</span>m <i class="bi bi-pencil-square"></i>
               </small>
             </div>
             <div class="progress mt-1" style="height: 7px; background-color: #191f35;">
@@ -284,24 +338,32 @@
           </div>
         </div>
 
-        <!-- Direita: Sincronização na Pasta & Backup -->
+        <!-- Direita: Micro-Estudo, PDF, Sincronização na Pasta & Backup -->
         <div class="col-12 col-lg-4 d-flex justify-content-lg-end align-items-center gap-2 flex-wrap">
+          <button class="btn btn-nexus btn-sm" onclick="openMicroStudyModal()" title="Sessão relâmpago de 10 minutos para celular/PC">
+            <i class="bi bi-lightning-charge-fill me-1"></i> Micro 10m
+          </button>
+
+          <button class="btn btn-outline-nexus btn-sm" onclick="exportCleanAcademicReport()" title="Gerar Folha de Revisão / Relatório Limpo para Impressão ou PDF">
+            <i class="bi bi-printer"></i> PDF
+          </button>
+
           <div id="syncStatusBtn" class="sync-badge sync-disconnected" onclick="handleFolderSyncClick()" title="Clique para vincular ou sincronizar com o arquivo meus_dados.json na pasta">
             <span id="syncDot">⚪</span>
-            <span id="syncText">Vincular Arquivo da Pasta</span>
+            <span id="syncText">Vincular Pasta</span>
           </div>
 
           <button class="btn btn-outline-nexus btn-sm" onclick="exportBackupJson()" title="Baixar cópia manual do banco de dados">
-            <i class="bi bi-download"></i> Exportar
+            <i class="bi bi-download"></i>
           </button>
           <label class="btn btn-outline-nexus btn-sm mb-0" title="Carregar um arquivo .json salvo">
-            <i class="bi bi-upload"></i> Importar
+            <i class="bi bi-upload"></i>
             <input type="file" accept=".json" hidden onchange="importBackupJson(event)">
           </label>
 
-          <button class="btn btn-outline-info btn-sm d-flex align-items-center gap-2" onclick="configureCloudSync()" id="btnCloudSync" title="Sincronização em Tempo Real (PC & Celular)">
+          <button class="btn btn-outline-info btn-sm d-flex align-items-center gap-1" onclick="configureCloudSync()" id="btnCloudSync" title="Sincronização em Tempo Real (PC & Celular)">
             <i class="bi bi-cloud-check-fill" id="cloudSyncIcon"></i>
-            <span id="cloudSyncText">Conectar Nuvem</span>
+            <span id="cloudSyncText">Nuvem</span>
           </button>
         </div>
 
@@ -330,6 +392,16 @@
         </button>
       </li>
       <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-flashcards" type="button" onclick="renderFlashcardsTab()">
+          <i class="bi bi-collection-play-fill me-1"></i> Flashcards & Revisão
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-lab" type="button">
+          <i class="bi bi-cpu-fill me-1"></i> Laboratório (Exatas & Dev)
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
         <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-schedule" type="button" onclick="renderScheduleUI()">
           <i class="bi bi-calendar-week-fill me-1"></i> Cronograma Semanal
         </button>
@@ -344,7 +416,7 @@
     <div class="tab-content">
 
       <!-- =========================================================
-           ABA 1: PAINEL GERAL (DASHBOARD)
+           ABA 1: PAINEL GERAL (DASHBOARD + MÉTRICAS + CONQUISTAS)
            ========================================================= -->
       <div class="tab-pane fade show active" id="tab-dashboard">
         
@@ -395,10 +467,113 @@
           </div>
         </div>
 
+        <!-- Engenharia de Produtividade: Calculadora de Formatura + Rastreador de Sono & Turno -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-lg-7">
+            <div class="nexus-card p-3 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
+                  <h6 class="fw-bold mb-0"><i class="bi bi-mortarboard-fill text-purple me-2"></i>Progresso até a Formatura (Carga Horária Global)</h6>
+                  <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="configureDegreeHours()">
+                    <i class="bi bi-sliders me-1"></i> Configurar Horas do Curso
+                  </button>
+                </div>
+                <p class="text-secondary small mb-2" id="degreeSubtitleText">Acompanhe as horas cumpridas da faculdade somadas ao seu tempo de foco.</p>
+                <div class="progress mb-2" style="height: 12px; background-color: #161b2e;">
+                  <div id="degreeProgressBar" class="progress-bar bg-gradient-primary" style="width: 0%;"></div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between small text-secondary pt-1">
+                <span id="degreeCompletedLabel">0h concluídas</span>
+                <span id="degreeRemainingLabel" class="text-info fw-semibold">Faltam 2000h</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-5">
+            <div class="nexus-card p-3 h-100 d-flex flex-column justify-content-between">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="bi bi-moon-stars-fill text-info me-2"></i>Ciclo de Sono & Rendimento por Turno</h6>
+                <button class="btn btn-outline-info btn-sm py-0 px-2" onclick="logSleepHoursToday()">+ Registrar Sono</button>
+              </div>
+              <div class="row g-2 text-center my-auto">
+                <div class="col-3">
+                  <div class="p-2 rounded-2" style="background:#0b0e18; border:1px solid var(--border-subtle);">
+                    <small class="text-secondary d-block" style="font-size:0.7rem;">Madrugada</small>
+                    <span class="fw-bold text-info small" id="shiftMinsDawn">0m</span>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="p-2 rounded-2" style="background:#0b0e18; border:1px solid var(--border-subtle);">
+                    <small class="text-secondary d-block" style="font-size:0.7rem;">Manhã</small>
+                    <span class="fw-bold text-warning small" id="shiftMinsMorning">0m</span>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="p-2 rounded-2" style="background:#0b0e18; border:1px solid var(--border-subtle);">
+                    <small class="text-secondary d-block" style="font-size:0.7rem;">Tarde</small>
+                    <span class="fw-bold text-success small" id="shiftMinsAfternoon">0m</span>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="p-2 rounded-2" style="background:#0b0e18; border:1px solid var(--border-subtle);">
+                    <small class="text-secondary d-block" style="font-size:0.7rem;">Noite</small>
+                    <span class="fw-bold text-purple small" id="shiftMinsNight">0m</span>
+                  </div>
+                </div>
+              </div>
+              <small class="text-secondary mt-2 d-block" id="sleepAvgStatusText">Sono hoje: não registrado • Pico produtivo: calculando...</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mural de 100 Conquistas & Insígnias Desbloqueáveis -->
+        <div class="nexus-card p-3 mb-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <div>
+              <h6 class="fw-bold mb-0">
+                <i class="bi bi-trophy-fill text-warning me-2"></i>Mural de Conquistas & Insígnias Acadêmicas (100 Desafios)
+              </h6>
+              <small class="text-secondary" id="badgesCountText">0 / 100 desbloqueadas (0%)</small>
+            </div>
+
+            <!-- Filtros Rápidos do Mural -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <select id="badgeCategoryFilter" class="form-select form-select-sm bg-dark border-secondary text-white" style="width: auto;" onchange="renderBadgesWall()">
+                <option value="all">Todas as Categorias (100)</option>
+                <option value="foco">1. Foco & Pomodoro (20)</option>
+                <option value="constancia">2. Constância & Turnos (18)</option>
+                <option value="academico">3. Domínio Acadêmico (14)</option>
+                <option value="exercicios">4. Exercícios & Simulados (13)</option>
+                <option value="conhecimento">5. Engenharia de Conhecimento (18)</option>
+                <option value="gestao">6. Prazos & Kanban (8)</option>
+                <option value="rpg">7. Biohacking, Níveis & Platina (9)</option>
+              </select>
+
+              <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-nexus active" id="btnFilterBadgeAll" onclick="setBadgeStatusFilter('all')">Todas</button>
+                <button type="button" class="btn btn-outline-nexus" id="btnFilterBadgeUnlocked" onclick="setBadgeStatusFilter('unlocked')">🏆 Conquistadas</button>
+                <button type="button" class="btn btn-outline-nexus" id="btnFilterBadgeLocked" onclick="setBadgeStatusFilter('locked')">🔒 Faltam</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Barra de Progresso Rumo à Platina -->
+          <div class="progress mb-3" style="height: 8px; background-color: #161b2e;">
+            <div id="badgesProgressBar" class="progress-bar bg-gradient-primary" style="width: 0%;"></div>
+          </div>
+
+          <!-- Grade com Rolagem Suave -->
+          <div class="row g-2 pe-1" id="badgesWallContainer" style="max-height: 360px; overflow-y: auto;"></div>
+        </div>
+
         <!-- Heatmap de Consistência -->
         <div class="nexus-card p-3 mb-4">
           <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-            <h6 class="fw-bold mb-0"><i class="bi bi-activity text-info me-2"></i>Consistência de Estudos (Últimas 28 Semanas)</h6>
+            <div>
+              <h6 class="fw-bold mb-0"><i class="bi bi-activity text-info me-2"></i>Mapa de Calor de Constância (Últimas 28 Semanas)</h6>
+              <small class="text-secondary" id="heatmapSummaryText">0 dias ativos registrados</small>
+            </div>
             <div class="d-flex align-items-center gap-1 small text-secondary">
               <span>Menos</span>
               <span class="heat-cell d-inline-block"></span>
@@ -501,26 +676,50 @@
       </div>
 
       <!-- =========================================================
-           ABA 3: POMODORO & IMERSÃO
+           ABA 3: POMODORO, ERGONOMIA, GATEKEEPER & MIXADOR 5 CANAIS
            ========================================================= -->
       <div class="tab-pane fade" id="tab-pomodoro">
         <div class="row g-4 justify-content-center">
           
           <!-- Painel Central do Timer -->
-          <div class="col-12 col-lg-7">
+          <div class="col-12 col-lg-7" id="pomoLeftCol">
             <div class="nexus-card p-4 text-center position-relative">
               
-              <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                 <span class="badge bg-dark border border-secondary text-secondary px-3 py-2">
                   Atalho: <kbd>Espaço</kbd> Play/Pause
                 </span>
-                <button class="btn btn-outline-nexus btn-sm" onclick="toggleFocusMode()">
-                  <i class="bi bi-arrows-fullscreen me-1"></i> Modo Foco Total
-                </button>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-outline-nexus btn-sm active" onclick="toggleErgo2020()" id="btnErgo2020" title="Alerta a cada 20m para descansar a visão 20s e alinhar a postura">
+                    <i class="bi bi-eye me-1"></i> Regra 20-20-20
+                  </button>
+                  <button class="btn btn-outline-nexus btn-sm" onclick="toggleGatekeeperMode()" id="btnGatekeeper" title="Exige resolver um desafio lógico antes de interromper o Pomodoro">
+                    <i class="bi bi-shield-lock me-1"></i> Trava Foco
+                  </button>
+                  <button class="btn btn-outline-nexus btn-sm" onclick="toggleOledMode()" id="btnOledMode" title="Tela 100% preta com Wake Lock para não apagar no celular">
+                    <i class="bi bi-phone-fill me-1"></i> OLED
+                  </button>
+                  <button class="btn btn-outline-nexus btn-sm" onclick="toggleFocusMode()">
+                    <i class="bi bi-arrows-fullscreen me-1"></i> Foco
+                  </button>
+                </div>
+              </div>
+
+              <!-- Janela Atmosférica Minimalista (Chuva Noturna CSS) -->
+              <div class="ambient-scene mb-3" id="ambientVisualScene">
+                <div class="ambient-rain-layer"></div>
+                <div class="text-start" style="z-index:2;">
+                  <span class="badge bg-dark bg-opacity-75 border border-secondary text-info" id="sceneStatusBadge">
+                    <i class="bi bi-stars me-1"></i> Ambiente de Foco Ativo
+                  </span>
+                </div>
+                <div class="text-end small text-secondary" style="z-index:2; font-size:0.75rem;" id="ergoPostureStatus">
+                  🪑 Postura ereta • Olhos relaxados
+                </div>
               </div>
 
               <!-- Seletor de Modo -->
-              <div class="btn-group mb-4" role="group">
+              <div class="btn-group mb-3" role="group">
                 <button type="button" class="btn btn-outline-nexus active" id="modeBtnFocus" onclick="setPomodoroMode('focus')">
                   🎯 Foco (<span id="lblFocusMins">25</span>m)
                 </button>
@@ -532,23 +731,30 @@
                 </button>
               </div>
 
-              <!-- Seletor de Matéria -->
-              <div class="mx-auto mb-3" style="max-width: 380px;">
-                <label class="form-label small text-secondary mb-1">Matéria vinculada à sessão:</label>
-                <select id="pomoSubjectSelect" class="form-select bg-dark border-secondary text-white text-center fw-semibold"></select>
+              <!-- Seletores de Matéria e Tarefa do Kanban (Planejado vs Real) -->
+              <div class="row g-2 mx-auto mb-3" style="max-width: 540px;">
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small text-secondary mb-1">Matéria da sessão:</label>
+                  <select id="pomoSubjectSelect" class="form-select form-select-sm bg-dark border-secondary text-white fw-semibold"></select>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small text-secondary mb-1">Tarefa vinculada (opcional):</label>
+                  <select id="pomoTaskSelect" class="form-select form-select-sm bg-dark border-secondary text-info"></select>
+                </div>
               </div>
 
-              <!-- Aviso de Hidratação nas Pausas -->
-              <div id="breakHydrationBanner" class="alert alert-info bg-opacity-10 border-info text-info py-2 mx-auto d-none" style="max-width: 440px;">
-                💧 <strong>Pausa Ativa:</strong> Hora de beber água, descansar a vista longe da tela e alongar!
+              <!-- Aviso de Hidratação / Ergonomia 20-20-20 -->
+              <div id="breakHydrationBanner" class="alert alert-info bg-opacity-10 border-info text-info py-2 mx-auto d-none" style="max-width: 500px;">
+                💧 <strong>Pausa Ativa:</strong> Beba água, olhe para 6 metros de distância por 20s e alongue os ombros!
               </div>
 
               <!-- Relógio Gigante -->
-              <div class="pomodoro-display my-3 gradient-text" id="pomoClockDisplay">25:00</div>
+              <div class="pomodoro-display my-2 gradient-text" id="pomoClockDisplay">25:00</div>
 
               <!-- Personalizar Tempo de Foco -->
               <div class="mb-4">
                 <small class="text-secondary me-2">Ajustar tempo de foco:</small>
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="changeCustomFocusTime(10)">10m</button>
                 <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="changeCustomFocusTime(25)">25m</button>
                 <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="changeCustomFocusTime(35)">35m</button>
                 <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="changeCustomFocusTime(50)">50m</button>
@@ -556,7 +762,7 @@
               </div>
 
               <!-- Controles do Timer -->
-              <div class="d-flex justify-content-center gap-3 flex-wrap">
+              <div class="d-flex justify-content-center gap-3 flex-wrap mb-4">
                 <button class="btn btn-nexus btn-lg px-5" id="pomoStartPauseBtn" onclick="togglePomodoro()">
                   <i class="bi bi-play-fill me-1"></i> Iniciar
                 </button>
@@ -568,52 +774,108 @@
                 </button>
               </div>
 
-            </div>
-          </div>
-
-          <!-- Gerador de Som Ambiente Offline -->
-          <!-- Coluna Direita: Imersão & Player YouTube -->
-          <div class="col-12 col-lg-5">
-            <div class="nexus-card p-4 h-100 d-flex flex-column justify-content-between">
-              <div>
-                <h5 class="fw-bold mb-1"><i class="bi bi-soundwave text-info me-2"></i>Gerador de Imersão (Offline)</h5>
-                <p class="text-secondary small mb-3">
-                  Sons sintetizados em tempo real pelo seu navegador (100% offline).
-                </p>
-
-                <div class="d-grid gap-2 mb-4">
-                  <button class="btn btn-outline-nexus text-start p-2 d-flex justify-content-between align-items-center" id="soundBtn-off" onclick="setAmbientSound('off')">
-                    <span><i class="bi bi-volume-mute-fill me-2 text-secondary"></i> Silêncio (Desligado)</span>
-                    <span class="badge bg-secondary">Ativo</span>
-                  </button>
-                  <button class="btn btn-outline-nexus text-start p-2 d-flex justify-content-between align-items-center" id="soundBtn-brown" onclick="setAmbientSound('brown')">
-                    <span><i class="bi bi-water me-2 text-warning"></i> Ruído Marrom (Foco Profundo)</span>
-                  </button>
-                  <button class="btn btn-outline-nexus text-start p-2 d-flex justify-content-between align-items-center" id="soundBtn-rain" onclick="setAmbientSound('rain')">
-                    <span><i class="bi bi-cloud-rain-fill me-2 text-primary"></i> Chuva Noturna Suave</span>
-                  </button>
+              <!-- Rastreador de Hidratação Integrado -->
+              <div class="p-3 rounded-3 text-start mx-auto" style="max-width: 540px; background: #0b0e18; border: 1px solid var(--border-subtle);">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                  <div>
+                    <span class="fw-bold small text-info"><i class="bi bi-droplet-fill me-1"></i>Hidratação Diária</span>
+                    <small class="text-secondary ms-2" id="hydrationStatusText">0 / 3000 ml (0%)</small>
+                  </div>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-outline-info btn-sm py-0 px-2" onclick="addWaterMl(250)">+250ml</button>
+                    <button class="btn btn-outline-info btn-sm py-0 px-2" onclick="addWaterMl(500)">+500ml</button>
+                    <button class="btn btn-outline-secondary btn-sm py-0 px-2" onclick="changeWaterGoal()" title="Alterar meta de água"><i class="bi bi-gear"></i></button>
+                    <button class="btn btn-outline-danger btn-sm py-0 px-2" onclick="resetWaterToday()" title="Zerar hoje"><i class="bi bi-arrow-counterclockwise"></i></button>
+                  </div>
                 </div>
-
-                <!-- MINI PLAYER YOUTUBE CUSTOMIZÁVEL -->
-                <h5 class="fw-bold mb-1"><i class="bi bi-youtube text-danger me-2"></i>Player YouTube Personalizado</h5>
-                <p class="text-secondary small mb-2">Cole o link ou ID de vídeos com permissão de embed:</p>
-                
-                <div class="input-group input-group-sm mb-3">
-                  <input type="text" id="ytLinkInput" class="form-control bg-dark border-secondary text-white" placeholder="Ex: jfKfPfyJRdk ou link do YouTube">
-                  <button class="btn btn-outline-nexus" type="button" onclick="loadCustomYouTubePlayer()">Carregar</button>
-                </div>
-
-                <div id="ytPlayerWrapper" class="rounded-3 overflow-hidden border border-secondary" style="background: #000; height: 160px; display: flex; align-items: center; justify-content: center;">
-                  <small class="text-secondary text-center p-2">Nenhum vídeo carregado.<br>Insira um link acima e clique em Carregar.</small>
+                <div class="progress" style="height: 8px; background-color: #161b2e;">
+                  <div id="hydrationProgressBar" class="progress-bar bg-info" style="width: 0%;"></div>
                 </div>
               </div>
 
-              <div class="mt-3">
-                <label class="form-label small text-secondary d-flex justify-content-between">
-                  <span>Volume do Gerador Offline</span>
-                  <span id="ambientVolLabel">40%</span>
-                </label>
-                <input type="range" class="form-range" min="5" max="100" value="40" oninput="changeAmbientVolume(this.value)">
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Mixador Offline de 5 Canais (Marrom, Rosa, Branco, Chuva e Lo-Fi) -->
+          <div class="col-12 col-lg-5" id="pomoRightCol">
+            <div class="nexus-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <h5 class="fw-bold mb-0"><i class="bi bi-sliders text-info me-2"></i>Estúdio de Imersão (100% Offline)</h5>
+                  <button class="btn btn-outline-secondary btn-sm py-0 px-2" onclick="stopAllAmbientSounds()">Silenciar Tudo</button>
+                </div>
+                <p class="text-secondary small mb-3">
+                  Sintetizador neural via Web Audio API. Misture quantos canais desejar sem depender de internet:
+                </p>
+
+                <!-- Canal 1: Ruído Marrom -->
+                <div class="p-2 px-3 rounded-3 mb-2" style="background: #0b0e18; border: 1px solid var(--border-subtle);">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-semibold small"><i class="bi bi-water text-warning me-2"></i>Ruído Marrom (Grave / Foco Profundo)</span>
+                    <button class="btn btn-outline-nexus btn-sm py-0 px-3" id="mixBtn-brown" onclick="toggleMixChannel('brown')">Ligar</button>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-volume-down text-secondary"></i>
+                    <input type="range" class="form-range" min="5" max="100" value="45" oninput="setMixChannelVolume('brown', this.value)">
+                    <small class="text-secondary" id="mixVolLabel-brown" style="min-width:36px;">45%</small>
+                  </div>
+                </div>
+
+                <!-- Canal 2: Ruído Rosa -->
+                <div class="p-2 px-3 rounded-3 mb-2" style="background: #0b0e18; border: 1px solid var(--border-subtle);">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-semibold small"><i class="bi bi-flower1 text-danger me-2"></i>Ruído Rosa (Equilibrado / Leitura)</span>
+                    <button class="btn btn-outline-nexus btn-sm py-0 px-3" id="mixBtn-pink" onclick="toggleMixChannel('pink')">Ligar</button>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-volume-down text-secondary"></i>
+                    <input type="range" class="form-range" min="5" max="100" value="35" oninput="setMixChannelVolume('pink', this.value)">
+                    <small class="text-secondary" id="mixVolLabel-pink" style="min-width:36px;">35%</small>
+                  </div>
+                </div>
+
+                <!-- Canal 3: Ruído Branco -->
+                <div class="p-2 px-3 rounded-3 mb-2" style="background: #0b0e18; border: 1px solid var(--border-subtle);">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-semibold small"><i class="bi bi-broadcast text-light me-2"></i>Ruído Branco (Isolamento Acústico)</span>
+                    <button class="btn btn-outline-nexus btn-sm py-0 px-3" id="mixBtn-white" onclick="toggleMixChannel('white')">Ligar</button>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-volume-down text-secondary"></i>
+                    <input type="range" class="form-range" min="5" max="100" value="25" oninput="setMixChannelVolume('white', this.value)">
+                    <small class="text-secondary" id="mixVolLabel-white" style="min-width:36px;">25%</small>
+                  </div>
+                </div>
+
+                <!-- Canal 4: Chuva Noturna Suave -->
+                <div class="p-2 px-3 rounded-3 mb-2" style="background: #0b0e18; border: 1px solid var(--border-subtle);">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-semibold small"><i class="bi bi-cloud-rain-fill text-primary me-2"></i>Chuva Noturna Suave</span>
+                    <button class="btn btn-outline-nexus btn-sm py-0 px-3" id="mixBtn-rain" onclick="toggleMixChannel('rain')">Ligar</button>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-volume-down text-secondary"></i>
+                    <input type="range" class="form-range" min="5" max="100" value="40" oninput="setMixChannelVolume('rain', this.value)">
+                    <small class="text-secondary" id="mixVolLabel-rain" style="min-width:36px;">40%</small>
+                  </div>
+                </div>
+
+                <!-- Canal 5: Sintetizador Lo-Fi Procedural -->
+                <div class="p-2 px-3 rounded-3" style="background: #0b0e18; border: 1px solid var(--border-subtle);">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-semibold small"><i class="bi bi-music-note-beamed text-info me-2"></i>Synth Lo-Fi Procedural (Acordes Suaves)</span>
+                    <button class="btn btn-outline-nexus btn-sm py-0 px-3" id="mixBtn-lofi" onclick="toggleProceduralLofi()">Ligar</button>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-volume-down text-secondary"></i>
+                    <input type="range" class="form-range" min="5" max="100" value="30" oninput="setProceduralLofiVolume(this.value)">
+                    <small class="text-secondary" id="mixVolLabel-lofi" style="min-width:36px;">30%</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 p-2 rounded-3 small text-secondary text-center" style="background:#0b0e18; border:1px dashed var(--border-subtle);">
+                💡 Dica: Combine <strong>Ruído Marrom + Chuva + Synth Lo-Fi</strong> para criar uma atmosfera de imersão total.
               </div>
             </div>
           </div>
@@ -622,18 +884,208 @@
       </div>
 
       <!-- =========================================================
-           ABA 4: PRAZOS & PROVAS (ACADEMIC TRACKER)
+           ABA 4: FLASHCARDS COM REPETIÇÃO ESPAÇADA (ESTILO ANKI)
+           ========================================================= -->
+      <div class="tab-pane fade" id="tab-flashcards">
+        <div class="row g-4">
+          <div class="col-12 col-lg-5">
+            <div class="nexus-card p-4 mb-4">
+              <h5 class="fw-bold mb-3"><i class="bi bi-plus-circle text-purple me-2"></i>Novo Flashcard</h5>
+              <form onsubmit="handleCreateFlashcard(event)">
+                <div class="mb-2">
+                  <label class="form-label small text-secondary mb-1">Matéria</label>
+                  <select id="fcSubjectSelect" class="form-select form-select-sm bg-dark border-secondary text-white" required></select>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label small text-secondary mb-1">Frente (Pergunta / Conceito)</label>
+                  <input type="text" id="fcFrontInput" class="form-control bg-dark border-secondary text-white" placeholder="Ex: O que faz o operador & em C?" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small text-secondary mb-1">Verso (Resposta / Código / Fórmula)</label>
+                  <textarea id="fcBackInput" class="form-control bg-dark border-secondary text-white" rows="3" placeholder="Ex: Retorna o endereço de memória da variável (ponteiro)." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-nexus w-100">
+                  <i class="bi bi-save me-1"></i> Adicionar Flashcard
+                </button>
+              </form>
+            </div>
+
+            <div class="nexus-card p-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0 text-secondary">Cartões Cadastrados</h6>
+                <span class="badge bg-dark border border-secondary" id="fcTotalBadge">0</span>
+              </div>
+              <div id="fcManageList" class="d-flex flex-column gap-2" style="max-height: 260px; overflow-y: auto;"></div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-7">
+            <div class="nexus-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                  <div>
+                    <h5 class="fw-bold mb-0"><i class="bi bi-lightning-fill text-warning me-2"></i>Arena de Repetição Espaçada</h5>
+                    <small class="text-secondary" id="fcReviewStatusSubtitle">Cartões agendados para hoje (+5 XP por revisão)</small>
+                  </div>
+                  <select id="fcFilterSubject" class="form-select form-select-sm bg-dark border-secondary text-white" style="width:auto;" onchange="renderFlashcardsTab()">
+                    <option value="all">Todas as Matérias</option>
+                  </select>
+                </div>
+
+                <div id="fcStudyBox" class="flashcard-box my-3" onclick="flipCurrentFlashcard()">
+                  <span class="badge bg-info bg-opacity-25 text-info mb-2" id="fcCardSubBadge">Matéria</span>
+                  <div class="small text-secondary mb-1" id="fcCardSideLabel">FRENTE (Clique para virar)</div>
+                  <h4 class="fw-bold mb-0" id="fcCardMainText">Nenhum cartão pendente para revisão!</h4>
+                </div>
+              </div>
+
+              <div id="fcReviewControls" class="d-none">
+                <p class="text-center text-secondary small mb-2">Como foi lembrar desta resposta?</p>
+                <div class="row g-2">
+                  <div class="col-4">
+                    <button class="btn btn-outline-danger w-100" onclick="rateCurrentFlashcard(1)">
+                      😰 Difícil<br><small style="font-size:0.7rem;">Revisar amanhã (1d)</small>
+                    </button>
+                  </div>
+                  <div class="col-4">
+                    <button class="btn btn-outline-warning w-100" onclick="rateCurrentFlashcard(3)">
+                      🤔 Médio<br><small style="font-size:0.7rem;">Em 3 dias</small>
+                    </button>
+                  </div>
+                  <div class="col-4">
+                    <button class="btn btn-outline-success w-100" onclick="rateCurrentFlashcard(7)">
+                      🚀 Fácil<br><small style="font-size:0.7rem;">Em 7 dias</small>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           ABA 5: LABORATÓRIO DE COMPUTAÇÃO & EXATAS
+           ========================================================= -->
+      <div class="tab-pane fade" id="tab-lab">
+        <div class="row g-4">
+          
+          <!-- 1. Gerador Automático de Tabelas-Verdade -->
+          <div class="col-12 col-xl-6">
+            <div class="nexus-card p-4 h-100">
+              <h5 class="fw-bold mb-1"><i class="bi bi-table text-info me-2"></i>1. Gerador de Tabelas-Verdade</h5>
+              <p class="text-secondary small mb-3">
+                Use variáveis de <code>A</code> a <code>Z</code> e operadores: <code>~</code> ou <code>!</code> (NÃO), <code>^</code> ou <code>&amp;</code> (E), <code>v</code> ou <code>|</code> (OU), <code>-&gt;</code> (SE...ENTÃO), <code>&lt;-&gt;</code> (SE E SOMENTE SE).
+              </p>
+              <div class="input-group mb-2">
+                <input type="text" id="ttExprInput" class="form-control bg-dark border-secondary text-white font-monospace" value="(P ^ Q) -> ~R" placeholder="Ex: (P ^ Q) -> ~R">
+                <button class="btn btn-nexus" type="button" onclick="generateTruthTable()">Gerar Tabela</button>
+              </div>
+              <div class="d-flex gap-1 flex-wrap mb-3">
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="insertTTToken('~')">~ (NÃO)</button>
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="insertTTToken(' ^ ')">^ (E)</button>
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="insertTTToken(' v ')">v (OU)</button>
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="insertTTToken(' -> ')">-&gt; (Implica)</button>
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="insertTTToken(' <-> ')">&lt;-&gt; (Equivale)</button>
+              </div>
+              <div id="ttClassificationBadge" class="mb-2"></div>
+              <div id="ttOutputContainer" class="table-responsive" style="max-height: 310px; overflow-y: auto;"></div>
+            </div>
+          </div>
+
+          <!-- 2. Conversor de Bases & Calculadora Bitwise -->
+          <div class="col-12 col-xl-6">
+            <div class="nexus-card p-4 h-100">
+              <h5 class="fw-bold mb-1"><i class="bi bi-binary text-purple me-2"></i>2. Conversor de Bases &amp; Calculadora Bitwise</h5>
+              <p class="text-secondary small mb-3">Digite em qualquer base para converter todas instantaneamente:</p>
+
+              <div class="row g-2 mb-4">
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small text-secondary mb-1">Decimal (Base 10)</label>
+                  <input type="text" id="baseDec" class="form-control bg-dark border-secondary text-white font-monospace" placeholder="Ex: 42" oninput="handleBaseConversion('dec', this.value)">
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small text-secondary mb-1">Binário (Base 2)</label>
+                  <input type="text" id="baseBin" class="form-control bg-dark border-secondary text-info font-monospace" placeholder="Ex: 101010" oninput="handleBaseConversion('bin', this.value)">
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small text-secondary mb-1">Hexadecimal (Base 16)</label>
+                  <input type="text" id="baseHex" class="form-control bg-dark border-secondary text-warning font-monospace" placeholder="Ex: 2A" oninput="handleBaseConversion('hex', this.value)">
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small text-secondary mb-1">Octal (Base 8)</label>
+                  <input type="text" id="baseOct" class="form-control bg-dark border-secondary text-success font-monospace" placeholder="Ex: 52" oninput="handleBaseConversion('oct', this.value)">
+                </div>
+              </div>
+
+              <h6 class="fw-bold text-info mb-2">Operações Bit a Bit (Bitwise)</h6>
+              <div class="row g-2 align-items-center">
+                <div class="col-4">
+                  <input type="number" id="bwA" class="form-control form-control-sm bg-dark border-secondary text-white font-monospace" value="12" oninput="calcBitwise()">
+                </div>
+                <div class="col-4">
+                  <select id="bwOp" class="form-select form-select-sm bg-dark border-secondary text-white font-monospace" onchange="calcBitwise()">
+                    <option value="AND">AND (&amp;)</option>
+                    <option value="OR">OR (|)</option>
+                    <option value="XOR">XOR (^)</option>
+                    <option value="LSHIFT">Shift &lt;&lt;</option>
+                    <option value="RSHIFT">Shift &gt;&gt;</option>
+                    <option value="NOT">NOT (~A)</option>
+                  </select>
+                </div>
+                <div class="col-4">
+                  <input type="number" id="bwB" class="form-control form-control-sm bg-dark border-secondary text-white font-monospace" value="5" oninput="calcBitwise()">
+                </div>
+              </div>
+              <div id="bwResultBox" class="p-2 rounded-3 mt-2 font-monospace small" style="background:#0b0e18; border:1px solid var(--border-subtle);"></div>
+            </div>
+          </div>
+
+          <!-- 3. Terminal Python no Navegador (Pyodide WebAssembly) -->
+          <div class="col-12">
+            <div class="nexus-card p-4">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                <div>
+                  <h5 class="fw-bold mb-0"><i class="bi bi-terminal-plus text-success me-2"></i>3. Terminal Python no Navegador (WebAssembly)</h5>
+                  <small class="text-secondary">Rode scripts Python 3 diretamente no painel (PC ou celular) sem instalar nada.</small>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-nexus btn-sm" onclick="clearPythonOutput()">Limpar Saída</button>
+                  <button class="btn btn-nexus btn-sm" id="btnRunPython" onclick="runBrowserPython()">
+                    <i class="bi bi-play-fill me-1"></i> Executar Python
+                  </button>
+                </div>
+              </div>
+
+              <div class="row g-3 mt-1">
+                <div class="col-12 col-lg-7">
+                  <div id="pyAceContainer" style="width: 100%; height: 240px; border-radius: 8px; border: 1px solid var(--border-subtle);"></div>
+                </div>
+                <div class="col-12 col-lg-5">
+                  <pre id="pyConsoleOutput" class="p-3 rounded-3 font-monospace small text-light mb-0" style="background:#05070c; border:1px solid var(--border-subtle); height:240px; overflow-y:auto;"># Saída do console Python aparecerá aqui...
+# Clique em "Executar Python" para rodar.</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- =========================================================
+           ABA 6: PRAZOS, ESTIMADOR DE TEMPO & LINHA DO TEMPO GANTT
            ========================================================= -->
       <div class="tab-pane fade" id="tab-tasks">
         
-        <!-- Adicionar Prazo/Prova -->
+        <!-- Adicionar Prazo/Prova com Tempo Estimado -->
         <div class="nexus-card p-3 mb-4">
           <form class="row g-2 align-items-end" onsubmit="handleCreateTask(event)">
             <div class="col-12 col-md-3">
               <label class="form-label small text-secondary mb-1">Título da Prova / Entrega</label>
               <input type="text" id="taskTitle" class="form-control bg-dark border-secondary text-white" placeholder="Ex: Prova Presencial - Unidade 1 a 4" required>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-2">
               <label class="form-label small text-secondary mb-1">Matéria</label>
               <select id="taskSubjectSelect" class="form-select bg-dark border-secondary text-white"></select>
             </div>
@@ -649,14 +1101,24 @@
               <label class="form-label small text-secondary mb-1">Data Limite</label>
               <input type="date" id="taskDate" class="form-control bg-dark border-secondary text-white" required>
             </div>
-            <div class="col-4 col-md-1">
-              <label class="form-label small text-secondary mb-1">Horário</label>
+            <div class="col-3 col-md-1">
+              <label class="form-label small text-secondary mb-1">Hora</label>
               <input type="time" id="taskTime" class="form-control bg-dark border-secondary text-white" value="19:00">
             </div>
-            <div class="col-2 col-md-1">
+            <div class="col-3 col-md-1">
+              <label class="form-label small text-secondary mb-1" title="Minutos planejados para concluir">Est.(min)</label>
+              <input type="number" id="taskEstMins" class="form-control bg-dark border-secondary text-info" value="60" min="10">
+            </div>
+            <div class="col-12 col-md-1">
               <button type="submit" class="btn btn-nexus w-100"><i class="bi bi-plus-lg"></i></button>
             </div>
           </form>
+        </div>
+
+        <!-- Linha do Tempo Visual do Semestre (Gantt Acadêmico) -->
+        <div class="nexus-card p-3 mb-4">
+          <h6 class="fw-bold mb-2"><i class="bi bi-bar-chart-steps text-info me-2"></i>Linha do Tempo do Semestre (Gantt Acadêmico & Progresso)</h6>
+          <div id="semesterGanttContainer" class="d-flex flex-column gap-2"></div>
         </div>
 
         <!-- Quadro Kanban 3 Colunas -->
@@ -684,7 +1146,7 @@
       </div>
 
       <!-- =========================================================
-           NOVA ABA: CRONOGRAMA SEMANAL
+           ABA 7: CRONOGRAMA SEMANAL
            ========================================================= -->
       <div class="tab-pane fade" id="tab-schedule">
         <div class="row g-4">
@@ -692,19 +1154,14 @@
             <div class="nexus-card p-4 h-100">
               <h5 class="fw-bold mb-2"><i class="bi bi-calendar-day text-info me-2"></i>Definição da Grade Semanal</h5>
               <p class="text-secondary small mb-4">Selecione qual matéria é a prioridade de estudo em cada dia da semana. O Pomodoro irá selecioná-la automaticamente para você.</p>
-              
-              <div id="scheduleFormContainer" class="d-flex flex-column gap-3">
-                <!-- Preenchido via JavaScript -->
-              </div>
+              <div id="scheduleFormContainer" class="d-flex flex-column gap-3"></div>
             </div>
           </div>
 
           <div class="col-12 col-lg-7">
             <div class="nexus-card p-4 h-100">
               <h5 class="fw-bold mb-3"><i class="bi bi-eye text-purple me-2"></i>Visão Geral do Cronograma</h5>
-              <div id="scheduleOverviewContainer" class="d-flex flex-column gap-2">
-                <!-- Preenchido via JavaScript -->
-              </div>
+              <div id="scheduleOverviewContainer" class="d-flex flex-column gap-2"></div>
             </div>
           </div>
         </div>
@@ -734,6 +1191,7 @@
       </div>
     </div>
   </div>
+
   <!-- ================= MODAL: ANOTAÇÕES DA AULA ================= -->
   <div class="modal fade" id="lessonNoteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -746,7 +1204,6 @@
         </div>
         <div class="modal-body">
           <p class="text-secondary small mb-2">Editor avançado (suporta Markdown, indentação e atalhos de código):</p>
-          <!-- Substituímos a textarea por esta div com altura fixa -->
           <div id="editorContainer" style="width: 100%; height: 380px; border-radius: 8px; border: 1px solid var(--border-subtle);"></div>
         </div>
         <div class="modal-footer border-secondary">
@@ -758,6 +1215,7 @@
       </div>
     </div>
   </div>
+
   <!-- ================= MODAL: REPOSITÓRIO DE PROMPTS & FÓRMULAS ================= -->
   <div class="modal fade" id="subjectRepoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -770,7 +1228,6 @@
         </div>
         <div class="modal-body">
           <div class="row g-3">
-            <!-- Coluna Esquerda: Formulário de Adicionar Novo Item -->
             <div class="col-12 col-lg-5 border-end border-secondary border-opacity-25 pe-lg-3">
               <h6 class="fw-bold text-info mb-3" id="repoFormHeading">Adicionar Novo Item</h6>
               <form onsubmit="handleSaveRepoItem(event)">
@@ -788,14 +1245,93 @@
               </form>
             </div>
 
-            <!-- Coluna Direita: Lista de Itens Salvos -->
             <div class="col-12 col-lg-7">
               <h6 class="fw-bold text-secondary mb-3">Itens Salvos nesta Matéria</h6>
-              <div id="repoItemsListContainer" class="d-flex flex-column gap-3" style="max-height: 420px; overflow-y: auto; padding-right: 4px;">
-                <!-- Preenchido via JS -->
+              <div id="repoItemsListContainer" class="d-flex flex-column gap-3" style="max-height: 420px; overflow-y: auto; padding-right: 4px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: SIMULADO DE MÚLTIPLA ESCOLHA POR UNIDADE ================= -->
+  <div class="modal fade" id="unitQuizModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content nexus-card border-info">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title fw-bold text-white" id="unitQuizModalTitle">
+            <i class="bi bi-patch-question-fill text-info me-2"></i>Simulado da Unidade
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-4">
+            <div class="col-12 col-lg-5 border-end border-secondary border-opacity-25">
+              <h6 class="fw-bold text-info mb-2">Adicionar Questão à Unidade</h6>
+              <form onsubmit="handleAddUnitQuestion(event)">
+                <div class="mb-2">
+                  <label class="form-label small text-secondary mb-1">Enunciado da Questão</label>
+                  <textarea id="uqQuestion" class="form-control form-control-sm bg-dark border-secondary text-white" rows="2" required></textarea>
+                </div>
+                <div class="row g-2 mb-2">
+                  <div class="col-6"><input type="text" id="uqOptA" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Alternativa A" required></div>
+                  <div class="col-6"><input type="text" id="uqOptB" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Alternativa B" required></div>
+                  <div class="col-6"><input type="text" id="uqOptC" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Alternativa C" required></div>
+                  <div class="col-6"><input type="text" id="uqOptD" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Alternativa D" required></div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small text-secondary mb-1">Alternativa Correta</label>
+                  <select id="uqCorrect" class="form-select form-select-sm bg-dark border-secondary text-white">
+                    <option value="0">Alternativa A</option>
+                    <option value="1">Alternativa B</option>
+                    <option value="2">Alternativa C</option>
+                    <option value="3">Alternativa D</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-outline-nexus w-100">
+                  <i class="bi bi-plus-circle me-1"></i> Salvar Questão
+                </button>
+              </form>
+            </div>
+
+            <div class="col-12 col-lg-7">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-white">Resolver Simulado</h6>
+                <span class="badge bg-dark border border-secondary" id="uqResultBadge">Responda e clique em Corrigir</span>
+              </div>
+              <div id="uqQuestionsRunContainer" class="d-flex flex-column gap-3" style="max-height: 360px; overflow-y: auto; padding-right: 4px;"></div>
+              <div class="mt-3 d-flex gap-2">
+                <button class="btn btn-nexus flex-grow-1" onclick="gradeUnitQuiz()">
+                  <i class="bi bi-check2-circle me-1"></i> Corrigir e Atualizar Nota (X/5)
+                </button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: MODO MICRO-ESTUDO 10 MINUTOS ================= -->
+  <div class="modal fade" id="microStudyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content nexus-card border-warning">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title fw-bold text-warning">
+            <i class="bi bi-lightning-charge-fill me-2"></i>Modo Micro-Estudo (Sessão Rápida de 10 Min)
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="stopMicroTimer()"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p class="text-secondary small mb-2">Ideal para revisar pelo celular quando você tem poucos minutos livres:</p>
+          <div class="display-4 fw-bold text-info font-monospace mb-3" id="microTimerDisplay">10:00</div>
+          <div class="d-flex justify-content-center gap-2 mb-4">
+            <button class="btn btn-nexus btn-sm px-3" id="btnMicroStart" onclick="toggleMicroTimer()">Iniciar 10m</button>
+            <button class="btn btn-outline-nexus btn-sm" onclick="pickRandomMicroChallenge()">🎲 Sortear Outro Desafio</button>
+            <button class="btn btn-outline-success btn-sm" onclick="finishMicroStudySession()">Concluir (+20 XP)</button>
+          </div>
+          <div id="microChallengeCard" class="p-3 rounded-3 text-start" style="background:#0b0e18; border:1px solid var(--border-subtle);"></div>
         </div>
       </div>
     </div>
@@ -808,9 +1344,8 @@
   <script>
     const STORAGE_KEY = 'NEXUS_STUDY_STATE_V1';
     let appState = null;
-    let fileHandle = null; // Handle do arquivo meus_dados.json na pasta
+    let fileHandle = null;
 
-    // Estrutura padrão de uma matéria com 4 Unidades x 5 Aulas + Prompts + Fórmulas
     function createSubjectTemplate(name, color, targetHours) {
       const units = [];
       for (let u = 1; u <= 4; u++) {
@@ -827,7 +1362,8 @@
           id: `u${u}_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
           name: `Unidade ${u}`,
           score: null,
-          lessons
+          lessons,
+          quizQuestions: []
         });
       }
       return {
@@ -837,18 +1373,22 @@
         targetHours: Number(targetHours) || 40,
         minutesStudied: 0,
         units,
-        prompts: [],   // <--- NOVO: Armazena os prompts da matéria
-        formulas: []   // <--- NOVO: Armazena as fórmulas e conceitos
+        prompts: [],
+        formulas: []
       };
     }
 
-    // Estado Inicial Padrão
     function getDefaultState() {
       return {
         settings: {
           dailyGoalMinutes: 120,
           focusMinutes: 25,
-          youtubeUrl: '' // <--- NOVO: Armazena o link/ID do YouTube salvo
+          waterGoalMl: 3000,
+          bonusXp: 0,
+          degreeTotalHours: 2400,
+          degreeCompletedHours: 400,
+          ergo2020Enabled: true,
+          gatekeeperEnabled: false
         },
         subjects: [
           createSubjectTemplate('Algoritmos e Programação Estruturada', '#8b5cf6', 40),
@@ -857,19 +1397,51 @@
         ],
         sessions: [],
         tasks: [],
-        schedule: { // <--- NOVO: Cronograma semanal de matérias (IDs das matérias por dia)
-          'Segunda': '',
-          'Terça': '',
-          'Quarta': '',
-          'Quinta': '',
-          'Sexta': '',
-          'Sábado': '',
-          'Domingo': ''
+        flashcards: [],
+        hydration: {},
+        sleepLog: {},
+        schedule: {
+          'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': ''
         }
       };
     }
 
-    // Utilitário de Data Local YYYY-MM-DD
+    function normalizeCloudData(data) {
+      if (!data || typeof data !== 'object') return getDefaultState();
+      
+      data.settings = data.settings || {};
+      data.settings.dailyGoalMinutes = Number(data.settings.dailyGoalMinutes) || 120;
+      data.settings.focusMinutes = Number(data.settings.focusMinutes) || 25;
+      data.settings.waterGoalMl = Number(data.settings.waterGoalMl) || 3000;
+      data.settings.bonusXp = Number(data.settings.bonusXp) || 0;
+      data.settings.degreeTotalHours = Number(data.settings.degreeTotalHours) || 2400;
+      data.settings.degreeCompletedHours = Number(data.settings.degreeCompletedHours) || 0;
+      data.settings.ergo2020Enabled = data.settings.ergo2020Enabled !== false;
+      data.settings.gatekeeperEnabled = Boolean(data.settings.gatekeeperEnabled);
+
+      data.sessions = Array.isArray(data.sessions) ? data.sessions : [];
+      data.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+      data.flashcards = Array.isArray(data.flashcards) ? data.flashcards : [];
+      data.hydration = (data.hydration && typeof data.hydration === 'object') ? data.hydration : {};
+      data.sleepLog = (data.sleepLog && typeof data.sleepLog === 'object') ? data.sleepLog : {};
+      data.schedule = data.schedule || {
+        'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': ''
+      };
+      data.subjects = Array.isArray(data.subjects) ? data.subjects : [];
+
+      data.subjects.forEach(sub => {
+        sub.prompts = Array.isArray(sub.prompts) ? sub.prompts : [];
+        sub.formulas = Array.isArray(sub.formulas) ? sub.formulas : [];
+        sub.units = Array.isArray(sub.units) ? sub.units : [];
+        sub.units.forEach(u => {
+          u.lessons = Array.isArray(u.lessons) ? u.lessons : [];
+          u.quizQuestions = Array.isArray(u.quizQuestions) ? u.quizQuestions : [];
+        });
+      });
+
+      return data;
+    }
+
     function getLocalDateStr(dateObj = new Date()) {
       const y = dateObj.getFullYear();
       const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -878,12 +1450,12 @@
     }
 
     // =========================================================================
-    // PERSISTÊNCIA: LOCALSTORAGE + INDEXEDDB + FILE SYSTEM ACCESS API (PASTA)
+    // PERSISTÊNCIA: LOCALSTORAGE + INDEXEDDB + FILE SYSTEM ACCESS API
     // =========================================================================
     function loadState() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        appState = raw ? JSON.parse(raw) : getDefaultState();
+        appState = raw ? normalizeCloudData(JSON.parse(raw)) : getDefaultState();
       } catch (e) {
         appState = getDefaultState();
       }
@@ -892,19 +1464,16 @@
     async function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
       updateAllUI();
-      pushStateToCloud(); // Envia para a nuvem em tempo real
+      pushStateToCloud();
       if (fileHandle) {
-        await writeToLinkedFile(); // Mantém o backup no meus_dados.json do PC
+        await writeToLinkedFile();
       }
     }
 
-    // IndexedDB para guardar a referência do arquivo meus_dados.json entre sessões
     function openHandleDB() {
       return new Promise((resolve, reject) => {
         const req = indexedDB.open('NexusFileHandleDB', 1);
-        req.onupgradeneeded = (e) => {
-          e.target.result.createObjectStore('handles');
-        };
+        req.onupgradeneeded = (e) => e.target.result.createObjectStore('handles');
         req.onsuccess = (e) => resolve(e.target.result);
         req.onerror = (e) => reject(e);
       });
@@ -939,11 +1508,8 @@
       if (savedHandle) {
         fileHandle = savedHandle;
         const perm = await fileHandle.queryPermission({ mode: 'readwrite' });
-        if (perm === 'granted') {
-          updateSyncBadge('connected', fileHandle.name);
-        } else {
-          updateSyncBadge('pending', fileHandle.name);
-        }
+        if (perm === 'granted') updateSyncBadge('connected', fileHandle.name);
+        else updateSyncBadge('pending', fileHandle.name);
       }
     }
 
@@ -960,26 +1526,24 @@
       } else if (state === 'pending') {
         btn.classList.add('sync-pending');
         dot.textContent = '🟡';
-        txt.textContent = `Reconectar Pasta (${fileName})`;
+        txt.textContent = `Reconectar (${fileName})`;
       } else if (state === 'unsupported') {
         btn.classList.add('sync-disconnected');
         dot.textContent = '⚪';
-        txt.textContent = 'Use Exportar/Importar neste navegador';
+        txt.textContent = 'Backup via JSON';
       } else {
         btn.classList.add('sync-disconnected');
         dot.textContent = '⚪';
-        txt.textContent = 'Vincular Arquivo da Pasta';
+        txt.textContent = 'Vincular Pasta';
       }
     }
 
     async function handleFolderSyncClick() {
       if (!('showSaveFilePicker' in window)) {
-        alert('Seu navegador atual bloqueia gravação direta em pasta. Use o Chrome, Edge ou Brave, ou utilize os botões Exportar/Importar ao lado.');
+        alert('Seu navegador atual bloqueia gravação direta em pasta. Use o Chrome, Edge ou Brave no PC, ou utilize os botões Exportar/Importar e a Nuvem.');
         return;
       }
-
       try {
-        // Se já existe um arquivo vinculado aguardando apenas 1 clique de permissão
         if (fileHandle) {
           const perm = await fileHandle.requestPermission({ mode: 'readwrite' });
           if (perm === 'granted') {
@@ -988,22 +1552,14 @@
             return;
           }
         }
-
-        // Cria ou seleciona o arquivo meus_dados.json na pasta do usuário
         fileHandle = await window.showSaveFilePicker({
           suggestedName: 'meus_dados.json',
-          types: [{
-            description: 'Banco de Dados JSON',
-            accept: { 'application/json': ['.json'] }
-          }]
+          types: [{ description: 'Banco de Dados JSON', accept: { 'application/json': ['.json'] } }]
         });
-
         await saveHandleToIDB(fileHandle);
         await writeToLinkedFile();
         updateSyncBadge('connected', fileHandle.name);
-      } catch (err) {
-        // Usuário cancelou a janela
-      }
+      } catch (err) {}
     }
 
     async function writeToLinkedFile() {
@@ -1041,7 +1597,7 @@
         try {
           const imported = JSON.parse(e.target.result);
           if (imported && Array.isArray(imported.subjects)) {
-            appState = imported;
+            appState = normalizeCloudData(imported);
             await saveState();
             refreshCharts();
             alert('Backup carregado com sucesso!');
@@ -1056,34 +1612,34 @@
       event.target.value = '';
     }
 
+    // Exportador Limpo para PDF / Impressão Acadêmica
+    function exportCleanAcademicReport() {
+      window.print();
+    }
+
     // =========================================================================
-    // GAMIFICAÇÃO (XP, NÍVEIS, PATENTES, STREAK)
+    // GAMIFICAÇÃO, CONQUISTAS, NÍVEIS, PATENTES E STREAK
     // =========================================================================
     function calculateGamification() {
-      let totalXP = 0;
-
-      // +2 XP por minuto estudado
+      let totalXP = Number(appState.settings?.bonusXp) || 0;
       const totalMins = appState.sessions.reduce((acc, s) => acc + (Number(s.minutes) || 0), 0);
       totalXP += totalMins * 2;
 
-      // +25 XP por aula concluída e +15 XP por acerto nos exercícios (0/5 a 5/5)
       appState.subjects.forEach(sub => {
         sub.units.forEach(u => {
-          u.lessons.forEach(l => {
-            if (l.done) totalXP += 25;
-          });
-          if (u.score !== null && u.score !== undefined) {
-            totalXP += Number(u.score) * 15;
-          }
+          u.lessons.forEach(l => { if (l.done) totalXP += 25; });
+          if (u.score !== null && u.score !== undefined) totalXP += Number(u.score) * 15;
         });
       });
 
-      // +50 XP por tarefa/prova concluída
-      appState.tasks.forEach(t => {
-        if (t.status === 'done') totalXP += 50;
+      appState.tasks.forEach(t => { if (t.status === 'done') totalXP += 50; });
+      (appState.flashcards || []).forEach(fc => { totalXP += (Number(fc.reviewsCount) || 0) * 5; });
+
+      const waterGoal = Number(appState.settings?.waterGoalMl) || 3000;
+      Object.values(appState.hydration || {}).forEach(ml => {
+        if (Number(ml) >= waterGoal) totalXP += 25;
       });
 
-      // Cada nível requer 250 XP
       const xpPerLevel = 250;
       const level = Math.floor(totalXP / xpPerLevel) + 1;
       const xpInCurrentLevel = totalXP % xpPerLevel;
@@ -1102,16 +1658,11 @@
       const studiedDates = new Set(appState.sessions.map(s => s.date));
       let streak = 0;
       const cursor = new Date();
-
       const todayStr = getLocalDateStr(cursor);
       if (!studiedDates.has(todayStr)) {
-        // Verifica se estudou ontem para manter o streak vivo hoje
         cursor.setDate(cursor.getDate() - 1);
-        if (!studiedDates.has(getLocalDateStr(cursor))) {
-          return 0;
-        }
+        if (!studiedDates.has(getLocalDateStr(cursor))) return 0;
       }
-
       while (studiedDates.has(getLocalDateStr(cursor))) {
         streak++;
         cursor.setDate(cursor.getDate() - 1);
@@ -1128,7 +1679,148 @@
     }
 
     // =========================================================================
-    // GERENCIAMENTO DE MATÉRIAS (4 UNIDADES x 5 AULAS + NOTAS X/5)
+    // ENGENHARIA DE PRODUTIVIDADE: FORMATURA, SONO/TURNOS & MURAL DE CONQUISTAS
+    // =========================================================================
+    function configureDegreeHours() {
+      const total = prompt('Carga horária total do seu curso na faculdade (em horas):', appState.settings.degreeTotalHours || 2400);
+      if (total === null) return;
+      const done = prompt('Quantas horas você já cumpriu em semestres anteriores?', appState.settings.degreeCompletedHours || 400);
+      if (done === null) return;
+
+      appState.settings.degreeTotalHours = Math.max(100, Number(total) || 2400);
+      appState.settings.degreeCompletedHours = Math.max(0, Number(done) || 0);
+      saveState();
+    }
+
+    function logSleepHoursToday() {
+      const today = getLocalDateStr();
+      const cur = appState.sleepLog?.[today] || 7;
+      const val = prompt('Quantas horas você dormiu no último ciclo de descanso?', cur);
+      if (val !== null && !isNaN(val) && Number(val) >= 0) {
+        if (!appState.sleepLog) appState.sleepLog = {};
+        appState.sleepLog[today] = Number(val);
+        saveState();
+      }
+    }
+
+    function renderProductivityAndBadges() {
+      // 1. Progresso até a Formatura
+      const focusHours = appState.sessions.reduce((a, s) => a + (Number(s.minutes) || 0), 0) / 60;
+      const baseDone = Number(appState.settings.degreeCompletedHours) || 0;
+      const totalCourse = Number(appState.settings.degreeTotalHours) || 2400;
+      const currentTotalDone = +(baseDone + focusHours).toFixed(1);
+      const pct = Math.min(100, Math.round((currentTotalDone / totalCourse) * 100));
+      const remaining = Math.max(0, +(totalCourse - currentTotalDone).toFixed(1));
+
+      document.getElementById('degreeProgressBar').style.width = `${pct}%`;
+      document.getElementById('degreeCompletedLabel').textContent = `${currentTotalDone}h cumpridas (${pct}%)`;
+      document.getElementById('degreeRemainingLabel').textContent = `Faltam ${remaining}h para a formatura`;
+
+      // 2. Foco por Turno (Madrugada, Manhã, Tarde, Noite)
+      const shifts = { dawn: 0, morning: 0, afternoon: 0, night: 0 };
+      appState.sessions.forEach(s => {
+        const hour = s.timestamp ? parseInt(s.timestamp.split(':')[0], 10) : 20;
+        const mins = Number(s.minutes) || 0;
+        if (hour >= 0 && hour < 6) shifts.dawn += mins;
+        else if (hour >= 6 && hour < 12) shifts.morning += mins;
+        else if (hour >= 12 && hour < 18) shifts.afternoon += mins;
+        else shifts.night += mins;
+      });
+
+      document.getElementById('shiftMinsDawn').textContent = `${shifts.dawn}m`;
+      document.getElementById('shiftMinsMorning').textContent = `${shifts.morning}m`;
+      document.getElementById('shiftMinsAfternoon').textContent = `${shifts.afternoon}m`;
+      document.getElementById('shiftMinsNight').textContent = `${shifts.night}m`;
+
+      const shiftNames = { dawn: 'Madrugada (00h-06h)', morning: 'Manhã (06h-12h)', afternoon: 'Tarde (12h-18h)', night: 'Noite (18h-00h)' };
+      const bestShiftKey = Object.keys(shifts).reduce((a, b) => shifts[a] >= shifts[b] ? a : b);
+      const todaySleep = appState.sleepLog?.[getLocalDateStr()];
+      document.getElementById('sleepAvgStatusText').textContent = 
+        `Sono hoje: ${todaySleep !== undefined ? todaySleep + 'h' : 'não registrado'} • Pico produtivo: ${shifts[bestShiftKey] > 0 ? shiftNames[bestShiftKey] : 'Sem dados'}`;
+
+      // 3. Mural de Conquistas (Badges)
+      const minsByDate = {};
+      appState.sessions.forEach(s => { minsByDate[s.date] = (minsByDate[s.date] || 0) + Number(s.minutes); });
+      const maxDailyMins = Math.max(0, ...Object.values(minsByDate));
+      const hasPerfectUnit = appState.subjects.some(sub => sub.units.some(u => Number(u.score) === 5));
+      const streak = calculateStreak();
+      const waterGoal = Number(appState.settings?.waterGoalMl) || 3000;
+      const hitWaterGoal = getTodayWaterMl() >= waterGoal;
+      const totalRepoItems = appState.subjects.reduce((acc, s) => acc + (s.prompts?.length || 0) + (s.formulas?.length || 0), 0);
+
+      const badges = [
+        { icon: '🦉', title: 'Guardião Noturno', desc: 'Estudou na madrugada (00h–06h)', unlocked: shifts.dawn > 0 },
+        { icon: '⚡', title: 'Maratonista', desc: '180+ min focado em um único dia', unlocked: maxDailyMins >= 180 },
+        { icon: '🎯', title: 'Mestre da Unidade', desc: 'Gabaritou uma unidade (5/5)', unlocked: hasPerfectUnit },
+        { icon: '🔥', title: 'Inabalável', desc: '7 dias seguidos de ofensiva', unlocked: streak >= 7 },
+        { icon: '💧', title: 'Protocolo Hidratado', desc: 'Bateu a meta diária de água', unlocked: hitWaterGoal },
+        { icon: '💻', title: 'Arquiteto de Código', desc: '5+ prompts ou fórmulas salvos', unlocked: totalRepoItems >= 5 }
+      ];
+
+      const unlockedCount = badges.filter(b => b.unlocked).length;
+      document.getElementById('badgesCountText').textContent = `${unlockedCount} / ${badges.length} desbloqueadas`;
+      document.getElementById('badgesWallContainer').innerHTML = badges.map(b => `
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="badge-item ${b.unlocked ? 'unlocked' : 'locked'} h-100 d-flex align-items-center gap-2">
+            <span class="fs-3">${b.icon}</span>
+            <div>
+              <div class="fw-bold small text-white lh-sm">${b.title}</div>
+              <small class="text-secondary" style="font-size:0.7rem;">${b.desc}</small>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // =========================================================================
+    // RASTREADOR DE HIDRATAÇÃO INTEGRADO
+    // =========================================================================
+    function getTodayWaterMl() {
+      const today = getLocalDateStr();
+      if (!appState.hydration) appState.hydration = {};
+      return Number(appState.hydration[today]) || 0;
+    }
+
+    function addWaterMl(amount) {
+      const today = getLocalDateStr();
+      if (!appState.hydration) appState.hydration = {};
+      appState.hydration[today] = getTodayWaterMl() + Number(amount);
+      saveState();
+    }
+
+    function resetWaterToday() {
+      const today = getLocalDateStr();
+      if (!appState.hydration) appState.hydration = {};
+      appState.hydration[today] = 0;
+      saveState();
+    }
+
+    function changeWaterGoal() {
+      const current = appState.settings.waterGoalMl || 3000;
+      const val = prompt('Qual sua meta diária de hidratação (em ml)?', current);
+      if (val !== null && !isNaN(val) && Number(val) >= 500) {
+        appState.settings.waterGoalMl = Number(val);
+        saveState();
+      }
+    }
+
+    function updateHydrationUI() {
+      const currentMl = getTodayWaterMl();
+      const goalMl = Number(appState.settings?.waterGoalMl) || 3000;
+      const pct = Math.min(100, Math.round((currentMl / goalMl) * 100));
+
+      const headerEl = document.getElementById('uiHeaderWater');
+      if (headerEl) headerEl.textContent = currentMl;
+
+      const statusEl = document.getElementById('hydrationStatusText');
+      if (statusEl) statusEl.textContent = `${currentMl} / ${goalMl} ml (${pct}%)`;
+
+      const barEl = document.getElementById('hydrationProgressBar');
+      if (barEl) barEl.style.width = `${pct}%`;
+    }
+
+    // =========================================================================
+    // GERENCIAMENTO DE MATÉRIAS (4 UNIDADES x 5 AULAS + NOTAS X/5 + SIMULADO)
     // =========================================================================
     function handleCreateSubject(e) {
       e.preventDefault();
@@ -1206,7 +1898,6 @@
       }
 
       container.innerHTML = appState.subjects.map(sub => {
-        // Cálculos da Matéria (20 aulas totais)
         let lessonsDone = 0;
         let totalScore = 0;
         let unitsScored = 0;
@@ -1228,7 +1919,6 @@
 
         return `
           <div class="nexus-card p-3 p-md-4" style="border-left: 4px solid ${sub.color};">
-            <!-- Cabeçalho da Matéria -->
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
               <div class="flex-grow-1">
                 <input type="text" class="editable-input fs-5 fw-bold" value="${escapeHtml(sub.name)}"
@@ -1239,7 +1929,7 @@
                   <span><i class="bi bi-journal-check me-1 text-warning"></i>Exercícios: <strong class="text-white">${quizDisplay}</strong></span>
                 </div>
               </div>
-              <div class="d-flex align-items-center gap-2">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
                 <button class="btn btn-outline-nexus btn-sm" onclick="openSubjectRepoModal('${sub.id}', 'prompts')" title="Biblioteca de Prompts e Comandos">
                   <i class="bi bi-terminal me-1"></i> Prompts
                 </button>
@@ -1252,24 +1942,22 @@
               </div>
             </div>
 
-            <!-- Barra de Progresso Geral da Matéria -->
             <div class="progress mb-4" style="height: 8px; background-color: #181d30;">
               <div class="progress-bar" style="width: ${progressPct}%; background-color: ${sub.color};"></div>
             </div>
 
-            <!-- Grade das 4 Unidades -->
             <div class="row g-3">
               ${sub.units.map((u, uIdx) => {
                 const uDone = u.lessons.filter(l => l.done).length;
                 const uPct = uDone * 20;
+                const qCount = (u.quizQuestions || []).length;
                 return `
                   <div class="col-12 col-md-6 col-xl-3">
                     <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" style="background: #0b0e18; border: 1px solid #1e253d;">
                       <div>
-                        <!-- Título Editável da Unidade -->
                         <div class="d-flex justify-content-between align-items-center mb-1">
                           <input type="text" class="editable-input fw-bold text-info" value="${escapeHtml(u.name)}"
-                            onchange="renameUnit('${sub.id}', '${u.id}', this.value)" title="Clique para renomear a Unidade ${uIdx + 1}">
+                            onchange="renameUnit('${sub.id}', '${u.id}', this.value)">
                           <span class="badge bg-dark border border-secondary text-secondary ms-1">${uPct}%</span>
                         </div>
 
@@ -1277,7 +1965,6 @@
                           <div class="progress-bar bg-info" style="width: ${uPct}%"></div>
                         </div>
 
-                        <!-- 5 Aulas da Unidade -->
                         <div class="d-flex flex-column gap-2 mb-3">
                           ${u.lessons.map(l => `
                             <div class="d-flex align-items-center gap-2">
@@ -1286,8 +1973,7 @@
                                 onchange="toggleLessonDone('${sub.id}', '${u.id}', '${l.id}', this.checked)">
                               <input type="text" class="editable-input small ${l.done ? 'lesson-done' : ''}"
                                 value="${escapeHtml(l.name)}"
-                                onchange="renameLesson('${sub.id}', '${u.id}', '${l.id}', this.value)"
-                                title="Clique para editar o nome da aula">
+                                onchange="renameLesson('${sub.id}', '${u.id}', '${l.id}', this.value)">
                               <button type="button" class="lesson-note-btn ${l.note ? 'has-notes' : ''}"
                                 onclick="openLessonNoteModal('${sub.id}', '${u.id}', '${l.id}')"
                                 title="${l.note ? 'Ver/Editar Anotação' : 'Adicionar Anotação'}">
@@ -1298,19 +1984,23 @@
                         </div>
                       </div>
 
-                      <!-- Seletor de Nota dos Exercícios (0/5 a 5/5) -->
-                      <div class="pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
-                        <small class="text-secondary">Exercícios:</small>
-                        <select class="form-select form-select-sm bg-dark border-secondary text-white" style="width: 115px;"
-                          onchange="updateUnitScore('${sub.id}', '${u.id}', this.value)">
-                          <option value="" ${u.score === null ? 'selected' : ''}>Pendente</option>
-                          <option value="0" ${u.score === 0 ? 'selected' : ''}>0 / 5 (0%)</option>
-                          <option value="1" ${u.score === 1 ? 'selected' : ''}>1 / 5 (20%)</option>
-                          <option value="2" ${u.score === 2 ? 'selected' : ''}>2 / 5 (40%)</option>
-                          <option value="3" ${u.score === 3 ? 'selected' : ''}>3 / 5 (60%)</option>
-                          <option value="4" ${u.score === 4 ? 'selected' : ''}>4 / 5 (80%)</option>
-                          <option value="5" ${u.score === 5 ? 'selected' : ''}>5 / 5 (100%)</option>
-                        </select>
+                      <div class="pt-2 border-top border-secondary border-opacity-25">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <small class="text-secondary">Nota:</small>
+                          <select class="form-select form-select-sm bg-dark border-secondary text-white" style="width: 115px;"
+                            onchange="updateUnitScore('${sub.id}', '${u.id}', this.value)">
+                            <option value="" ${u.score === null ? 'selected' : ''}>Pendente</option>
+                            <option value="0" ${u.score === 0 ? 'selected' : ''}>0 / 5 (0%)</option>
+                            <option value="1" ${u.score === 1 ? 'selected' : ''}>1 / 5 (20%)</option>
+                            <option value="2" ${u.score === 2 ? 'selected' : ''}>2 / 5 (40%)</option>
+                            <option value="3" ${u.score === 3 ? 'selected' : ''}>3 / 5 (60%)</option>
+                            <option value="4" ${u.score === 4 ? 'selected' : ''}>4 / 5 (80%)</option>
+                            <option value="5" ${u.score === 5 ? 'selected' : ''}>5 / 5 (100%)</option>
+                          </select>
+                        </div>
+                        <button class="btn btn-outline-nexus btn-sm w-100 py-1" onclick="openUnitQuizModal('${sub.id}', '${u.id}')">
+                          <i class="bi bi-ui-checks-grid me-1 text-info"></i> Simulado (${qCount})
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1323,16 +2013,192 @@
     }
 
     // =========================================================================
-    // POMODORO TIMER & GERADOR DE SOM AMBIENTE (WEB AUDIO API)
+    // SIMULADO DE MÚLTIPLA ESCOLHA POR UNIDADE
     // =========================================================================
-    let pomoMode = 'focus'; // 'focus' | 'short' | 'long'
+    let currentQuizTarget = { subId: null, unitId: null };
+
+    function openUnitQuizModal(subId, unitId) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      const unit = sub?.units.find(u => u.id === unitId);
+      if (!unit) return;
+
+      currentQuizTarget = { subId, unitId };
+      document.getElementById('unitQuizModalTitle').innerHTML = `<i class="bi bi-patch-question-fill text-info me-2"></i>Simulado: ${escapeHtml(sub.name)} — ${escapeHtml(unit.name)}`;
+      document.getElementById('uqResultBadge').className = 'badge bg-dark border border-secondary';
+      document.getElementById('uqResultBadge').textContent = 'Responda e clique em Corrigir';
+
+      renderUnitQuizQuestions();
+      const modal = new bootstrap.Modal(document.getElementById('unitQuizModal'));
+      modal.show();
+    }
+
+    function handleAddUnitQuestion(e) {
+      e.preventDefault();
+      const sub = appState.subjects.find(s => s.id === currentQuizTarget.subId);
+      const unit = sub?.units.find(u => u.id === currentQuizTarget.unitId);
+      if (!unit) return;
+
+      if (!Array.isArray(unit.quizQuestions)) unit.quizQuestions = [];
+      unit.quizQuestions.push({
+        id: 'uq_' + Date.now(),
+        q: document.getElementById('uqQuestion').value.trim(),
+        options: [
+          document.getElementById('uqOptA').value.trim(),
+          document.getElementById('uqOptB').value.trim(),
+          document.getElementById('uqOptC').value.trim(),
+          document.getElementById('uqOptD').value.trim()
+        ],
+        correct: Number(document.getElementById('uqCorrect').value)
+      });
+
+      document.getElementById('uqQuestion').value = '';
+      document.getElementById('uqOptA').value = '';
+      document.getElementById('uqOptB').value = '';
+      document.getElementById('uqOptC').value = '';
+      document.getElementById('uqOptD').value = '';
+
+      saveState();
+      renderUnitQuizQuestions();
+    }
+
+    function deleteUnitQuestion(qId) {
+      const sub = appState.subjects.find(s => s.id === currentQuizTarget.subId);
+      const unit = sub?.units.find(u => u.id === currentQuizTarget.unitId);
+      if (!unit) return;
+      unit.quizQuestions = (unit.quizQuestions || []).filter(item => item.id !== qId);
+      saveState();
+      renderUnitQuizQuestions();
+    }
+
+    function renderUnitQuizQuestions() {
+      const container = document.getElementById('uqQuestionsRunContainer');
+      const sub = appState.subjects.find(s => s.id === currentQuizTarget.subId);
+      const unit = sub?.units.find(u => u.id === currentQuizTarget.unitId);
+      const list = unit?.quizQuestions || [];
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="text-secondary text-center py-4 small">Nenhuma questão cadastrada nesta unidade ainda. Use o formulário ao lado para criar seu simulado!</div>`;
+        return;
+      }
+
+      const letters = ['A', 'B', 'C', 'D'];
+      container.innerHTML = list.map((item, idx) => `
+        <div class="p-3 rounded-3" style="background:#0b0e18; border:1px solid var(--border-subtle);" id="uqBox_${item.id}">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="fw-bold small text-white">${idx + 1}. ${escapeHtml(item.q)}</span>
+            <button class="btn btn-outline-danger btn-sm py-0 px-2" onclick="deleteUnitQuestion('${item.id}')"><i class="bi bi-trash"></i></button>
+          </div>
+          <div class="d-flex flex-column gap-1">
+            ${item.options.map((opt, oIdx) => `
+              <label class="d-flex align-items-center gap-2 small text-secondary" style="cursor:pointer;">
+                <input type="radio" name="uqRadio_${item.id}" value="${oIdx}" class="form-check-input mt-0">
+                <span><strong>${letters[oIdx]})</strong> ${escapeHtml(opt)}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function gradeUnitQuiz() {
+      const sub = appState.subjects.find(s => s.id === currentQuizTarget.subId);
+      const unit = sub?.units.find(u => u.id === currentQuizTarget.unitId);
+      const list = unit?.quizQuestions || [];
+      if (list.length === 0) return;
+
+      let hits = 0;
+      list.forEach(item => {
+        const selected = document.querySelector(`input[name="uqRadio_${item.id}"]:checked`);
+        const box = document.getElementById(`uqBox_${item.id}`);
+        if (selected && Number(selected.value) === Number(item.correct)) {
+          hits++;
+          if (box) box.style.borderColor = '#10b981';
+        } else {
+          if (box) box.style.borderColor = '#ef4444';
+        }
+      });
+
+      const pct = Math.round((hits / list.length) * 100);
+      const scaledScore = Math.round((hits / list.length) * 5);
+      unit.score = scaledScore;
+      appState.settings.bonusXp = (Number(appState.settings.bonusXp) || 0) + 20;
+
+      const badge = document.getElementById('uqResultBadge');
+      badge.className = 'badge bg-success';
+      badge.textContent = `Acertos: ${hits}/${list.length} (${pct}%) -> Nota ${scaledScore}/5 salva (+20 XP)`;
+
+      saveState();
+      refreshCharts();
+    }
+
+    // =========================================================================
+    // POMODORO TIMER, REGRA 20-20-20, GATEKEEPER & MODO OLED
+    // =========================================================================
+    let pomoMode = 'focus';
     let pomoSecondsLeft = 25 * 60;
     let pomoTotalSeconds = 25 * 60;
     let pomoInterval = null;
     let pendingSessionMinutes = 0;
+    let wakeLockSentinel = null;
+
+    function playFinishBeep() {
+      try {
+        ensureAudioContext();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.65);
+      } catch {}
+    }
+
+    function playSoftErgoChime() {
+      try {
+        ensureAudioContext();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(528, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+      } catch {}
+    }
+
+    function toggleErgo2020() {
+      appState.settings.ergo2020Enabled = !appState.settings.ergo2020Enabled;
+      document.getElementById('btnErgo2020')?.classList.toggle('active', appState.settings.ergo2020Enabled);
+      saveState();
+    }
+
+    function toggleGatekeeperMode() {
+      appState.settings.gatekeeperEnabled = !appState.settings.gatekeeperEnabled;
+      document.getElementById('btnGatekeeper')?.classList.toggle('active', appState.settings.gatekeeperEnabled);
+      saveState();
+    }
+
+    function verifyGatekeeperChallenge() {
+      if (!appState.settings?.gatekeeperEnabled || !pomoInterval || pomoMode !== 'focus') return true;
+      const a = Math.floor(Math.random() * 12) + 4;
+      const b = Math.floor(Math.random() * 9) + 3;
+      const ans = prompt(`🛡️ TRAVA ANTIPROCRASTINAÇÃO ATIVA!\nPara interromper o foco antes da hora, resolva:\nQuanto é (${a} × ${b}) + ${a}?`);
+      if (ans === null) return false;
+      if (Number(ans) !== (a * b + a)) {
+        alert('Resposta incorreta! Mantenha o foco na sessão.');
+        return false;
+      }
+      return true;
+    }
 
     function setPomodoroMode(mode) {
-      pausePomodoro();
+      pausePomodoro(true);
       pomoMode = mode;
       document.getElementById('modeBtnFocus').classList.toggle('active', mode === 'focus');
       document.getElementById('modeBtnShort').classList.toggle('active', mode === 'short');
@@ -1370,7 +2236,8 @@
 
     function togglePomodoro() {
       if (pomoInterval) {
-        pausePomodoro();
+        if (!verifyGatekeeperChallenge()) return;
+        pausePomodoro(true);
       } else {
         startPomodoro();
       }
@@ -1387,8 +2254,20 @@
       pomoInterval = setInterval(() => {
         pomoSecondsLeft--;
         updatePomodoroClockUI();
+
+        // Assistente de Ergonomia e Visão 20-20-20 (a cada 20 min de foco corrido)
+        const elapsed = pomoTotalSeconds - pomoSecondsLeft;
+        if (appState.settings?.ergo2020Enabled && elapsed > 0 && elapsed % 1200 === 0) {
+          playSoftErgoChime();
+          const ergoEl = document.getElementById('ergoPostureStatus');
+          if (ergoEl) {
+            ergoEl.innerHTML = `<span class="text-warning fw-bold">👀 Regra 20-20-20: Olhe a 6m por 20s e alinhe a coluna!</span>`;
+            setTimeout(() => { ergoEl.textContent = '🪑 Postura ereta • Olhos relaxados'; }, 20000);
+          }
+        }
+
         if (pomoSecondsLeft <= 0) {
-          pausePomodoro();
+          pausePomodoro(true);
           playFinishBeep();
           if (pomoMode === 'focus') {
             openSessionModal(Math.round(pomoTotalSeconds / 60));
@@ -1399,7 +2278,8 @@
       }, 1000);
     }
 
-    function pausePomodoro() {
+    function pausePomodoro(skipGate = false) {
+      if (!skipGate && !verifyGatekeeperChallenge()) return;
       clearInterval(pomoInterval);
       pomoInterval = null;
       document.getElementById('pomoStartPauseBtn').innerHTML = `<i class="bi bi-play-fill me-1"></i> Iniciar`;
@@ -1407,14 +2287,16 @@
     }
 
     function resetPomodoro() {
-      pausePomodoro();
+      if (!verifyGatekeeperChallenge()) return;
+      pausePomodoro(true);
       pomoSecondsLeft = pomoTotalSeconds;
       updatePomodoroClockUI();
     }
 
     function finishFocusSessionEarly() {
       if (pomoMode !== 'focus') return;
-      pausePomodoro();
+      if (!verifyGatekeeperChallenge()) return;
+      pausePomodoro(true);
       const elapsedMins = Math.max(1, Math.round((pomoTotalSeconds - pomoSecondsLeft) / 60));
       openSessionModal(elapsedMins);
     }
@@ -1429,6 +2311,7 @@
 
     function confirmSaveSession() {
       const subId = document.getElementById('pomoSubjectSelect').value;
+      const taskId = document.getElementById('pomoTaskSelect')?.value || '';
       const note = document.getElementById('modalSessionNote').value.trim() || 'Sessão de foco Pomodoro';
       const sub = appState.subjects.find(s => s.id === subId);
 
@@ -1436,11 +2319,19 @@
         sub.minutesStudied = (Number(sub.minutesStudied) || 0) + pendingSessionMinutes;
       }
 
+      if (taskId) {
+        const linkedTask = appState.tasks.find(t => t.id === taskId);
+        if (linkedTask) {
+          linkedTask.actualMinutes = (Number(linkedTask.actualMinutes) || 0) + pendingSessionMinutes;
+        }
+      }
+
       appState.sessions.unshift({
         id: 'sess_' + Date.now(),
         date: getLocalDateStr(),
         timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         subjectId: subId,
+        taskId,
         minutes: pendingSessionMinutes,
         note
       });
@@ -1456,7 +2347,18 @@
       document.body.classList.toggle('focus-mode');
     }
 
-    // Atalho Global: Barra de Espaço para Play/Pause quando na aba Pomodoro
+    async function toggleOledMode() {
+      const isOled = document.body.classList.toggle('oled-mode');
+      const btn = document.getElementById('btnOledMode');
+      if (btn) btn.classList.toggle('active', isOled);
+
+      if (isOled && 'wakeLock' in navigator) {
+        try { wakeLockSentinel = await navigator.wakeLock.request('screen'); } catch {}
+      } else if (!isOled && wakeLockSentinel) {
+        try { await wakeLockSentinel.release(); wakeLockSentinel = null; } catch {}
+      }
+    }
+
     document.addEventListener('keydown', (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
@@ -1468,12 +2370,17 @@
     });
 
     // =========================================================================
-    // GERADOR DE SOM AMBIENTE OFFLINE (WEB AUDIO API)
+    // MIXADOR OFFLINE DE 5 CANAIS (MARROM, ROSA, BRANCO, CHUVA E LO-FI SYNTH)
     // =========================================================================
     let audioCtx = null;
-    let ambientSource = null;
-    let ambientGain = null;
-    let currentAmbientVolume = 0.4;
+    const mixChannels = {
+      brown: { active: false, source: null, gain: null, volume: 0.45 },
+      pink:  { active: false, source: null, gain: null, volume: 0.35 },
+      white: { active: false, source: null, gain: null, volume: 0.25 },
+      rain:  { active: false, source: null, gain: null, volume: 0.40 }
+    };
+
+    let lofiState = { active: false, interval: null, volume: 0.30 };
 
     function ensureAudioContext() {
       if (!audioCtx) {
@@ -1484,25 +2391,19 @@
       }
     }
 
-    function setAmbientSound(type) {
-      ['off', 'brown', 'pink', 'rain'].forEach(t => {
-        const btn = document.getElementById(`soundBtn-${t}`);
-        if (!btn) return;
-        const badge = btn.querySelector('.badge');
-        if (badge) badge.remove();
-        if (t === type) {
-          btn.insertAdjacentHTML('beforeend', '<span class="badge bg-primary">Ativo</span>');
-        }
-      });
+    function toggleMixChannel(type) {
+      const ch = mixChannels[type];
+      if (!ch) return;
+      if (ch.active) stopMixChannel(type);
+      else startMixChannel(type);
+    }
 
-      if (ambientSource) {
-        try { ambientSource.stop(); } catch {}
-        ambientSource.disconnect();
-        ambientSource = null;
-      }
-      if (type === 'off') return;
-
+    function startMixChannel(type) {
+      const ch = mixChannels[type];
+      if (!ch) return;
+      stopMixChannel(type);
       ensureAudioContext();
+
       const bufferSize = 2 * audioCtx.sampleRate;
       const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       const output = noiseBuffer.getChannelData(0);
@@ -1515,37 +2416,578 @@
           lastOut = output[i];
           output[i] *= 3.5;
         }
+      } else if (type === 'pink') {
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+          output[i] *= 0.04;
+          b6 = white * 0.115926;
+        }
+      } else if (type === 'white') {
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = (Math.random() * 2 - 1) * 0.18;
+        }
       } else if (type === 'rain') {
         for (let i = 0; i < bufferSize; i++) {
           output[i] = (Math.random() * 2 - 1) * 0.25;
         }
       }
 
-      ambientSource = audioCtx.createBufferSource();
-      ambientSource.buffer = noiseBuffer;
-      ambientSource.loop = true;
+      const source = audioCtx.createBufferSource();
+      source.buffer = noiseBuffer;
+      source.loop = true;
 
       const filter = audioCtx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.value = type === 'rain' ? 1100 : 650;
+      filter.frequency.value = type === 'rain' ? 1100 : (type === 'white' ? 4500 : (type === 'pink' ? 2200 : 650));
 
-      ambientGain = audioCtx.createGain();
-      ambientGain.gain.value = currentAmbientVolume * 0.35;
+      const gain = audioCtx.createGain();
+      gain.gain.value = ch.volume * 0.35;
 
-      ambientSource.connect(filter).connect(ambientGain).connect(audioCtx.destination);
-      ambientSource.start();
+      source.connect(filter).connect(gain).connect(audioCtx.destination);
+      source.start();
+
+      ch.source = source;
+      ch.gain = gain;
+      ch.active = true;
+
+      const btn = document.getElementById(`mixBtn-${type}`);
+      if (btn) {
+        btn.classList.add('active');
+        btn.textContent = 'Ativo';
+      }
     }
 
-    function changeAmbientVolume(val) {
-      currentAmbientVolume = Number(val) / 100;
-      document.getElementById('ambientVolLabel').textContent = `${val}%`;
-      if (ambientGain) {
-        ambientGain.gain.value = currentAmbientVolume * 0.35;
+    function stopMixChannel(type) {
+      const ch = mixChannels[type];
+      if (!ch) return;
+      if (ch.source) {
+        try { ch.source.stop(); } catch {}
+        try { ch.source.disconnect(); } catch {}
+      }
+      ch.source = null;
+      ch.gain = null;
+      ch.active = false;
+
+      const btn = document.getElementById(`mixBtn-${type}`);
+      if (btn) {
+        btn.classList.remove('active');
+        btn.textContent = 'Ligar';
+      }
+    }
+
+    function setMixChannelVolume(type, val) {
+      const ch = mixChannels[type];
+      if (!ch) return;
+      ch.volume = Number(val) / 100;
+      const lbl = document.getElementById(`mixVolLabel-${type}`);
+      if (lbl) lbl.textContent = `${val}%`;
+      if (ch.gain) {
+        ch.gain.gain.value = ch.volume * 0.35;
+      }
+    }
+
+    // Sintetizador Procedural Lo-Fi (Acordes Pentatônicos Suaves em Web Audio)
+    function toggleProceduralLofi() {
+      if (lofiState.active) {
+        stopProceduralLofi();
+      } else {
+        startProceduralLofi();
+      }
+    }
+
+    function startProceduralLofi() {
+      stopProceduralLofi();
+      ensureAudioContext();
+      lofiState.active = true;
+      const btn = document.getElementById('mixBtn-lofi');
+      if (btn) { btn.classList.add('active'); btn.textContent = 'Ativo'; }
+
+      const chords = [
+        [220.00, 261.63, 329.63, 392.00], // Am7
+        [174.61, 220.00, 261.63, 349.23], // Fmaj7
+        [196.00, 246.94, 293.66, 392.00], // G6
+        [164.81, 196.00, 246.94, 293.66]  // Em7
+      ];
+      let chordIdx = 0;
+
+      const playLofiChord = () => {
+        if (!lofiState.active) return;
+        const notes = chords[chordIdx % chords.length];
+        chordIdx++;
+        const now = audioCtx.currentTime;
+
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const filter = audioCtx.createBiquadFilter();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq + (Math.random() * 0.8 - 0.4), now + i * 0.12);
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(600, now);
+
+          const peak = lofiState.volume * 0.06;
+          gain.gain.setValueAtTime(0.0001, now + i * 0.12);
+          gain.gain.linearRampToValueAtTime(peak, now + i * 0.12 + 0.6);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.4);
+
+          osc.connect(filter).connect(gain).connect(audioCtx.destination);
+          osc.start(now + i * 0.12);
+          osc.stop(now + 3.5);
+        });
+      };
+
+      playLofiChord();
+      lofiState.interval = setInterval(playLofiChord, 3500);
+    }
+
+    function stopProceduralLofi() {
+      lofiState.active = false;
+      clearInterval(lofiState.interval);
+      lofiState.interval = null;
+      const btn = document.getElementById('mixBtn-lofi');
+      if (btn) { btn.classList.remove('active'); btn.textContent = 'Ligar'; }
+    }
+
+    function setProceduralLofiVolume(val) {
+      lofiState.volume = Number(val) / 100;
+      const lbl = document.getElementById('mixVolLabel-lofi');
+      if (lbl) lbl.textContent = `${val}%`;
+    }
+
+    function stopAllAmbientSounds() {
+      ['brown', 'pink', 'white', 'rain'].forEach(t => stopMixChannel(t));
+      stopProceduralLofi();
+    }
+
+    // =========================================================================
+    // SISTEMA DE FLASHCARDS COM REPETIÇÃO ESPAÇADA
+    // =========================================================================
+    let currentDueFlashcards = [];
+    let currentFlashcardIndex = 0;
+    let isFlashcardFlipped = false;
+
+    function handleCreateFlashcard(e) {
+      e.preventDefault();
+      const subjectId = document.getElementById('fcSubjectSelect').value;
+      const front = document.getElementById('fcFrontInput').value.trim();
+      const back = document.getElementById('fcBackInput').value.trim();
+      if (!front || !back) return;
+
+      if (!Array.isArray(appState.flashcards)) appState.flashcards = [];
+      appState.flashcards.push({
+        id: 'fc_' + Date.now(),
+        subjectId,
+        front,
+        back,
+        nextReview: getLocalDateStr(),
+        reviewsCount: 0
+      });
+
+      document.getElementById('fcFrontInput').value = '';
+      document.getElementById('fcBackInput').value = '';
+      saveState();
+      renderFlashcardsTab();
+    }
+
+    function deleteFlashcard(fcId) {
+      appState.flashcards = (appState.flashcards || []).filter(c => c.id !== fcId);
+      saveState();
+      renderFlashcardsTab();
+    }
+
+    function renderFlashcardsTab() {
+      if (!Array.isArray(appState.flashcards)) appState.flashcards = [];
+
+      const subOpts = appState.subjects.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+      const fcSel = document.getElementById('fcSubjectSelect');
+      if (fcSel) fcSel.innerHTML = subOpts || `<option value="">Cadastre uma matéria</option>`;
+
+      const filterEl = document.getElementById('fcFilterSubject');
+      const prevFilter = filterEl ? filterEl.value : 'all';
+      if (filterEl) {
+        filterEl.innerHTML = `<option value="all">Todas as Matérias</option>` + subOpts;
+        if (prevFilter) filterEl.value = prevFilter;
+      }
+
+      document.getElementById('fcTotalBadge').textContent = appState.flashcards.length;
+
+      const listEl = document.getElementById('fcManageList');
+      if (appState.flashcards.length === 0) {
+        listEl.innerHTML = `<small class="text-secondary text-center py-3">Nenhum flashcard criado.</small>`;
+      } else {
+        listEl.innerHTML = appState.flashcards.map(c => {
+          const sub = appState.subjects.find(s => s.id === c.subjectId);
+          return `
+            <div class="p-2 rounded-2 d-flex justify-content-between align-items-center" style="background:#0b0e18; border:1px solid var(--border-subtle);">
+              <div class="text-truncate pe-2">
+                <span class="badge me-1" style="background:${sub?.color || '#475569'}">${escapeHtml(sub?.name || 'Geral')}</span>
+                <span class="small text-white">${escapeHtml(c.front)}</span>
+              </div>
+              <button class="btn btn-outline-danger btn-sm py-0 px-2" onclick="deleteFlashcard('${c.id}')"><i class="bi bi-trash"></i></button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const today = getLocalDateStr();
+      const activeFilter = filterEl ? filterEl.value : 'all';
+      currentDueFlashcards = appState.flashcards.filter(c => {
+        const matchSub = activeFilter === 'all' || c.subjectId === activeFilter;
+        const isDue = !c.nextReview || c.nextReview <= today;
+        return matchSub && isDue;
+      });
+
+      currentFlashcardIndex = 0;
+      isFlashcardFlipped = false;
+      updateFlashcardArenaUI();
+    }
+
+    function updateFlashcardArenaUI() {
+      const subBadge = document.getElementById('fcCardSubBadge');
+      const sideLabel = document.getElementById('fcCardSideLabel');
+      const mainText = document.getElementById('fcCardMainText');
+      const controls = document.getElementById('fcReviewControls');
+      const subtitle = document.getElementById('fcReviewStatusSubtitle');
+
+      if (currentDueFlashcards.length === 0) {
+        subBadge.textContent = 'Tudo em dia!';
+        sideLabel.textContent = 'REVISÃO CONCLUÍDA';
+        mainText.textContent = '🎉 Nenhum flashcard pendente para hoje!';
+        controls.classList.add('d-none');
+        subtitle.textContent = '0 cartões pendentes para hoje';
+        return;
+      }
+
+      const card = currentDueFlashcards[currentFlashcardIndex];
+      const sub = appState.subjects.find(s => s.id === card.subjectId);
+      subtitle.textContent = `Revisando ${currentFlashcardIndex + 1} de ${currentDueFlashcards.length} pendentes hoje`;
+      subBadge.textContent = sub ? sub.name : 'Matéria';
+
+      if (!isFlashcardFlipped) {
+        sideLabel.textContent = 'FRENTE — PERGUNTA (Clique no cartão para virar)';
+        mainText.textContent = card.front;
+        controls.classList.add('d-none');
+      } else {
+        sideLabel.textContent = 'VERSO — RESPOSTA';
+        mainText.textContent = card.back;
+        controls.classList.remove('d-none');
+      }
+    }
+
+    function flipCurrentFlashcard() {
+      if (currentDueFlashcards.length === 0) return;
+      isFlashcardFlipped = !isFlashcardFlipped;
+      updateFlashcardArenaUI();
+    }
+
+    function rateCurrentFlashcard(daysToAdd) {
+      if (currentDueFlashcards.length === 0) return;
+      const card = currentDueFlashcards[currentFlashcardIndex];
+      const target = appState.flashcards.find(c => c.id === card.id);
+      if (target) {
+        const nextDate = new Date();
+        nextDate.setDate(nextDate.getDate() + Number(daysToAdd));
+        target.nextReview = getLocalDateStr(nextDate);
+        target.reviewsCount = (Number(target.reviewsCount) || 0) + 1;
+      }
+      saveState();
+      renderFlashcardsTab();
+    }
+
+    // =========================================================================
+    // MODO MICRO-ESTUDO 10 MINUTOS
+    // =========================================================================
+    let microSecondsLeft = 10 * 60;
+    let microInterval = null;
+
+    function openMicroStudyModal() {
+      stopMicroTimer();
+      microSecondsLeft = 10 * 60;
+      updateMicroTimerUI();
+      pickRandomMicroChallenge();
+      const modal = new bootstrap.Modal(document.getElementById('microStudyModal'));
+      modal.show();
+    }
+
+    function updateMicroTimerUI() {
+      const m = String(Math.floor(microSecondsLeft / 60)).padStart(2, '0');
+      const s = String(microSecondsLeft % 60).padStart(2, '0');
+      const el = document.getElementById('microTimerDisplay');
+      if (el) el.textContent = `${m}:${s}`;
+    }
+
+    function toggleMicroTimer() {
+      const btn = document.getElementById('btnMicroStart');
+      if (microInterval) {
+        stopMicroTimer();
+      } else {
+        if (btn) btn.textContent = 'Pausar';
+        microInterval = setInterval(() => {
+          microSecondsLeft--;
+          updateMicroTimerUI();
+          if (microSecondsLeft <= 0) {
+            stopMicroTimer();
+            playFinishBeep();
+            finishMicroStudySession();
+          }
+        }, 1000);
+      }
+    }
+
+    function stopMicroTimer() {
+      clearInterval(microInterval);
+      microInterval = null;
+      const btn = document.getElementById('btnMicroStart');
+      if (btn) btn.textContent = 'Iniciar 10m';
+    }
+
+    function pickRandomMicroChallenge() {
+      const box = document.getElementById('microChallengeCard');
+      if (!box) return;
+
+      const pendingLessons = [];
+      appState.subjects.forEach(s => {
+        s.units.forEach(u => {
+          u.lessons.forEach(l => {
+            if (!l.done) pendingLessons.push({ sub: s.name, unit: u.name, lesson: l.name, note: l.note });
+          });
+        });
+      });
+
+      const cards = appState.flashcards || [];
+      if (cards.length > 0 && Math.random() < 0.5) {
+        const randCard = cards[Math.floor(Math.random() * cards.length)];
+        const sub = appState.subjects.find(s => s.id === randCard.subjectId);
+        box.innerHTML = `
+          <span class="badge bg-purple mb-2" style="background:var(--accent-purple);">Flashcard Rápido • ${escapeHtml(sub?.name || 'Estudo')}</span>
+          <h6 class="fw-bold text-white mb-2">Pergunta: ${escapeHtml(randCard.front)}</h6>
+          <details class="small text-info">
+            <summary style="cursor:pointer;">Ver Resposta</summary>
+            <div class="mt-2 p-2 rounded bg-dark text-white">${escapeHtml(randCard.back)}</div>
+          </details>
+        `;
+      } else if (pendingLessons.length > 0) {
+        const randL = pendingLessons[Math.floor(Math.random() * pendingLessons.length)];
+        box.innerHTML = `
+          <span class="badge bg-info text-dark mb-2">Revisão de Aula Pendente</span>
+          <h6 class="fw-bold text-white mb-1">${escapeHtml(randL.sub)} — ${escapeHtml(randL.unit)}</h6>
+          <p class="small text-secondary mb-0">Foque 10 minutos no tópico: <strong class="text-white">${escapeHtml(randL.lesson)}</strong></p>
+        `;
+      } else {
+        box.innerHTML = `<div class="text-secondary small">Revise seus Prompts e Fórmulas das matérias durante estes 10 minutos!</div>`;
+      }
+    }
+
+    function finishMicroStudySession() {
+      stopMicroTimer();
+      const firstSub = appState.subjects[0];
+      if (firstSub) firstSub.minutesStudied = (Number(firstSub.minutesStudied) || 0) + 10;
+
+      appState.sessions.unshift({
+        id: 'sess_' + Date.now(),
+        date: getLocalDateStr(),
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        subjectId: firstSub ? firstSub.id : '',
+        minutes: 10,
+        note: 'Sessão Rápida (Micro-Estudo 10m)'
+      });
+
+      const modalEl = document.getElementById('microStudyModal');
+      bootstrap.Modal.getInstance(modalEl)?.hide();
+      saveState();
+      refreshCharts();
+    }
+
+    // =========================================================================
+    // LABORATÓRIO: 1. GERADOR DE TABELAS-VERDADE
+    // =========================================================================
+    function insertTTToken(token) {
+      const inp = document.getElementById('ttExprInput');
+      if (!inp) return;
+      inp.value += token;
+      inp.focus();
+    }
+
+    function generateTruthTable() {
+      const raw = document.getElementById('ttExprInput').value.trim();
+      const container = document.getElementById('ttOutputContainer');
+      const badgeEl = document.getElementById('ttClassificationBadge');
+      if (!raw) return;
+
+      const vars = Array.from(new Set((raw.toUpperCase().match(/\b[A-UW-Z]\b/g) || []))).sort();
+      if (vars.length === 0 || vars.length > 6) {
+        container.innerHTML = `<div class="text-warning small">Use de 1 a 6 variáveis proposicionais (ex: P, Q, R).</div>`;
+        badgeEl.innerHTML = '';
+        return;
+      }
+
+      const numRows = Math.pow(2, vars.length);
+      let trueCount = 0;
+      let rowsHtml = '';
+
+      try {
+        for (let i = numRows - 1; i >= 0; i--) {
+          const env = {};
+          vars.forEach((v, idx) => {
+            env[v] = Boolean((i >> (vars.length - 1 - idx)) & 1);
+          });
+
+          const res = evaluatePropositionalFormula(raw.toUpperCase(), env);
+          if (res) trueCount++;
+
+          const cells = vars.map(v => `<td class="${env[v] ? 'text-info fw-bold' : 'text-secondary'}">${env[v] ? 'V' : 'F'}</td>`).join('');
+          rowsHtml += `<tr>${cells}<td class="fw-bold ${res ? 'text-success' : 'text-danger'}">${res ? 'V' : 'F'}</td></tr>`;
+        }
+
+        if (trueCount === numRows) {
+          badgeEl.innerHTML = `<span class="badge bg-success">Classificação: TAUTOLOGIA (Sempre Verdadeiro)</span>`;
+        } else if (trueCount === 0) {
+          badgeEl.innerHTML = `<span class="badge bg-danger">Classificação: CONTRADIÇÃO (Sempre Falso)</span>`;
+        } else {
+          badgeEl.innerHTML = `<span class="badge bg-info text-dark">Classificação: CONTINGÊNCIA (${trueCount} V / ${numRows - trueCount} F)</span>`;
+        }
+
+        container.innerHTML = `
+          <table class="table table-dark table-sm table-bordered text-center align-middle mb-0 font-monospace">
+            <thead>
+              <tr class="text-secondary">
+                ${vars.map(v => `<th>${v}</th>`).join('')}
+                <th class="text-purple">${escapeHtml(raw.toUpperCase())}</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        `;
+      } catch (err) {
+        badgeEl.innerHTML = '';
+        container.innerHTML = `<div class="text-danger small">Expressão inválida. Exemplo válido: <code>(P ^ Q) -> ~R</code></div>`;
+      }
+    }
+
+    function evaluatePropositionalFormula(expr, env) {
+      let s = expr;
+      Object.keys(env).forEach(k => {
+        const re = new RegExp(`\\b${k}\\b`, 'g');
+        s = s.replace(re, env[k] ? '1' : '0');
+      });
+      s = s.replace(/~/g, '!').replace(/!/g, '!');
+      s = s.replace(/\^/g, '&&').replace(/&+/g, '&&');
+      s = s.replace(/\bV\b/gi, '||').replace(/\|+/g, '||');
+      while (s.includes('<->')) {
+        s = s.replace(/([!01()&|^\s]+)<->([!01()&|^\s]+)/, '(Boolean($1) === Boolean($2))');
+      }
+      while (s.includes('->')) {
+        s = s.replace(/([^->]+)->(.+)/, '(!Boolean($1) || Boolean($2))');
+      }
+      return Boolean(Function(`"use strict"; return (${s});`)());
+    }
+
+    // =========================================================================
+    // LABORATÓRIO: 2. CONVERSOR DE BASES & CALCULADORA BITWISE
+    // =========================================================================
+    function handleBaseConversion(sourceBase, rawVal) {
+      const val = rawVal.trim();
+      if (!val) {
+        ['baseDec', 'baseBin', 'baseHex', 'baseOct'].forEach(id => document.getElementById(id).value = '');
+        return;
+      }
+
+      let num = NaN;
+      if (sourceBase === 'dec') num = parseInt(val, 10);
+      else if (sourceBase === 'bin') num = parseInt(val, 2);
+      else if (sourceBase === 'hex') num = parseInt(val, 16);
+      else if (sourceBase === 'oct') num = parseInt(val, 8);
+
+      if (isNaN(num) || num < 0) return;
+
+      if (sourceBase !== 'dec') document.getElementById('baseDec').value = num.toString(10);
+      if (sourceBase !== 'bin') document.getElementById('baseBin').value = num.toString(2);
+      if (sourceBase !== 'hex') document.getElementById('baseHex').value = num.toString(16).toUpperCase();
+      if (sourceBase !== 'oct') document.getElementById('baseOct').value = num.toString(8);
+    }
+
+    function calcBitwise() {
+      const a = parseInt(document.getElementById('bwA')?.value || '0', 10) || 0;
+      const b = parseInt(document.getElementById('bwB')?.value || '0', 10) || 0;
+      const op = document.getElementById('bwOp')?.value || 'AND';
+
+      let res = 0;
+      if (op === 'AND') res = a & b;
+      else if (op === 'OR') res = a | b;
+      else if (op === 'XOR') res = a ^ b;
+      else if (op === 'LSHIFT') res = a << b;
+      else if (op === 'RSHIFT') res = a >> b;
+      else if (op === 'NOT') res = ~a;
+
+      const box = document.getElementById('bwResultBox');
+      if (box) {
+        box.innerHTML = `
+          <div>Resultado Decimal: <strong class="text-info">${res}</strong></div>
+          <div>Binário (8-bit): <strong class="text-warning">${(res >>> 0).toString(2).padStart(8, '0')}</strong> | Hex: <strong class="text-success">0x${(res >>> 0).toString(16).toUpperCase()}</strong></div>
+        `;
       }
     }
 
     // =========================================================================
-    // GESTÃO DE PRAZOS & PROVAS (KANBAN)
+    // LABORATÓRIO: 3. TERMINAL PYTHON NO NAVEGADOR VIA PYODIDE
+    // =========================================================================
+    let pyAceEditor = null;
+    let pyodideInstance = null;
+    let pyodideLoading = false;
+
+    function clearPythonOutput() {
+      const out = document.getElementById('pyConsoleOutput');
+      if (out) out.textContent = '';
+    }
+
+    async function runBrowserPython() {
+      const out = document.getElementById('pyConsoleOutput');
+      const btn = document.getElementById('btnRunPython');
+      const code = pyAceEditor ? pyAceEditor.getValue() : '';
+      if (!code.trim()) return;
+
+      try {
+        btn.disabled = true;
+        if (!pyodideInstance) {
+          out.textContent = '⏳ Baixando motor Python (Pyodide WebAssembly) pela 1ª vez... Aguarde alguns segundos...\n';
+          if (!window.loadPyodide && !pyodideLoading) {
+            pyodideLoading = true;
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js';
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+          pyodideInstance = await window.loadPyodide({
+            stdout: (msg) => { out.textContent += msg + '\n'; },
+            stderr: (msg) => { out.textContent += '[Erro] ' + msg + '\n'; }
+          });
+          out.textContent = '✅ Python 3 carregado! Executando script:\n----------------------------------------\n';
+        } else {
+          out.textContent += '\n>>> Executando:\n';
+        }
+
+        await pyodideInstance.runPythonAsync(code);
+      } catch (err) {
+        out.textContent += `\n❌ Erro de Execução:\n${err.message || err}\n`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // =========================================================================
+    // GESTÃO DE PRAZOS, ESTIMADOR DE TEMPO & LINHA DO TEMPO GANTT
     // =========================================================================
     function handleCreateTask(e) {
       e.preventDefault();
@@ -1554,6 +2996,7 @@
       const type = document.getElementById('taskType').value;
       const dueDate = document.getElementById('taskDate').value;
       const dueTime = document.getElementById('taskTime').value;
+      const estMinutes = Number(document.getElementById('taskEstMins')?.value) || 60;
       if (!title || !dueDate) return;
 
       appState.tasks.push({
@@ -1563,6 +3006,8 @@
         type,
         dueDate,
         dueTime: dueTime || '',
+        estMinutes,
+        actualMinutes: 0,
         status: 'todo'
       });
 
@@ -1602,14 +3047,21 @@
         const sub = appState.subjects.find(s => s.id === t.subjectId);
         const subName = sub ? sub.name : 'Geral';
         const subColor = sub ? sub.color : '#64748b';
+        const est = Number(t.estMinutes) || 60;
+        const act = Number(t.actualMinutes) || 0;
+        const timeDiffLabel = act > 0 
+          ? `<span class="badge bg-dark border border-secondary text-info">Real: ${act}m / Est: ${est}m</span>`
+          : `<span class="badge bg-dark border border-secondary text-secondary">Est: ${est}m</span>`;
+
         const cardHtml = `
           <div class="p-3 rounded-3" style="background:#0b0e18; border:1px solid #1f2640; border-left: 3px solid ${subColor};">
             <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
               <span class="fw-bold small">${escapeHtml(t.title)}</span>
               ${getDaysRemainingBadge(t.dueDate, t.status)}
             </div>
-            <div class="small text-secondary mb-2">
-              <span class="me-2">${t.type}</span> • <span class="ms-1">${escapeHtml(subName)}</span>
+            <div class="d-flex justify-content-between align-items-center small text-secondary mb-2">
+              <span>${t.type} • ${escapeHtml(subName)}</span>
+              ${timeDiffLabel}
             </div>
             <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
               <small class="text-secondary" style="font-size:0.75rem;">
@@ -1630,6 +3082,28 @@
       document.getElementById('kanban-todo').innerHTML = cols.todo.join('') || `<small class="text-secondary">Nenhum item pendente.</small>`;
       document.getElementById('kanban-doing').innerHTML = cols.doing.join('') || `<small class="text-secondary">Nenhum item em andamento.</small>`;
       document.getElementById('kanban-done').innerHTML = cols.done.join('') || `<small class="text-secondary">Nenhum item concluído.</small>`;
+
+      // Renderiza Linha do Tempo Gantt do Semestre
+      const ganttEl = document.getElementById('semesterGanttContainer');
+      if (ganttEl) {
+        ganttEl.innerHTML = appState.subjects.map(s => {
+          const doneL = s.units.reduce((acc, u) => acc + u.lessons.filter(l => l.done).length, 0);
+          const pct = Math.round((doneL / 20) * 100);
+          const subTasks = appState.tasks.filter(t => t.subjectId === s.id && t.status !== 'done');
+          const nextTaskInfo = subTasks.length > 0 ? `Próxima entrega: ${subTasks[0].title} (${subTasks[0].dueDate.split('-').reverse().join('/')})` : 'Sem entregas pendentes';
+          return `
+            <div class="p-2 rounded-2" style="background:#0b0e18; border:1px solid var(--border-subtle);">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="fw-bold text-white">${escapeHtml(s.name)}</span>
+                <span class="text-secondary">${nextTaskInfo} • <strong class="text-info">${pct}% concluído</strong></span>
+              </div>
+              <div class="progress" style="height: 8px; background:#161b2e;">
+                <div class="progress-bar" style="width:${pct}%; background:${s.color};"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     }
 
     // =========================================================================
@@ -1646,7 +3120,13 @@
         minsByDate[s.date] = (minsByDate[s.date] || 0) + Number(s.minutes);
       });
 
-      const totalDays = 28 * 7; // 28 semanas
+      const activeDaysCount = Object.keys(minsByDate).filter(k => minsByDate[k] > 0).length;
+      const summaryEl = document.getElementById('heatmapSummaryText');
+      if (summaryEl) {
+        summaryEl.textContent = `${activeDaysCount} dias ativos registrados • ${appState.sessions.length} sessões de foco concluídas`;
+      }
+
+      const totalDays = 28 * 7;
       const today = new Date();
       const cells = [];
 
@@ -1671,7 +3151,6 @@
     function refreshCharts() {
       if (!appState) return;
 
-      // 1. Gráfico de Ritmo dos Últimos 7 Dias
       const labels7 = [];
       const data7 = [];
       const today = new Date();
@@ -1711,7 +3190,6 @@
         }
       });
 
-      // 2. Gráfico de Rosca: Tempo por Matéria
       const subNames = appState.subjects.map(s => s.name);
       const subMins = appState.subjects.map(s => s.minutesStudied || 0);
       const subColors = appState.subjects.map(s => s.color);
@@ -1736,7 +3214,6 @@
         }
       });
 
-      // 3. Gráfico de Notas nos Exercícios por Unidade (0 a 5 acertos)
       const unitColors = ['#38bdf8', '#3b82f6', '#8b5cf6', '#a855f7'];
       const unitDatasets = [0, 1, 2, 3].map(uIdx => ({
         label: `Unidade ${uIdx + 1}`,
@@ -1770,15 +3247,15 @@
     // ATUALIZAÇÃO GERAL DA INTERFACE
     // =========================================================================
     function updateAllUI() {
-      // 1. Header Gamificação
       const g = calculateGamification();
       document.getElementById('uiLevelBadge').textContent = g.level;
       document.getElementById('uiRankTitle').textContent = g.rank;
       document.getElementById('uiXpText').textContent = `${g.xpInCurrentLevel} / ${g.xpPerLevel} XP (Total: ${g.totalXP})`;
       document.getElementById('uiXpBar').style.width = `${g.progressPct}%`;
 
-      // 2. Streak e Meta Diária
       document.getElementById('uiStreakCount').textContent = calculateStreak();
+      updateHydrationUI();
+
       const todayStr = getLocalDateStr();
       const todayMins = appState.sessions
         .filter(s => s.date === todayStr)
@@ -1788,7 +3265,6 @@
       document.getElementById('uiDailyGoal').textContent = goal;
       document.getElementById('uiDailyGoalBar').style.width = `${Math.min(100, Math.round((todayMins / goal) * 100))}%`;
 
-      // 3. Cards de Resumo da Dashboard
       const totalMins = appState.sessions.reduce((acc, s) => acc + Number(s.minutes), 0);
       const h = Math.floor(totalMins / 60);
       const m = totalMins % 60;
@@ -1826,7 +3302,6 @@
       document.getElementById('statQuizScore').textContent = `${sumScores} / ${maxQuizPts}`;
       document.getElementById('statQuizPct').textContent = `Aproveitamento médio: ${quizPct}%`;
 
-      // Próximo Prazo
       const pendingTasks = appState.tasks
         .filter(t => t.status !== 'done')
         .sort((a, b) => `${a.dueDate} ${a.dueTime || '23:59'}`.localeCompare(`${b.dueDate} ${b.dueTime || '23:59'}`));
@@ -1840,17 +3315,25 @@
         document.getElementById('statNextDeadlineCountdown').textContent = 'Tudo em dia!';
       }
 
-      // 4. Selects de Matérias (Pomodoro e Tarefas)
       const optionsHtml = appState.subjects.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
       const pomoSel = document.getElementById('pomoSubjectSelect');
       const prevPomoVal = pomoSel.value;
       pomoSel.innerHTML = optionsHtml || `<option value="">Cadastre uma matéria primeiro</option>`;
       if (prevPomoVal && appState.subjects.some(s => s.id === prevPomoVal)) pomoSel.value = prevPomoVal;
 
+      const pomoTaskSel = document.getElementById('pomoTaskSelect');
+      if (pomoTaskSel) {
+        const prevTaskVal = pomoTaskSel.value;
+        const activeTasksHtml = appState.tasks
+          .filter(t => t.status !== 'done')
+          .map(t => `<option value="${t.id}">${escapeHtml(t.title)} (Est: ${t.estMinutes || 60}m)</option>`).join('');
+        pomoTaskSel.innerHTML = `<option value="">-- Nenhuma tarefa específica --</option>` + activeTasksHtml;
+        if (prevTaskVal) pomoTaskSel.value = prevTaskVal;
+      }
+
       const taskSel = document.getElementById('taskSubjectSelect');
       taskSel.innerHTML = `<option value="geral">Geral</option>` + optionsHtml;
 
-      // 5. Tabela de Log de Estudo
       const tbody = document.getElementById('studyLogTableBody');
       if (appState.sessions.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-3">Nenhuma sessão registrada ainda.</td></tr>`;
@@ -1868,10 +3351,11 @@
         }).join('');
       }
 
-      // 6. Renderizações de Componentes
+      renderProductivityAndBadges();
       renderHeatmap();
       renderSubjects();
       renderTasks();
+      renderBadgesWall();
     }
 
     function escapeHtml(str) {
@@ -1882,50 +3366,11 @@
         .replace(/"/g, '&quot;');
     }
 
-    // Inicialização ao abrir o arquivo
-    window.addEventListener('DOMContentLoaded', async () => {
-      loadState();
-      document.getElementById('lblFocusMins').textContent = appState.settings.focusMinutes || 25;
-      setPomodoroMode('focus');
-      document.getElementById('taskDate').value = getLocalDateStr();
-
-      // <--- COLE ESTAS LINHAS AQUI DENTRO: --->
-      if (appState.settings && appState.settings.youtubeUrl) {
-        document.getElementById('ytLinkInput').value = appState.settings.youtubeUrl;
-        loadCustomYouTubePlayer();
-      }
-      // ----------------------------------------
-
-      updateAllUI();
-      refreshCharts();
-      await initFolderSyncStatus();
-    });
-
     // =========================================================================
-    // SISTEMA DE ANOTAÇÕES POR AULA COM ACE EDITOR (ESTILO VS CODE)
+    // SISTEMA DE ANOTAÇÕES POR AULA COM ACE EDITOR
     // =========================================================================
     let currentNoteTarget = { subId: null, unitId: null, lessonId: null };
     let aceEditorInstance = null;
-
-    // Inicializa o Ace Editor assim que a página carrega
-    window.addEventListener('DOMContentLoaded', () => {
-      // Pequeno atraso para garantir que o modal e o DOM renderizaram
-      setTimeout(() => {
-        const container = document.getElementById('editorContainer');
-        if (container && !aceEditorInstance) {
-          aceEditorInstance = ace.edit("editorContainer");
-          aceEditorInstance.setTheme("ace/theme/one_dark"); // Tema escuro estilo VS Code
-          aceEditorInstance.session.setMode("ace/mode/markdown"); // Modo padrão (reconhece markdown/c/python)
-          aceEditorInstance.setOptions({
-            fontSize: "14px",
-            showPrintMargin: false,
-            highlightActiveLine: true,
-            tabSize: 2,
-            useSoftTabs: true
-          });
-        }
-      }, 500);
-    });
 
     function openLessonNoteModal(subId, unitId, lessonId) {
       const sub = appState.subjects.find(s => s.id === subId);
@@ -1939,10 +3384,9 @@
       const modal = new bootstrap.Modal(document.getElementById('lessonNoteModal'));
       modal.show();
 
-      // Insere o texto salvo no editor e redimensiona para encaixar perfeitamente na janela
       setTimeout(() => {
         if (aceEditorInstance) {
-          aceEditorInstance.setValue(lesson.note || '', -1); // -1 move o cursor para o início
+          aceEditorInstance.setValue(lesson.note || '', -1);
           aceEditorInstance.resize();
           aceEditorInstance.focus();
         }
@@ -1966,21 +3410,8 @@
     // =========================================================================
     // SISTEMA DE PROMPTS E FÓRMULAS POR MATÉRIA (COM ACE EDITOR)
     // =========================================================================
-    let currentRepo = { subId: null, type: null }; // type: 'prompts' | 'formulas'
+    let currentRepo = { subId: null, type: null };
     let repoAceInstance = null;
-
-    // Inicializa o editor do repositório junto com o DOM
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const el = document.getElementById('repoEditorContainer');
-        if (el && !repoAceInstance) {
-          repoAceInstance = ace.edit("repoEditorContainer");
-          repoAceInstance.setTheme("ace/theme/one_dark");
-          repoAceInstance.session.setMode("ace/mode/markdown");
-          repoAceInstance.setOptions({ fontSize: "13px", showPrintMargin: false, tabSize: 2, useSoftTabs: true });
-        }
-      }, 600);
-    });
 
     function openSubjectRepoModal(subId, type) {
       const sub = appState.subjects.find(s => s.id === subId);
@@ -1996,9 +3427,7 @@
       document.getElementById('repoFormHeading').textContent = isPrompt ? 'Adicionar Novo Prompt / Comando' : 'Adicionar Nova Fórmula / Conceito';
       document.getElementById('repoItemTitle').value = '';
       
-      if (repoAceInstance) {
-        repoAceInstance.setValue('', -1);
-      }
+      if (repoAceInstance) repoAceInstance.setValue('', -1);
 
       renderRepoItemsList();
       const modal = new bootstrap.Modal(document.getElementById('subjectRepoModal'));
@@ -2015,11 +3444,7 @@
       const sub = appState.subjects.find(s => s.id === currentRepo.subId);
       if (sub) {
         const list = currentRepo.type === 'prompts' ? sub.prompts : sub.formulas;
-        list.push({
-          id: 'item_' + Date.now(),
-          title,
-          content
-        });
+        list.push({ id: 'item_' + Date.now(), title, content });
         saveState();
         document.getElementById('repoItemTitle').value = '';
         repoAceInstance.setValue('', -1);
@@ -2030,17 +3455,15 @@
     function deleteRepoItem(itemId) {
       const sub = appState.subjects.find(s => s.id === currentRepo.subId);
       if (sub) {
-        if (currentRepo.type === 'prompts') {
-          sub.prompts = sub.prompts.filter(i => i.id !== itemId);
-        } else {
-          sub.formulas = sub.formulas.filter(i => i.id !== itemId);
-        }
+        if (currentRepo.type === 'prompts') sub.prompts = sub.prompts.filter(i => i.id !== itemId);
+        else sub.formulas = sub.formulas.filter(i => i.id !== itemId);
         saveState();
         renderRepoItemsList();
       }
     }
 
-    function copyRepoItemContent(text) {
+    function copyRepoItemContent(encodedText) {
+      const text = decodeURIComponent(encodedText);
       navigator.clipboard.writeText(text).then(() => {
         alert('Copiado para a área de transferência!');
       });
@@ -2062,7 +3485,7 @@
           <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="fw-bold text-info small">${escapeHtml(item.title)}</span>
             <div class="btn-group btn-group-sm">
-              <button class="btn btn-outline-nexus py-0 px-2" onclick="copyRepoItemContent(${encodeURIComponent(JSON.stringify(item.content))})" title="Copiar conteúdo">
+              <button class="btn btn-outline-nexus py-0 px-2" onclick="copyRepoItemContent('${encodeURIComponent(item.content || '')}')" title="Copiar conteúdo">
                 <i class="bi bi-clipboard"></i> Copiar
               </button>
               <button class="btn btn-outline-danger py-0 px-2" onclick="deleteRepoItem('${item.id}')" title="Excluir">
@@ -2080,7 +3503,6 @@
     // =========================================================================
     const daysOfWeek = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
-    // Mapeia o dia da semana do JS (0 = Domingo, 1 = Segunda...) para o nosso array
     function getTodayDayName() {
       const jsDay = new Date().getDay();
       const map = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
@@ -2098,7 +3520,6 @@
       const subjectOptions = `<option value="">-- Nenhuma matéria definida --</option>` + 
         appState.subjects.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
 
-      // Formulário de configuração por dia
       container.innerHTML = daysOfWeek.map(day => {
         const currentSubId = appState.schedule[day] || '';
         const isToday = day === getTodayDayName();
@@ -2114,7 +3535,6 @@
         `;
       }).join('');
 
-      // Visão Geral lateral
       overview.innerHTML = daysOfWeek.map(day => {
         const subId = appState.schedule[day];
         const sub = appState.subjects.find(s => s.id === subId);
@@ -2141,55 +3561,16 @@
       renderScheduleUI();
     }
 
-    // Seleciona automaticamente a matéria do dia no Pomodoro ao abrir a aba
     function checkTodayScheduleSelection() {
       if (!appState.schedule) return;
       const todayDay = getTodayDayName();
       const scheduledSubId = appState.schedule[todayDay];
       if (scheduledSubId && appState.subjects.some(s => s.id === scheduledSubId)) {
         const pomoSel = document.getElementById('pomoSubjectSelect');
-        if (pomoSel) {
-          pomoSel.value = scheduledSubId;
-        }
+        if (pomoSel) pomoSel.value = scheduledSubId;
       }
     }
 
-    // =========================================================================
-    // MINI PLAYER YOUTUBE CUSTOMIZÁVEL
-    // =========================================================================
-    function extractYouTubeId(urlOrId) {
-      if (!urlOrId) return '';
-      urlOrId = urlOrId.trim();
-      // Se for um ID direto de 11 caracteres
-      if (/^[a-zA-Z0-9_-]{11}$/.test(urlOrId)) return urlOrId;
-      
-      // Se for link do YouTube (watch?v=xxx ou youtu.be/xxx)
-      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-      const match = urlOrId.match(regExp);
-      return (match && match[2].length === 11) ? match[2] : '';
-    }
-
-    function loadCustomYouTubePlayer() {
-      const inputVal = document.getElementById('ytLinkInput').value;
-      const videoId = extractYouTubeId(inputVal);
-      const wrapper = document.getElementById('ytPlayerWrapper');
-
-      if (!videoId) {
-        alert('Link ou ID do YouTube inválido. Verifique o endereço digitado.');
-        return;
-      }
-
-      appState.settings.youtubeUrl = inputVal;
-      saveState();
-
-      wrapper.innerHTML = `
-        <iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1" 
-          title="YouTube video player" frameborder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowfullscreen>
-        </iframe>
-      `;
-    }
     // =========================================================================
     // SINCRONIZAÇÃO EM TEMPO REAL NA NUVEM (FIREBASE REST API - PC & CELULAR)
     // =========================================================================
@@ -2199,7 +3580,7 @@
     function getCleanCloudUrl() {
       let url = localStorage.getItem(CLOUD_URL_KEY) || '';
       if (!url) return '';
-      url = url.trim().replace(/\/+$/, ''); // Remove barra final se houver
+      url = url.trim().replace(/\/+$/, '');
       return `${url}/nexus_state.json`;
     }
 
@@ -2210,21 +3591,21 @@
       if (!btn || !icon || !text) return;
 
       if (status === 'connected') {
-        btn.className = 'btn btn-outline-success btn-sm d-flex align-items-center gap-2';
+        btn.className = 'btn btn-outline-success btn-sm d-flex align-items-center gap-1';
         icon.className = 'bi bi-cloud-check-fill';
         text.textContent = 'Nuvem Ativa';
       } else if (status === 'syncing') {
-        btn.className = 'btn btn-outline-warning btn-sm d-flex align-items-center gap-2';
+        btn.className = 'btn btn-outline-warning btn-sm d-flex align-items-center gap-1';
         icon.className = 'bi bi-arrow-repeat';
-        text.textContent = 'Sincronizando...';
+        text.textContent = 'Sinc...';
       } else if (status === 'error') {
-        btn.className = 'btn btn-outline-danger btn-sm d-flex align-items-center gap-2';
+        btn.className = 'btn btn-outline-danger btn-sm d-flex align-items-center gap-1';
         icon.className = 'bi bi-cloud-slash-fill';
-        text.textContent = 'Erro na Nuvem';
+        text.textContent = 'Erro Nuvem';
       } else {
-        btn.className = 'btn btn-outline-info btn-sm d-flex align-items-center gap-2';
+        btn.className = 'btn btn-outline-info btn-sm d-flex align-items-center gap-1';
         icon.className = 'bi bi-cloud-plus';
-        text.textContent = 'Conectar Nuvem';
+        text.textContent = 'Nuvem';
       }
     }
 
@@ -2235,7 +3616,7 @@
         current
       );
 
-      if (input === null) return; // Cancelou
+      if (input === null) return;
       const clean = input.trim();
 
       if (!clean) {
@@ -2248,7 +3629,6 @@
       await pullStateFromCloud(true);
     }
 
-    // Envia os dados locais para a nuvem
     async function pushStateToCloud() {
       const endpoint = getCleanCloudUrl();
       if (!endpoint || isSyncingFromCloud) return;
@@ -2261,42 +3641,14 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(appState)
         });
-        if (res.ok) {
-          updateCloudUIStatus('connected');
-        } else {
-          updateCloudUIStatus('error');
-        }
+        if (res.ok) updateCloudUIStatus('connected');
+        else updateCloudUIStatus('error');
       } catch (err) {
         console.error('Falha ao enviar para a nuvem:', err);
         updateCloudUIStatus('error');
       }
     }
 
-    // Reconstrói listas vazias que o Firebase omite automaticamente
-    function normalizeCloudData(data) {
-      if (!data || typeof data !== 'object') return getDefaultState();
-      
-      data.settings = data.settings || { dailyGoalMinutes: 120, focusMinutes: 25, youtubeUrl: '' };
-      data.sessions = Array.isArray(data.sessions) ? data.sessions : [];
-      data.tasks = Array.isArray(data.tasks) ? data.tasks : [];
-      data.schedule = data.schedule || {
-        'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': ''
-      };
-      data.subjects = Array.isArray(data.subjects) ? data.subjects : [];
-
-      data.subjects.forEach(sub => {
-        sub.prompts = Array.isArray(sub.prompts) ? sub.prompts : [];
-        sub.formulas = Array.isArray(sub.formulas) ? sub.formulas : [];
-        sub.units = Array.isArray(sub.units) ? sub.units : [];
-        sub.units.forEach(u => {
-          u.lessons = Array.isArray(u.lessons) ? u.lessons : [];
-        });
-      });
-
-      return data;
-    }
-
-    // Baixa os dados da nuvem com proteção contra falhas de listas vazias
     async function pullStateFromCloud(isInitialSetup = false) {
       const endpoint = getCleanCloudUrl();
       if (!endpoint) {
@@ -2316,20 +3668,17 @@
           localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
           
           try {
-            if (typeof writeToLinkedFile === 'function' && typeof fileHandle !== 'undefined' && fileHandle) {
+            if (typeof writeToLinkedFile === 'function' && fileHandle) {
               await writeToLinkedFile();
             }
-          } catch (fileErr) {
-            console.warn('Aviso ao atualizar arquivo local:', fileErr);
-          }
+          } catch (fileErr) {}
 
           try {
             updateAllUI();
             if (typeof refreshCharts === 'function') refreshCharts();
             if (typeof renderScheduleUI === 'function') renderScheduleUI();
-          } catch (uiErr) {
-            console.warn('Aviso na interface:', uiErr);
-          }
+            if (typeof renderFlashcardsTab === 'function') renderFlashcardsTab();
+          } catch (uiErr) {}
 
           isSyncingFromCloud = false;
           updateCloudUIStatus('connected');
@@ -2345,8 +3694,50 @@
       }
     }
 
-    // Sincroniza automaticamente ao abrir a página e quando você troca de aba/desbloqueia o celular
-    window.addEventListener('DOMContentLoaded', () => {
+    // =========================================================================
+    // INICIALIZAÇÃO GERAL AO ABRIR O ARQUIVO
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', async () => {
+      loadState();
+      document.getElementById('lblFocusMins').textContent = appState.settings.focusMinutes || 25;
+      document.getElementById('btnErgo2020')?.classList.toggle('active', appState.settings.ergo2020Enabled !== false);
+      document.getElementById('btnGatekeeper')?.classList.toggle('active', Boolean(appState.settings.gatekeeperEnabled));
+      setPomodoroMode('focus');
+      document.getElementById('taskDate').value = getLocalDateStr();
+
+      setTimeout(() => {
+        const container = document.getElementById('editorContainer');
+        if (container && !aceEditorInstance) {
+          aceEditorInstance = ace.edit("editorContainer");
+          aceEditorInstance.setTheme("ace/theme/one_dark");
+          aceEditorInstance.session.setMode("ace/mode/markdown");
+          aceEditorInstance.setOptions({ fontSize: "14px", showPrintMargin: false, highlightActiveLine: true, tabSize: 2, useSoftTabs: true });
+        }
+
+        const repoEl = document.getElementById('repoEditorContainer');
+        if (repoEl && !repoAceInstance) {
+          repoAceInstance = ace.edit("repoEditorContainer");
+          repoAceInstance.setTheme("ace/theme/one_dark");
+          repoAceInstance.session.setMode("ace/mode/markdown");
+          repoAceInstance.setOptions({ fontSize: "13px", showPrintMargin: false, tabSize: 2, useSoftTabs: true });
+        }
+
+        const pyEl = document.getElementById('pyAceContainer');
+        if (pyEl && !pyAceEditor) {
+          pyAceEditor = ace.edit("pyAceContainer");
+          pyAceEditor.setTheme("ace/theme/one_dark");
+          pyAceEditor.session.setMode("ace/mode/python");
+          pyAceEditor.setOptions({ fontSize: "14px", showPrintMargin: false, tabSize: 4, useSoftTabs: true });
+          pyAceEditor.setValue(`# Exemplo rápido em Python 3\ndef fatorial(n):\n    return 1 if n <= 1 else n * fatorial(n - 1)\n\nfor i in range(1, 6):\n    print(f"{i}! = {fatorial(i)}")`, -1);
+        }
+      }, 400);
+
+      updateAllUI();
+      refreshCharts();
+      generateTruthTable();
+      calcBitwise();
+      await initFolderSyncStatus();
+
       if (localStorage.getItem(CLOUD_URL_KEY)) {
         pullStateFromCloud();
       }
@@ -2357,6 +3748,309 @@
         pullStateFromCloud();
       }
     });
+
+    // =========================================================================
+    // MOTOR DAS 100 CONQUISTAS E INSÍGNIAS ACADÊMICAS
+    // =========================================================================
+    let currentBadgeStatusFilter = 'all'; // 'all' | 'unlocked' | 'locked'
+
+    function setBadgeStatusFilter(status) {
+      currentBadgeStatusFilter = status;
+      document.getElementById('btnFilterBadgeAll')?.classList.toggle('active', status === 'all');
+      document.getElementById('btnFilterBadgeUnlocked')?.classList.toggle('active', status === 'unlocked');
+      document.getElementById('btnFilterBadgeLocked')?.classList.toggle('active', status === 'locked');
+      renderBadgesWall();
+    }
+
+    function renderBadgesWall() {
+      const container = document.getElementById('badgesWallContainer');
+      if (!container || !appState) return;
+
+      // --- 1. Coleta de Métricas de Sessões e Tempo ---
+      const sessions = appState.sessions || [];
+      const totalSessions = sessions.length;
+      const totalMins = sessions.reduce((acc, s) => acc + (Number(s.minutes) || 0), 0);
+      const maxSingleSession = sessions.reduce((max, s) => Math.max(max, Number(s.minutes) || 0), 0);
+      const microSessionsCount = sessions.filter(s => Number(s.minutes) === 10 || (s.note && s.note.includes('Micro-Estudo'))).length;
+
+      const minsByDate = {};
+      const sessionsByDate = {};
+      const shifts = { dawn: 0, morning: 0, afternoon: 0, night: 0 };
+      const shiftCounts = { dawn: 0, morning: 0, afternoon: 0, night: 0 };
+      let studiedSaturday = false;
+      let studiedSunday = false;
+
+      sessions.forEach(s => {
+        const m = Number(s.minutes) || 0;
+        if (s.date) {
+          minsByDate[s.date] = (minsByDate[s.date] || 0) + m;
+          sessionsByDate[s.date] = (sessionsByDate[s.date] || 0) + 1;
+          const dObj = new Date(s.date + 'T12:00:00');
+          if (dObj.getDay() === 6) studiedSaturday = true;
+          if (dObj.getDay() === 0) studiedSunday = true;
+        }
+        const hr = s.timestamp ? parseInt(s.timestamp.split(':')[0], 10) : 20;
+        if (hr >= 0 && hr < 6) { shifts.dawn += m; shiftCounts.dawn++; }
+        else if (hr >= 6 && hr < 12) { shifts.morning += m; shiftCounts.morning++; }
+        else if (hr >= 12 && hr < 18) { shifts.afternoon += m; shiftCounts.afternoon++; }
+        else { shifts.night += m; shiftCounts.night++; }
+      });
+
+      const maxDailyMins = Math.max(0, ...Object.values(minsByDate));
+      const maxDailySessions = Math.max(0, ...Object.values(sessionsByDate));
+      const activeDaysCount = Object.keys(minsByDate).filter(d => minsByDate[d] > 0).length;
+      const streak = calculateStreak();
+      const todayMins = minsByDate[getLocalDateStr()] || 0;
+      const dailyGoal = Number(appState.settings?.dailyGoalMinutes) || 120;
+
+      // --- 2. Coleta de Métricas Acadêmicas, Notas, Questões e Ace Editor ---
+      const subjects = appState.subjects || [];
+      const totalLessonsPossible = subjects.length * 20;
+      let totalLessonsDone = 0;
+      let closedUnitsCount = 0;
+      let closedSubjectsCount = 0;
+      let subjectsWith1Hour = 0;
+      let hitSubjectTargetHours = false;
+      let allSubjectsUnit1Done = subjects.length > 0;
+
+      let scoredUnitsCount = 0;
+      let sumUnitScores = 0;
+      let hasPerfectUnit = false;
+      let hasQuadraPerfeita = false;
+      let totalQuizQuestions = 0;
+
+      let lessonsWithNotes = 0;
+      let totalNoteChars = 0;
+      let totalPrompts = 0;
+      let totalFormulas = 0;
+
+      subjects.forEach(sub => {
+        if ((Number(sub.minutesStudied) || 0) >= 60) subjectsWith1Hour++;
+        if ((Number(sub.minutesStudied) || 0) >= (Number(sub.targetHours) || 40) * 60) hitSubjectTargetHours = true;
+        totalPrompts += (sub.prompts || []).length;
+        totalFormulas += (sub.formulas || []).length;
+
+        let subLessonsDone = 0;
+        let subPerfectUnits = 0;
+
+        (sub.units || []).forEach((u, uIdx) => {
+          const uDone = (u.lessons || []).filter(l => l.done).length;
+          totalLessonsDone += uDone;
+          subLessonsDone += uDone;
+          if (uDone === 5) closedUnitsCount++;
+          if (uIdx === 0 && uDone < 5) allSubjectsUnit1Done = false;
+
+          if (u.score !== null && u.score !== undefined && u.score !== '') {
+            const sc = Number(u.score);
+            scoredUnitsCount++;
+            sumUnitScores += sc;
+            if (sc === 5) {
+              hasPerfectUnit = true;
+              subPerfectUnits++;
+            }
+          }
+
+          totalQuizQuestions += (u.quizQuestions || []).length;
+
+          (u.lessons || []).forEach(l => {
+            const txt = (l.note || '').trim();
+            if (txt.length > 0) {
+              lessonsWithNotes++;
+              totalNoteChars += txt.length;
+            }
+          });
+        });
+
+        if (subLessonsDone === 20) closedSubjectsCount++;
+        if (subPerfectUnits === 4) hasQuadraPerfeita = true;
+      });
+
+      const lessonsCompletionPct = totalLessonsPossible > 0 ? (totalLessonsDone / totalLessonsPossible) * 100 : 0;
+      const avgQuizPct = scoredUnitsCount > 0 ? (sumUnitScores / (scoredUnitsCount * 5)) * 100 : 0;
+
+      // --- 3. Flashcards, Kanban, Cronograma, Hidratação e Nível RPG ---
+      const flashcards = appState.flashcards || [];
+      const totalFlashcards = flashcards.length;
+      const totalFcReviews = flashcards.reduce((acc, c) => acc + (Number(c.reviewsCount) || 0), 0);
+
+      const scheduleDaysFilled = Object.values(appState.schedule || {}).filter(v => Boolean(v)).length;
+      const tasks = appState.tasks || [];
+      const doneTasks = tasks.filter(t => t.status === 'done');
+      const doingOrDoneTasks = tasks.filter(t => t.status === 'doing' || t.status === 'done');
+      const doneWorks = doneTasks.filter(t => t.type === 'Trabalho').length;
+      const doneExams = doneTasks.filter(t => t.type === 'Prova').length;
+      const beatEstimateTask = doneTasks.some(t => Number(t.actualMinutes) > 0 && Number(t.actualMinutes) <= (Number(t.estMinutes) || 60));
+
+      const waterGoal = Number(appState.settings?.waterGoalMl) || 3000;
+      const hydrationValues = Object.values(appState.hydration || {}).map(v => Number(v) || 0);
+      const waterGoalDays = hydrationValues.filter(ml => ml >= waterGoal).length;
+      const totalWaterMl = hydrationValues.reduce((a, b) => a + b, 0);
+      const sleepDaysLogged = Object.keys(appState.sleepLog || {}).length;
+      const g = calculateGamification();
+
+      // --- LISTA DAS 99 PRIMEIRAS INSÍGNIAS ---
+      const badges = [
+        // 1. Foco & Pomodoro (1 a 20)
+        { id: 1, cat: 'foco', icon: '🌱', title: 'Hello, World!', desc: 'Concluiu a 1ª sessão de foco no Pomodoro', unlocked: totalSessions >= 1 },
+        { id: 2, cat: 'foco', icon: '⚡', title: 'Ignição Rápida', desc: 'Concluiu 1 sessão de Micro-Estudo (10m)', unlocked: microSessionsCount >= 1 },
+        { id: 3, cat: 'foco', icon: '🔋', title: 'Curto-Circuito Produtivo', desc: '10 sessões de Micro-Estudo concluídas', unlocked: microSessionsCount >= 10 },
+        { id: 4, cat: 'foco', icon: '🧘', title: 'Estado de Flow', desc: 'Concluiu uma sessão única de 50+ min', unlocked: maxSingleSession >= 50 },
+        { id: 5, cat: 'foco', icon: '💎', title: 'Hiperfoco Blindado', desc: 'Concluiu uma sessão de 60 min ininterruptos', unlocked: maxSingleSession >= 60 },
+        { id: 6, cat: 'foco', icon: '🕯️', title: 'Vigília Silenciosa', desc: 'Estudou 120+ minutos em um único dia', unlocked: maxDailyMins >= 120 },
+        { id: 7, cat: 'foco', icon: '🌌', title: 'Overclock Neural', desc: 'Estudou 180+ minutos em um único dia', unlocked: maxDailyMins >= 180 },
+        { id: 8, cat: 'foco', icon: '🔥', title: 'Titã da Maratona', desc: 'Estudou 300+ minutos (5h) no mesmo dia', unlocked: maxDailyMins >= 300 },
+        { id: 9, cat: 'foco', icon: '🔁', title: 'Dobradinha', desc: '2 sessões de foco concluídas no mesmo dia', unlocked: maxDailySessions >= 2 },
+        { id: 10, cat: 'foco', icon: '🎯', title: 'Hat-Trick Acadêmico', desc: '3 sessões de foco concluídas no mesmo dia', unlocked: maxDailySessions >= 3 },
+        { id: 11, cat: 'foco', icon: '🚀', title: 'Penta-Kill do Estudo', desc: '5 sessões de foco concluídas no mesmo dia', unlocked: maxDailySessions >= 5 },
+        { id: 12, cat: 'foco', icon: '🎖️', title: 'Veterano de Sessões', desc: '50 sessões de foco registradas no histórico', unlocked: totalSessions >= 50 },
+        { id: 13, cat: 'foco', icon: '💯', title: 'Centenário de Pomodoro', desc: '100 sessões de foco registradas', unlocked: totalSessions >= 100 },
+        { id: 14, cat: 'foco', icon: '⏱️', title: 'Primeiras 10 Horas', desc: 'Acumulou 600 min (10h) totais de foco', unlocked: totalMins >= 600 },
+        { id: 15, cat: 'foco', icon: '⏳', title: 'Senhor do Tempo', desc: 'Acumulou 1.500 min (25h) totais de foco', unlocked: totalMins >= 1500 },
+        { id: 16, cat: 'foco', icon: '🛠️', title: 'Meio Semestre no Braço', desc: 'Acumulou 3.000 min (50h) totais de foco', unlocked: totalMins >= 3000 },
+        { id: 17, cat: 'foco', icon: '🏔️', title: 'Escalada Olímpica', desc: 'Acumulou 4.500 min (75h) totais de foco', unlocked: totalMins >= 4500 },
+        { id: 18, cat: 'foco', icon: '🚀', title: 'Centurião do Foco', desc: 'Acumulou 6.000 min (100h) totais de foco', unlocked: totalMins >= 6000 },
+        { id: 19, cat: 'foco', icon: '🌠', title: 'Viajante Interestelar', desc: 'Acumulou 12.000 min (200h) totais de foco', unlocked: totalMins >= 12000 },
+        { id: 20, cat: 'foco', icon: '♾️', title: 'Imortal do Foco', desc: 'Acumulou 30.000 min (500h) totais de foco', unlocked: totalMins >= 30000 },
+
+        // 2. Constância & Turnos (21 a 38)
+        { id: 21, cat: 'constancia', icon: '🦉', title: 'Guardião da Madrugada', desc: 'Estudou entre 00h00 e 05h59', unlocked: shiftCounts.dawn >= 1 },
+        { id: 22, cat: 'constancia', icon: '🦇', title: 'Coruja de Plantão', desc: '10 sessões concluídas na madrugada', unlocked: shiftCounts.dawn >= 10 },
+        { id: 23, cat: 'constancia', icon: '🧛', title: 'Senhor das Sombras', desc: '300+ min estudados na madrugada', unlocked: shifts.dawn >= 300 },
+        { id: 24, cat: 'constancia', icon: '🌅', title: 'Alvorada Binária', desc: 'Estudou pela manhã (06h00 às 11h59)', unlocked: shiftCounts.morning >= 1 },
+        { id: 25, cat: 'constancia', icon: '☕', title: 'Clube das 6 da Manhã', desc: '10 sessões concluídas pela manhã', unlocked: shiftCounts.morning >= 10 },
+        { id: 26, cat: 'constancia', icon: '🌇', title: 'Crepúsculo Produtivo', desc: '10 sessões concluídas durante a tarde', unlocked: shiftCounts.afternoon >= 10 },
+        { id: 27, cat: 'constancia', icon: '☀️', title: 'Engenheiro Solar', desc: '300+ min estudados no turno da tarde', unlocked: shifts.afternoon >= 300 },
+        { id: 28, cat: 'constancia', icon: '🌙', title: 'Operador Noturno', desc: '600+ min estudados à noite (18h–23h59)', unlocked: shifts.night >= 600 },
+        { id: 29, cat: 'constancia', icon: '🌆', title: 'Cidadão de Night City', desc: '20 sessões concluídas no turno da noite', unlocked: shiftCounts.night >= 20 },
+        { id: 30, cat: 'constancia', icon: '🌈', title: 'Onipresente', desc: 'Estudou na Madrugada, Manhã, Tarde e Noite', unlocked: shiftCounts.dawn > 0 && shiftCounts.morning > 0 && shiftCounts.afternoon > 0 && shiftCounts.night > 0 },
+        { id: 31, cat: 'constancia', icon: '⚔️', title: 'Guerreiro de Fim de Semana', desc: 'Estudou no Sábado e no Domingo', unlocked: studiedSaturday && studiedSunday },
+        { id: 32, cat: 'constancia', icon: '🔗', title: 'Trinca de Ferro', desc: '3 dias seguidos de ofensiva (streak)', unlocked: streak >= 3 },
+        { id: 33, cat: 'constancia', icon: '🛡️', title: 'Semana Inabalável', desc: '7 dias seguidos de ofensiva (streak)', unlocked: streak >= 7 },
+        { id: 34, cat: 'constancia', icon: '👑', title: 'Constância Inquebrável', desc: '15 dias seguidos de ofensiva (streak)', unlocked: streak >= 15 },
+        { id: 35, cat: 'constancia', icon: '🌋', title: 'Lenda Mensal', desc: '30 dias seguidos de ofensiva (streak)', unlocked: streak >= 30 },
+        { id: 36, cat: 'constancia', icon: '💎', title: 'Ofensiva de Platina', desc: '60 dias seguidos de ofensiva (streak)', unlocked: streak >= 60 },
+        { id: 37, cat: 'constancia', icon: '🗓️', title: 'Mês Ativo no Heatmap', desc: '30 dias diferentes pintados no Heatmap', unlocked: activeDaysCount >= 30 },
+        { id: 38, cat: 'constancia', icon: '🗓️', title: 'Trimestre de Aço', desc: '90 dias diferentes pintados no Heatmap', unlocked: activeDaysCount >= 90 },
+
+        // 3. Domínio Acadêmico & Grade 4x5 (39 a 52)
+        { id: 39, cat: 'academico', icon: '📖', title: 'Primeiro Passo na Grade', desc: 'Concluiu a 1ª aula em qualquer matéria', unlocked: totalLessonsDone >= 1 },
+        { id: 40, cat: 'academico', icon: '🧱', title: 'Fundação Sólida', desc: '10 aulas concluídas no painel', unlocked: totalLessonsDone >= 10 },
+        { id: 41, cat: 'academico', icon: '🏗️', title: 'Estrutura Erguida', desc: '30 aulas concluídas no painel', unlocked: totalLessonsDone >= 30 },
+        { id: 42, cat: 'academico', icon: '🏰', title: 'Fortaleza do Saber', desc: '50 aulas concluídas no painel', unlocked: totalLessonsDone >= 50 },
+        { id: 43, cat: 'academico', icon: '📦', title: 'Unidade Fechada', desc: 'Concluiu as 5/5 aulas de uma unidade', unlocked: closedUnitsCount >= 1 },
+        { id: 44, cat: 'academico', icon: '⚖️', title: 'Largada Sincronizada', desc: 'Unidade 1 concluída em todas as matérias', unlocked: allSubjectsUnit1Done },
+        { id: 45, cat: 'academico', icon: '🏛️', title: 'Pilar Concluído', desc: 'Fechou 20/20 aulas de uma matéria inteira', unlocked: closedSubjectsCount >= 1 },
+        { id: 46, cat: 'academico', icon: '🎓', title: 'Tríade Acadêmica', desc: 'Fechou 20/20 aulas em 3 matérias', unlocked: closedSubjectsCount >= 3 },
+        { id: 47, cat: 'academico', icon: '🗂️', title: 'Grade Completa', desc: '5 ou mais disciplinas cadastradas', unlocked: subjects.length >= 5 },
+        { id: 48, cat: 'academico', icon: '🧭', title: 'Explorador Multidisciplinar', desc: '1h+ de foco em 3 matérias diferentes', unlocked: subjectsWith1Hour >= 3 },
+        { id: 49, cat: 'academico', icon: '🎯', title: 'Meta Semestral Batida', desc: 'Atingiu 100% das horas-meta de uma matéria', unlocked: hitSubjectTargetHours },
+        { id: 50, cat: 'academico', icon: '📚', title: 'Meio Caminho Andado', desc: '50% de todas as aulas do semestre concluídas', unlocked: lessonsCompletionPct >= 50 },
+        { id: 51, cat: 'academico', icon: '🏁', title: 'Reta Final', desc: '75% de todas as aulas do semestre concluídas', unlocked: lessonsCompletionPct >= 75 },
+        { id: 52, cat: 'academico', icon: '🏆', title: 'Semestre Zerado', desc: '100% das aulas de todas as matérias concluídas', unlocked: totalLessonsPossible > 0 && lessonsCompletionPct >= 100 },
+
+        // 4. Exercícios & Simulados (53 a 65)
+        { id: 53, cat: 'exercicios', icon: '🥉', title: 'Primeira Avaliação', desc: 'Registrou a 1ª nota de exercícios numa unidade', unlocked: scoredUnitsCount >= 1 },
+        { id: 54, cat: 'exercicios', icon: '🎯', title: 'Na Mosca!', desc: 'Tirou nota máxima (5/5) em uma unidade', unlocked: hasPerfectUnit },
+        { id: 55, cat: 'exercicios', icon: '🌟', title: 'Quadra de Ases', desc: 'Nota 5/5 nas 4 unidades de uma matéria', unlocked: hasQuadraPerfeita },
+        { id: 56, cat: 'exercicios', icon: '🧠', title: 'Mente Testada', desc: '8 unidades avaliadas com notas', unlocked: scoredUnitsCount >= 8 },
+        { id: 57, cat: 'exercicios', icon: '🥈', title: 'Dez Unidades Avaliadas', desc: '10 baterias de exercícios concluídas', unlocked: scoredUnitsCount >= 10 },
+        { id: 58, cat: 'exercicios', icon: '🥇', title: 'Vinte Unidades Avaliadas', desc: '20 unidades avaliadas no semestre', unlocked: scoredUnitsCount >= 20 },
+        { id: 59, cat: 'exercicios', icon: '📈', title: 'Acima da Média', desc: 'Aproveitamento >= 80% (mín. 4 unidades)', unlocked: scoredUnitsCount >= 4 && avgQuizPct >= 80 },
+        { id: 60, cat: 'exercicios', icon: '🏅', title: 'Gabarito Impecável', desc: 'Aproveitamento 100% (mín. 6 unidades)', unlocked: scoredUnitsCount >= 6 && avgQuizPct === 100 },
+        { id: 61, cat: 'exercicios', icon: '🎯', title: 'Sniper de Pontos', desc: 'Acumulou 50+ acertos somados nas unidades', unlocked: sumUnitScores >= 50 },
+        { id: 62, cat: 'exercicios', icon: '💯', title: 'Pontuação Centenária', desc: 'Acumulou 100+ acertos somados nas unidades', unlocked: sumUnitScores >= 100 },
+        { id: 63, cat: 'exercicios', icon: '🧩', title: 'Criador de Desafios', desc: 'Cadastrou 5 questões nos Simulados', unlocked: totalQuizQuestions >= 5 },
+        { id: 64, cat: 'exercicios', icon: '🏛️', title: 'Banca Examinadora', desc: 'Cadastrou 20 questões nos Simulados', unlocked: totalQuizQuestions >= 20 },
+        { id: 65, cat: 'exercicios', icon: '🧠', title: 'Fábrica de Provas', desc: 'Cadastrou 50 questões nos Simulados', unlocked: totalQuizQuestions >= 50 },
+
+        // 5. Engenharia de Conhecimento (66 a 83)
+        { id: 66, cat: 'conhecimento', icon: '📝', title: 'Escriba Digital', desc: 'Salvou a 1ª anotação de aula no Ace Editor', unlocked: lessonsWithNotes >= 1 },
+        { id: 67, cat: 'conhecimento', icon: '📓', title: 'Documentação Completa', desc: '10 aulas com anotações salvas', unlocked: lessonsWithNotes >= 10 },
+        { id: 68, cat: 'conhecimento', icon: '📜', title: 'Enciclopédia Pessoal', desc: '25 aulas com anotações salvas', unlocked: lessonsWithNotes >= 25 },
+        { id: 69, cat: 'conhecimento', icon: '✍️', title: 'Autor Dedicado', desc: '1.000+ caracteres escritos nas notas de aula', unlocked: totalNoteChars >= 1000 },
+        { id: 70, cat: 'conhecimento', icon: '📖', title: 'Escritor Técnico', desc: '5.000+ caracteres escritos nas notas de aula', unlocked: totalNoteChars >= 5000 },
+        { id: 71, cat: 'conhecimento', icon: '📚', title: 'Autor de Compêndio', desc: '15.000+ caracteres escritos no Ace Editor', unlocked: totalNoteChars >= 15000 },
+        { id: 72, cat: 'conhecimento', icon: '💻', title: 'Colecionador de Snippets', desc: '5 itens salvos na biblioteca de Prompts', unlocked: totalPrompts >= 5 },
+        { id: 73, cat: 'conhecimento', icon: '🐚', title: 'Mestre do Terminal', desc: '15 itens salvos na biblioteca de Prompts', unlocked: totalPrompts >= 15 },
+        { id: 74, cat: 'conhecimento', icon: '📐', title: 'Mestre dos Teoremas', desc: '5 itens salvos na biblioteca de Fórmulas', unlocked: totalFormulas >= 5 },
+        { id: 75, cat: 'conhecimento', icon: '🧮', title: 'Arquimedes Moderno', desc: '15 itens salvos na biblioteca de Fórmulas', unlocked: totalFormulas >= 15 },
+        { id: 76, cat: 'conhecimento', icon: '🗄️', title: 'Arsenal do Desenvolvedor', desc: '20+ itens somando Prompts e Fórmulas', unlocked: (totalPrompts + totalFormulas) >= 20 },
+        { id: 77, cat: 'conhecimento', icon: '🃏', title: 'Primeiro Cartão', desc: 'Criou o 1º Flashcard de revisão', unlocked: totalFlashcards >= 1 },
+        { id: 78, cat: 'conhecimento', icon: '🎴', title: 'Forjador de Memória', desc: '10 Flashcards criados no sistema', unlocked: totalFlashcards >= 10 },
+        { id: 79, cat: 'conhecimento', icon: '🔮', title: 'Mestre do Baralho', desc: '30 Flashcards criados no sistema', unlocked: totalFlashcards >= 30 },
+        { id: 80, cat: 'conhecimento', icon: '🏛️', title: 'Biblioteca de Alexandria', desc: '50 Flashcards criados no sistema', unlocked: totalFlashcards >= 50 },
+        { id: 81, cat: 'conhecimento', icon: '🔄', title: 'Sinapse Reforçada', desc: '25 revisões concluídas na Arena de Flashcards', unlocked: totalFcReviews >= 25 },
+        { id: 82, cat: 'conhecimento', icon: '🧠', title: 'Memória Eidética', desc: '100 revisões concluídas na Arena de Flashcards', unlocked: totalFcReviews >= 100 },
+        { id: 83, cat: 'conhecimento', icon: '⚡', title: 'Sinapse de Ouro', desc: '250 revisões concluídas na Arena de Flashcards', unlocked: totalFcReviews >= 250 },
+
+        // 6. Prazos, Kanban & Cronograma (84 a 91)
+        { id: 84, cat: 'gestao', icon: '📅', title: 'Arquiteto da Rotina', desc: '5+ dias configurados no Cronograma Semanal', unlocked: scheduleDaysFilled >= 5 },
+        { id: 85, cat: 'gestao', icon: '🗓️', title: 'Semana Blindada', desc: 'Todos os 7 dias do Cronograma preenchidos', unlocked: scheduleDaysFilled >= 7 },
+        { id: 86, cat: 'gestao', icon: '✅', title: 'Missão Cumprida', desc: '1ª tarefa ou prova concluída no Kanban', unlocked: doneTasks.length >= 1 },
+        { id: 87, cat: 'gestao', icon: '🏃', title: 'Em Movimento', desc: 'Moveu uma tarefa para Em Andamento ou Concluído', unlocked: doingOrDoneTasks.length >= 1 },
+        { id: 88, cat: 'gestao', icon: '💻', title: 'Entregador de Projetos', desc: 'Concluiu 5 Trabalhos no quadro Kanban', unlocked: doneWorks >= 5 },
+        { id: 89, cat: 'gestao', icon: '🎓', title: 'Sobrevivente de Provas', desc: 'Concluiu 5 Provas no quadro Kanban', unlocked: doneExams >= 5 },
+        { id: 90, cat: 'gestao', icon: '⚔️', title: 'Exterminador de Pendências', desc: '10 tarefas concluídas no quadro Kanban', unlocked: doneTasks.length >= 10 },
+        { id: 91, cat: 'gestao', icon: '🎯', title: 'Relógio Suíço', desc: 'Concluiu tarefa dentro do tempo estimado', unlocked: beatEstimateTask },
+
+        // 7. Biohacking, Níveis RPG & Platina (92 a 99 + 100)
+        { id: 92, cat: 'rpg', icon: '💧', title: 'Protocolo Hidratado', desc: 'Bateu 100% da meta diária de água', unlocked: waterGoalDays >= 1 },
+        { id: 93, cat: 'rpg', icon: '🌊', title: 'Fonte Inesgotável', desc: '7 dias batendo a meta diária de hidratação', unlocked: waterGoalDays >= 7 },
+        { id: 94, cat: 'rpg', icon: '🐳', title: 'Oceano Particular', desc: 'Acumulou 30 litros (30.000 ml) registrados', unlocked: totalWaterMl >= 30000 },
+        { id: 95, cat: 'rpg', icon: '🎯', title: 'Meta Diária Cravada', desc: 'Bateu 100% da meta diária de minutos hoje', unlocked: todayMins >= dailyGoal },
+        { id: 96, cat: 'rpg', icon: '🛡️', title: 'Iniciado da Ordem (Nv. 5)', desc: 'Alcançou o Nível 5 de experiência', unlocked: g.level >= 5 },
+        { id: 97, cat: 'rpg', icon: '⚔️', title: 'Veterano de Sistemas (Nv. 10)', desc: 'Alcançou o Nível 10 de experiência', unlocked: g.level >= 10 },
+        { id: 98, cat: 'rpg', icon: '🧙‍♂️', title: 'Arcano do Código (Nv. 25)', desc: 'Alcançou o Nível 25 de experiência', unlocked: g.level >= 25 },
+        { id: 99, cat: 'rpg', icon: '🌟', title: 'Semideus Acadêmico (Nv. 50)', desc: 'Alcançou o Nível 50 de experiência', unlocked: g.level >= 50 }
+      ];
+
+      // Insígnia #100: Platina (Desbloqueia quando todas as 99 anteriores forem conquistadas)
+      const unlocked99 = badges.filter(b => b.unlocked).length;
+      badges.push({
+        id: 100,
+        cat: 'rpg',
+        icon: '🏆',
+        title: 'Platina Nexus: O Onisciente',
+        desc: 'Desbloqueou todas as 99 insígnias anteriores!',
+        unlocked: unlocked99 === 99
+      });
+
+      const totalUnlocked = badges.filter(b => b.unlocked).length;
+      const pct = Math.round((totalUnlocked / 100) * 100);
+
+      const countEl = document.getElementById('badgesCountText');
+      if (countEl) countEl.textContent = `${totalUnlocked} / 100 desbloqueadas (${pct}% concluído)`;
+
+      const barEl = document.getElementById('badgesProgressBar');
+      if (barEl) barEl.style.width = `${pct}%`;
+
+      // Aplica filtros selecionados na interface
+      const catFilter = document.getElementById('badgeCategoryFilter')?.value || 'all';
+      const filtered = badges.filter(b => {
+        const matchCat = catFilter === 'all' || b.cat === catFilter;
+        const matchStatus = currentBadgeStatusFilter === 'all'
+          || (currentBadgeStatusFilter === 'unlocked' && b.unlocked)
+          || (currentBadgeStatusFilter === 'locked' && !b.unlocked);
+        return matchCat && matchStatus;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-12 text-center text-secondary py-4 small">Nenhuma insígnia encontrada neste filtro.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(b => `
+        <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+          <div class="badge-item ${b.unlocked ? 'unlocked' : 'locked'} h-100 d-flex align-items-center gap-2" title="Insígnia #${b.id}: ${b.desc}">
+            <span class="fs-3">${b.icon}</span>
+            <div class="text-truncate">
+              <div class="fw-bold small text-white text-truncate">#${b.id} ${b.title}</div>
+              <small class="text-secondary d-block text-truncate" style="font-size:0.72rem;">${b.desc}</small>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
   </script>
 </body>
 </html>
