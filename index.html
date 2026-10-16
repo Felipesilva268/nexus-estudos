@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Configurações de Web App para Celular (PWA) -->
+  <meta name="theme-color" content="#070913">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Nexus Study // Painel de Estudos</title>
+  <!-- Bootstrap 5.3 + Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Ace Editor CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js" type="text/javascript" charset="utf-8"></script>
+
+  <style>
+    :root {
+      --bg-deep: #07080d;
+      --bg-card: #10131f;
+      --bg-card-hover: #161b2e;
+      --bg-input: #0b0e17;
+      --border-subtle: #232a45;
+      --border-glow: #4f46e5;
+      --accent-purple: #8b5cf6;
+      --accent-purple-bright: #a855f7;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #38bdf8;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.08), transparent 35%),
+        radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.08), transparent 35%);
+      color: var(--text-main);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Topbar Fixa */
+    .nexus-header {
+      background: rgba(16, 19, 31, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    /* Cards e Containers */
+    .nexus-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .nexus-card:hover {
+      border-color: #313b61;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple-bright));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .bg-gradient-primary {
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+    }
+
+    /* Botões Customizados */
+    .btn-nexus {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 10px;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-nexus:hover {
+      opacity: 0.92;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline-nexus {
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      border-radius: 10px;
+      font-size: 0.85rem;
+    }
+    .btn-outline-nexus:hover {
+      border-color: var(--accent-purple);
+      background: rgba(139, 92, 246, 0.15);
+      color: #fff;
+    }
+
+    /* Navegação por Abas */
+    .nav-pills .nav-link {
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      margin-right: 8px;
+      font-weight: 500;
+      padding: 0.55rem 1.1rem;
+      transition: all 0.2s;
+    }
+    .nav-pills .nav-link:hover {
+      color: #fff;
+      border-color: var(--accent-blue);
+    }
+    .nav-pills .nav-link.active {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    }
+
+    /* Inputs Editáveis Inline (Unidades e Aulas) */
+    .editable-input {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 2px 6px;
+      width: 100%;
+      transition: all 0.15s;
+    }
+    .editable-input:hover {
+      border-color: var(--border-subtle);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .editable-input:focus {
+      outline: none;
+      border-color: var(--accent-purple);
+      background: var(--bg-input);
+    }
+    /* Estilo para o Modal de Anotações da Aula */
+    .lesson-note-btn {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      transition: all 0.15s;
+    }
+    .lesson-note-btn:hover, .lesson-note-btn.has-notes {
+      border-color: var(--accent-purple);
+      color: var(--accent-purple-bright);
+      background: rgba(139, 92, 246, 0.1);
+    }
+    .lesson-done {
+      text-decoration: line-through;
+      color: var(--text-muted) !important;
+    }
+
+    /* Heatmap Estilo GitHub */
+    .heatmap-grid {
+      display: grid;
+      grid-template-rows: repeat(7, 14px);
+      grid-auto-flow: column;
+      grid-auto-columns: 14px;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .heat-cell {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background-color: #161b2c;
+      border: 1px solid rgba(255,255,255,0.03);
+      transition: transform 0.1s;
+    }
+    .heat-cell:hover {
+      transform: scale(1.3);
+      z-index: 2;
+      border-color: #fff;
+    }
+    .heat-l1 { background-color: #1e3a8a; }
+    .heat-l2 { background-color: #2563eb; }
+    .heat-l3 { background-color: #7c3aed; }
+    .heat-l4 { background-color: #a855f7; box-shadow: 0 0 6px rgba(168, 85, 247, 0.6); }
+
+    /* Display do Pomodoro */
+    .pomodoro-display {
+      font-size: 5.5rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 25px rgba(59, 130, 246, 0.45);
+    }
+
+    /* Modo Foco (Tela Cheia Interna) */
+    body.focus-mode .nexus-header,
+    body.focus-mode #mainNavTabs {
+      display: none !important;
+    }
+    body.focus-mode #tab-pomodoro {
+      padding-top: 4vh;
+    }
+
+    /* Status da Sincronização */
+    .sync-badge {
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border-subtle);
+      transition: all 0.2s;
+    }
+    .sync-disconnected { background: rgba(148, 163, 184, 0.1); color: #cbd5e1; }
+    .sync-pending { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border-color: rgba(245, 158, 11, 0.4); }
+    .sync-connected { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.4); }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: #262f4d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-purple); }
+  </style>
+</head>
+<body>
+
+  <!-- ================= HEADER FIXO ================= -->
+  <header class="nexus-header py-2 px-3 mb-4">
+    <div class="container-fluid">
+      <div class="row align-items-center gy-2">
+        
+        <!-- Esquerda: Identidade & XP -->
+        <div class="col-12 col-lg-4 d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center justify-content-center rounded-3 bg-gradient-primary text-white fw-bold" style="width:44px; height:44px; font-size:1.2rem;">
+            <span id="uiLevelBadge">1</span>
+          </div>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-white" id="uiRankTitle">Iniciante</span>
+              <small class="text-secondary" id="uiXpText">0 / 200 XP</small>
+            </div>
+            <div class="progress mt-1" style="height: 7px; background-color: #191f35;">
+              <div id="uiXpBar" class="progress-bar bg-gradient-primary" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Centro: Streak & Meta Diária -->
+        <div class="col-12 col-lg-4 d-flex justify-content-lg-center align-items-center gap-4">
+          <div class="d-flex align-items-center gap-2" title="Dias consecutivos estudando">
+            <i class="bi bi-fire fs-4 text-warning"></i>
+            <div>
+              <div class="fw-bold lh-1"><span id="uiStreakCount">0</span> dias</div>
+              <small class="text-secondary" style="font-size:0.72rem;">Ofensiva</small>
+            </div>
+          </div>
+
+          <div class="flex-grow-1" style="max-width: 220px;">
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-secondary" style="font-size:0.75rem;">Meta Diária</small>
+              <small class="fw-semibold text-info" style="font-size:0.75rem; cursor:pointer;" onclick="changeDailyGoal()" title="Clique para alterar sua meta diária">
+                <span id="uiTodayMins">0</span>/<span id="uiDailyGoal">120</span> min <i class="bi bi-pencil-square"></i>
+              </small>
+            </div>
+            <div class="progress mt-1" style="height: 7px; background-color: #191f35;">
+              <div id="uiDailyGoalBar" class="progress-bar bg-info" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direita: Sincronização na Pasta & Backup -->
+        <div class="col-12 col-lg-4 d-flex justify-content-lg-end align-items-center gap-2 flex-wrap">
+          <div id="syncStatusBtn" class="sync-badge sync-disconnected" onclick="handleFolderSyncClick()" title="Clique para vincular ou sincronizar com o arquivo meus_dados.json na pasta">
+            <span id="syncDot">⚪</span>
+            <span id="syncText">Vincular Arquivo da Pasta</span>
+          </div>
+
+          <button class="btn btn-outline-nexus btn-sm" onclick="exportBackupJson()" title="Baixar cópia manual do banco de dados">
+            <i class="bi bi-download"></i> Exportar
+          </button>
+          <label class="btn btn-outline-nexus btn-sm mb-0" title="Carregar um arquivo .json salvo">
+            <i class="bi bi-upload"></i> Importar
+            <input type="file" accept=".json" hidden onchange="importBackupJson(event)">
+          </label>
+
+          <button class="btn btn-outline-info btn-sm d-flex align-items-center gap-2" onclick="configureCloudSync()" id="btnCloudSync" title="Sincronização em Tempo Real (PC & Celular)">
+            <i class="bi bi-cloud-check-fill" id="cloudSyncIcon"></i>
+            <span id="cloudSyncText">Conectar Nuvem</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= CONTEÚDO PRINCIPAL ================= -->
+  <main class="container-fluid px-3 px-md-4 pb-5">
+
+    <!-- Menu de Abas -->
+    <ul class="nav nav-pills mb-4" id="mainNavTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-dashboard" type="button" onclick="refreshCharts()">
+          <i class="bi bi-grid-1x2-fill me-1"></i> Painel Geral
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-subjects" type="button">
+          <i class="bi bi-journal-bookmark-fill me-1"></i> Minhas Matérias (4x5)
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-pomodoro" type="button" onclick="checkTodayScheduleSelection()">
+          <i class="bi bi-stopwatch-fill me-1"></i> Pomodoro & Imersão
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-schedule" type="button" onclick="renderScheduleUI()">
+          <i class="bi bi-calendar-week-fill me-1"></i> Cronograma Semanal
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-tasks" type="button">
+          <i class="bi bi-calendar2-check-fill me-1"></i> Prazos & Provas
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+
+      <!-- =========================================================
+           ABA 1: PAINEL GERAL (DASHBOARD)
+           ========================================================= -->
+      <div class="tab-pane fade show active" id="tab-dashboard">
+        
+        <!-- 4 Cards de Resumo -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="nexus-card p-3 h-100">
+              <div class="d-flex justify-content-between">
+                <span class="text-secondary small">Tempo Total de Foco</span>
+                <i class="bi bi-clock-history text-info fs-5"></i>
+              </div>
+              <h3 class="fw-bold mt-2 mb-1" id="statTotalHours">0h 00m</h3>
+              <small class="text-secondary" id="statWeekHours">0min nos últimos 7 dias</small>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="nexus-card p-3 h-100">
+              <div class="d-flex justify-content-between">
+                <span class="text-secondary small">Aulas Concluídas</span>
+                <i class="bi bi-check2-circle text-primary fs-5"></i>
+              </div>
+              <h3 class="fw-bold mt-2 mb-1" id="statLessonsDone">0 / 0</h3>
+              <small class="text-secondary" id="statLessonsPct">0% da grade concluída</small>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="nexus-card p-3 h-100">
+              <div class="d-flex justify-content-between">
+                <span class="text-secondary small">Acertos nos Exercícios</span>
+                <i class="bi bi-award text-warning fs-5"></i>
+              </div>
+              <h3 class="fw-bold mt-2 mb-1" id="statQuizScore">0 / 0</h3>
+              <small class="text-secondary" id="statQuizPct">Aproveitamento médio: 0%</small>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="nexus-card p-3 h-100">
+              <div class="d-flex justify-content-between">
+                <span class="text-secondary small">Próximo Prazo / Prova</span>
+                <i class="bi bi-alarm text-danger fs-5"></i>
+              </div>
+              <h5 class="fw-bold mt-2 mb-1 text-truncate" id="statNextDeadlineTitle">Sem prazos pendentes</h5>
+              <small class="text-secondary" id="statNextDeadlineCountdown">Tudo em dia!</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Heatmap de Consistência -->
+        <div class="nexus-card p-3 mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <h6 class="fw-bold mb-0"><i class="bi bi-activity text-info me-2"></i>Consistência de Estudos (Últimas 28 Semanas)</h6>
+            <div class="d-flex align-items-center gap-1 small text-secondary">
+              <span>Menos</span>
+              <span class="heat-cell d-inline-block"></span>
+              <span class="heat-cell heat-l1 d-inline-block"></span>
+              <span class="heat-cell heat-l2 d-inline-block"></span>
+              <span class="heat-cell heat-l3 d-inline-block"></span>
+              <span class="heat-cell heat-l4 d-inline-block"></span>
+              <span>Mais</span>
+            </div>
+          </div>
+          <div id="heatmapContainer" class="heatmap-grid mt-2"></div>
+        </div>
+
+        <!-- Gráficos Principais -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-lg-5">
+            <div class="nexus-card p-3 h-100">
+              <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-fill text-primary me-2"></i>Ritmo dos Últimos 7 Dias (Minutos)</h6>
+              <div style="height: 250px;">
+                <canvas id="chartWeekly"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-3">
+            <div class="nexus-card p-3 h-100">
+              <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill text-info me-2"></i>Foco por Matéria</h6>
+              <div style="height: 250px;" class="d-flex align-items-center justify-content-center">
+                <canvas id="chartSubjectTime"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-4">
+            <div class="nexus-card p-3 h-100">
+              <h6 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow text-warning me-2"></i>Notas por Unidade (Acertos de 5)</h6>
+              <div style="height: 250px;">
+                <canvas id="chartSubjectGrades"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diário de Sessões Recentes -->
+        <div class="nexus-card p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0"><i class="bi bi-journal-text text-purple me-2"></i>Histórico Recente de Sessões (Log de Estudo)</h6>
+            <small class="text-secondary">Últimos 15 registros</small>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
+              <thead>
+                <tr class="text-secondary small">
+                  <th>Data</th>
+                  <th>Matéria</th>
+                  <th>Duração</th>
+                  <th>O que foi estudado</th>
+                </tr>
+              </thead>
+              <tbody id="studyLogTableBody">
+                <tr><td colspan="4" class="text-center text-secondary py-3">Nenhuma sessão registrada ainda.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- =========================================================
+           ABA 2: MINHAS MATÉRIAS (4 UNIDADES x 5 AULAS)
+           ========================================================= -->
+      <div class="tab-pane fade" id="tab-subjects">
+        
+        <!-- Barra de Criação de Matéria -->
+        <div class="nexus-card p-3 mb-4">
+          <form id="addSubjectForm" class="row g-2 align-items-end" onsubmit="handleCreateSubject(event)">
+            <div class="col-12 col-md-5">
+              <label class="form-label small text-secondary mb-1">Nome da Nova Matéria</label>
+              <input type="text" id="newSubName" class="form-control bg-dark border-secondary text-white" placeholder="Ex: Algoritmos e Programação Estruturada" required>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label small text-secondary mb-1">Meta de Horas no Semestre</label>
+              <input type="number" id="newSubTargetHours" class="form-control bg-dark border-secondary text-white" value="40" min="1" required>
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label small text-secondary mb-1">Cor</label>
+              <input type="color" id="newSubColor" class="form-control form-control-color w-100 bg-dark border-secondary" value="#8b5cf6">
+            </div>
+            <div class="col-12 col-md-2">
+              <button type="submit" class="btn btn-nexus w-100">
+                <i class="bi bi-plus-lg me-1"></i> Criar (4x5)
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Lista de Matérias -->
+        <div id="subjectsContainer" class="d-flex flex-column gap-4"></div>
+
+      </div>
+
+      <!-- =========================================================
+           ABA 3: POMODORO & IMERSÃO
+           ========================================================= -->
+      <div class="tab-pane fade" id="tab-pomodoro">
+        <div class="row g-4 justify-content-center">
+          
+          <!-- Painel Central do Timer -->
+          <div class="col-12 col-lg-7">
+            <div class="nexus-card p-4 text-center position-relative">
+              
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-dark border border-secondary text-secondary px-3 py-2">
+                  Atalho: <kbd>Espaço</kbd> Play/Pause
+                </span>
+                <button class="btn btn-outline-nexus btn-sm" onclick="toggleFocusMode()">
+                  <i class="bi bi-arrows-fullscreen me-1"></i> Modo Foco Total
+                </button>
+              </div>
+
+              <!-- Seletor de Modo -->
+              <div class="btn-group mb-4" role="group">
+                <button type="button" class="btn btn-outline-nexus active" id="modeBtnFocus" onclick="setPomodoroMode('focus')">
+                  🎯 Foco (<span id="lblFocusMins">25</span>m)
+                </button>
+                <button type="button" class="btn btn-outline-nexus" id="modeBtnShort" onclick="setPomodoroMode('short')">
+                  ☕ Pausa Curta (5m)
+                </button>
+                <button type="button" class="btn btn-outline-nexus" id="modeBtnLong" onclick="setPomodoroMode('long')">
+                  🔋 Pausa Longa (15m)
+                </button>
+              </div>
+
+              <!-- Seletor de Matéria -->
+              <div class="mx-auto mb-3" style="max-width: 380px;">
+                <label class="form-label small text-secondary mb-1">Matéria vinculada à sessão:</label>
+                <select id="pomoSubjectSelect" class="form-select bg-dark border-secondary text-white text-center fw-semibold"></select>
+              </div>
+
+              <!-- Aviso de Hidratação nas Pausas -->
+              <div id="breakHydrationBanner" class="alert alert-info bg-opacity-10 border-info text-info py-2 mx-auto d-none" style="max-width: 440px;">
+                💧 <strong>Pausa Ativa:</strong> Hora de beber água, descansar a vista longe da tela e alongar!
+              </div>
+
+              <!-- Relógio Gigante -->
+              <div class="pomodoro-display my-3 gradient-text" id="pomoClockDisplay">25:00</div>
+
+              <!-- Personalizar Tempo de Foco -->
+              <div class="mb-4">
+                <small class="text-secondary me-2">Ajustar tempo de foco:</small>
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="changeCustomFocusTime(25)">25m</button>
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="changeCustomFocusTime(35)">35m</button>
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="changeCustomFocusTime(50)">50m</button>
+                <button class="btn btn-outline-nexus btn-sm py-0 px-2" onclick="changeCustomFocusTime(60)">60m</button>
+              </div>
+
+              <!-- Controles do Timer -->
+              <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-nexus btn-lg px-5" id="pomoStartPauseBtn" onclick="togglePomodoro()">
+                  <i class="bi bi-play-fill me-1"></i> Iniciar
+                </button>
+                <button class="btn btn-outline-nexus btn-lg px-3" onclick="resetPomodoro()" title="Reiniciar relógio">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+                <button class="btn btn-outline-success btn-lg px-3" onclick="finishFocusSessionEarly()" title="Concluir e registrar os minutos já estudados agora">
+                  <i class="bi bi-check2-all me-1"></i> Salvar Sessão
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Gerador de Som Ambiente Offline -->
+          <!-- Coluna Direita: Imersão & Player YouTube -->
+          <div class="col-12 col-lg-5">
+            <div class="nexus-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <h5 class="fw-bold mb-1"><i class="bi bi-soundwave text-info me-2"></i>Gerador de Imersão (Offline)</h5>
+                <p class="text-secondary small mb-3">
+                  Sons sintetizados em tempo real pelo seu navegador (100% offline).
+                </p>
+
+                <div class="d-grid gap-2 mb-4">
+                  <button class="btn btn-outline-nexus text-start p-2 d-flex justify-content-between align-items-center" id="soundBtn-off" onclick="setAmbientSound('off')">
+                    <span><i class="bi bi-volume-mute-fill me-2 text-secondary"></i> Silêncio (Desligado)</span>
+                    <span class="badge bg-secondary">Ativo</span>
+                  </button>
+                  <button class="btn btn-outline-nexus text-start p-2 d-flex justify-content-between align-items-center" id="soundBtn-brown" onclick="setAmbientSound('brown')">
+                    <span><i class="bi bi-water me-2 text-warning"></i> Ruído Marrom (Foco Profundo)</span>
+                  </button>
+                  <button class="btn btn-outline-nexus text-start p-2 d-flex justify-content-between align-items-center" id="soundBtn-rain" onclick="setAmbientSound('rain')">
+                    <span><i class="bi bi-cloud-rain-fill me-2 text-primary"></i> Chuva Noturna Suave</span>
+                  </button>
+                </div>
+
+                <!-- MINI PLAYER YOUTUBE CUSTOMIZÁVEL -->
+                <h5 class="fw-bold mb-1"><i class="bi bi-youtube text-danger me-2"></i>Player YouTube Personalizado</h5>
+                <p class="text-secondary small mb-2">Cole o link ou ID de vídeos com permissão de embed:</p>
+                
+                <div class="input-group input-group-sm mb-3">
+                  <input type="text" id="ytLinkInput" class="form-control bg-dark border-secondary text-white" placeholder="Ex: jfKfPfyJRdk ou link do YouTube">
+                  <button class="btn btn-outline-nexus" type="button" onclick="loadCustomYouTubePlayer()">Carregar</button>
+                </div>
+
+                <div id="ytPlayerWrapper" class="rounded-3 overflow-hidden border border-secondary" style="background: #000; height: 160px; display: flex; align-items: center; justify-content: center;">
+                  <small class="text-secondary text-center p-2">Nenhum vídeo carregado.<br>Insira um link acima e clique em Carregar.</small>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <label class="form-label small text-secondary d-flex justify-content-between">
+                  <span>Volume do Gerador Offline</span>
+                  <span id="ambientVolLabel">40%</span>
+                </label>
+                <input type="range" class="form-range" min="5" max="100" value="40" oninput="changeAmbientVolume(this.value)">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- =========================================================
+           ABA 4: PRAZOS & PROVAS (ACADEMIC TRACKER)
+           ========================================================= -->
+      <div class="tab-pane fade" id="tab-tasks">
+        
+        <!-- Adicionar Prazo/Prova -->
+        <div class="nexus-card p-3 mb-4">
+          <form class="row g-2 align-items-end" onsubmit="handleCreateTask(event)">
+            <div class="col-12 col-md-3">
+              <label class="form-label small text-secondary mb-1">Título da Prova / Entrega</label>
+              <input type="text" id="taskTitle" class="form-control bg-dark border-secondary text-white" placeholder="Ex: Prova Presencial - Unidade 1 a 4" required>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label small text-secondary mb-1">Matéria</label>
+              <select id="taskSubjectSelect" class="form-select bg-dark border-secondary text-white"></select>
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label small text-secondary mb-1">Tipo</label>
+              <select id="taskType" class="form-select bg-dark border-secondary text-white">
+                <option value="Prova">📝 Prova</option>
+                <option value="Trabalho">💻 Trabalho</option>
+                <option value="Atividade">📌 Atividade</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label small text-secondary mb-1">Data Limite</label>
+              <input type="date" id="taskDate" class="form-control bg-dark border-secondary text-white" required>
+            </div>
+            <div class="col-4 col-md-1">
+              <label class="form-label small text-secondary mb-1">Horário</label>
+              <input type="time" id="taskTime" class="form-control bg-dark border-secondary text-white" value="19:00">
+            </div>
+            <div class="col-2 col-md-1">
+              <button type="submit" class="btn btn-nexus w-100"><i class="bi bi-plus-lg"></i></button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Quadro Kanban 3 Colunas -->
+        <div class="row g-3">
+          <div class="col-12 col-lg-4">
+            <div class="nexus-card p-3 h-100">
+              <h6 class="fw-bold text-warning mb-3"><i class="bi bi-hourglass-split me-2"></i>Pendente</h6>
+              <div id="kanban-todo" class="d-flex flex-column gap-2"></div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4">
+            <div class="nexus-card p-3 h-100">
+              <h6 class="fw-bold text-info mb-3"><i class="bi bi-lightning-charge-fill me-2"></i>Em Andamento</h6>
+              <div id="kanban-doing" class="d-flex flex-column gap-2"></div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4">
+            <div class="nexus-card p-3 h-100">
+              <h6 class="fw-bold text-success mb-3"><i class="bi bi-check-circle-fill me-2"></i>Concluído (+50 XP)</h6>
+              <div id="kanban-done" class="d-flex flex-column gap-2"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- =========================================================
+           NOVA ABA: CRONOGRAMA SEMANAL
+           ========================================================= -->
+      <div class="tab-pane fade" id="tab-schedule">
+        <div class="row g-4">
+          <div class="col-12 col-lg-5">
+            <div class="nexus-card p-4 h-100">
+              <h5 class="fw-bold mb-2"><i class="bi bi-calendar-day text-info me-2"></i>Definição da Grade Semanal</h5>
+              <p class="text-secondary small mb-4">Selecione qual matéria é a prioridade de estudo em cada dia da semana. O Pomodoro irá selecioná-la automaticamente para você.</p>
+              
+              <div id="scheduleFormContainer" class="d-flex flex-column gap-3">
+                <!-- Preenchido via JavaScript -->
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-7">
+            <div class="nexus-card p-4 h-100">
+              <h5 class="fw-bold mb-3"><i class="bi bi-eye text-purple me-2"></i>Visão Geral do Cronograma</h5>
+              <div id="scheduleOverviewContainer" class="d-flex flex-column gap-2">
+                <!-- Preenchido via JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= MODAL: REGISTRAR SESSÃO POMODORO ================= -->
+  <div class="modal fade" id="sessionCompleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content nexus-card border-primary">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title fw-bold"><i class="bi bi-stars text-warning me-2"></i>Sessão de Foco Concluída!</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2">Você acumulou <strong class="text-info" id="modalSessionMins">25</strong> minutos de foco.</p>
+          <label class="form-label small text-secondary">O que você estudou ou avançou nesta sessão?</label>
+          <input type="text" id="modalSessionNote" class="form-control bg-dark border-secondary text-white" placeholder="Ex: Unidade 2 - Aula 3 e exercícios de fixação">
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-nexus w-100" onclick="confirmSaveSession()">
+            Salvar Progresso e Receber XP
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ================= MODAL: ANOTAÇÕES DA AULA ================= -->
+  <div class="modal fade" id="lessonNoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content nexus-card border-purple">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title fw-bold text-white" id="modalNoteTitle">
+            <i class="bi bi-journal-richtext text-purple me-2"></i>Anotações da Aula
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-secondary small mb-2">Editor avançado (suporta Markdown, indentação e atalhos de código):</p>
+          <!-- Substituímos a textarea por esta div com altura fixa -->
+          <div id="editorContainer" style="width: 100%; height: 380px; border-radius: 8px; border: 1px solid var(--border-subtle);"></div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-nexus" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-nexus" onclick="saveCurrentLessonNote()">
+            <i class="bi bi-check-lg me-1"></i> Salvar Anotação
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ================= MODAL: REPOSITÓRIO DE PROMPTS & FÓRMULAS ================= -->
+  <div class="modal fade" id="subjectRepoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content nexus-card border-purple">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title fw-bold text-white" id="repoModalTitle">
+            <i class="bi bi-code-square text-purple me-2"></i>Biblioteca
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <!-- Coluna Esquerda: Formulário de Adicionar Novo Item -->
+            <div class="col-12 col-lg-5 border-end border-secondary border-opacity-25 pe-lg-3">
+              <h6 class="fw-bold text-info mb-3" id="repoFormHeading">Adicionar Novo Item</h6>
+              <form onsubmit="handleSaveRepoItem(event)">
+                <div class="mb-3">
+                  <label class="form-label small text-secondary">Título / Descrição Curta</label>
+                  <input type="text" id="repoItemTitle" class="form-control bg-dark border-secondary text-white" placeholder="Ex: Compilar gcc -o prog main.c" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small text-secondary">Conteúdo / Código (Ace Editor)</label>
+                  <div id="repoEditorContainer" style="width: 100%; height: 240px; border-radius: 6px; border: 1px solid var(--border-subtle);"></div>
+                </div>
+                <button type="submit" class="btn btn-nexus w-100">
+                  <i class="bi bi-plus-lg me-1"></i> Salvar na Matéria
+                </button>
+              </form>
+            </div>
+
+            <!-- Coluna Direita: Lista de Itens Salvos -->
+            <div class="col-12 col-lg-7">
+              <h6 class="fw-bold text-secondary mb-3">Itens Salvos nesta Matéria</h6>
+              <div id="repoItemsListContainer" class="d-flex flex-column gap-3" style="max-height: 420px; overflow-y: auto; padding-right: 4px;">
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- ================= LÓGICA DO SISTEMA ================= -->
+  <script>
+    const STORAGE_KEY = 'NEXUS_STUDY_STATE_V1';
+    let appState = null;
+    let fileHandle = null; // Handle do arquivo meus_dados.json na pasta
+
+    // Estrutura padrão de uma matéria com 4 Unidades x 5 Aulas + Prompts + Fórmulas
+    function createSubjectTemplate(name, color, targetHours) {
+      const units = [];
+      for (let u = 1; u <= 4; u++) {
+        const lessons = [];
+        for (let l = 1; l <= 5; l++) {
+          lessons.push({
+            id: `u${u}_l${l}_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
+            name: `Aula ${l} - Tópico da Aula`,
+            done: false,
+            note: ''
+          });
+        }
+        units.push({
+          id: `u${u}_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
+          name: `Unidade ${u}`,
+          score: null,
+          lessons
+        });
+      }
+      return {
+        id: 'sub_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+        name,
+        color: color || '#8b5cf6',
+        targetHours: Number(targetHours) || 40,
+        minutesStudied: 0,
+        units,
+        prompts: [],   // <--- NOVO: Armazena os prompts da matéria
+        formulas: []   // <--- NOVO: Armazena as fórmulas e conceitos
+      };
+    }
+
+    // Estado Inicial Padrão
+    function getDefaultState() {
+      return {
+        settings: {
+          dailyGoalMinutes: 120,
+          focusMinutes: 25,
+          youtubeUrl: '' // <--- NOVO: Armazena o link/ID do YouTube salvo
+        },
+        subjects: [
+          createSubjectTemplate('Algoritmos e Programação Estruturada', '#8b5cf6', 40),
+          createSubjectTemplate('Lógica Matemática Computacional', '#3b82f6', 40),
+          createSubjectTemplate('Sistemas Operacionais', '#10b981', 40)
+        ],
+        sessions: [],
+        tasks: [],
+        schedule: { // <--- NOVO: Cronograma semanal de matérias (IDs das matérias por dia)
+          'Segunda': '',
+          'Terça': '',
+          'Quarta': '',
+          'Quinta': '',
+          'Sexta': '',
+          'Sábado': '',
+          'Domingo': ''
+        }
+      };
+    }
+
+    // Utilitário de Data Local YYYY-MM-DD
+    function getLocalDateStr(dateObj = new Date()) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const d = String(dateObj.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    // =========================================================================
+    // PERSISTÊNCIA: LOCALSTORAGE + INDEXEDDB + FILE SYSTEM ACCESS API (PASTA)
+    // =========================================================================
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        appState = raw ? JSON.parse(raw) : getDefaultState();
+      } catch (e) {
+        appState = getDefaultState();
+      }
+    }
+
+    async function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      updateAllUI();
+      pushStateToCloud(); // Envia para a nuvem em tempo real
+      if (fileHandle) {
+        await writeToLinkedFile(); // Mantém o backup no meus_dados.json do PC
+      }
+    }
+
+    // IndexedDB para guardar a referência do arquivo meus_dados.json entre sessões
+    function openHandleDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('NexusFileHandleDB', 1);
+        req.onupgradeneeded = (e) => {
+          e.target.result.createObjectStore('handles');
+        };
+        req.onsuccess = (e) => resolve(e.target.result);
+        req.onerror = (e) => reject(e);
+      });
+    }
+
+    async function saveHandleToIDB(handle) {
+      const db = await openHandleDB();
+      const tx = db.transaction('handles', 'readwrite');
+      tx.objectStore('handles').put(handle, 'linkedJsonFile');
+    }
+
+    async function restoreHandleFromIDB() {
+      try {
+        const db = await openHandleDB();
+        return new Promise((resolve) => {
+          const tx = db.transaction('handles', 'readonly');
+          const req = tx.objectStore('handles').get('linkedJsonFile');
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        });
+      } catch {
+        return null;
+      }
+    }
+
+    async function initFolderSyncStatus() {
+      if (!('showSaveFilePicker' in window)) {
+        updateSyncBadge('unsupported');
+        return;
+      }
+      const savedHandle = await restoreHandleFromIDB();
+      if (savedHandle) {
+        fileHandle = savedHandle;
+        const perm = await fileHandle.queryPermission({ mode: 'readwrite' });
+        if (perm === 'granted') {
+          updateSyncBadge('connected', fileHandle.name);
+        } else {
+          updateSyncBadge('pending', fileHandle.name);
+        }
+      }
+    }
+
+    function updateSyncBadge(state, fileName = 'meus_dados.json') {
+      const btn = document.getElementById('syncStatusBtn');
+      const dot = document.getElementById('syncDot');
+      const txt = document.getElementById('syncText');
+      btn.className = 'sync-badge';
+
+      if (state === 'connected') {
+        btn.classList.add('sync-connected');
+        dot.textContent = '🟢';
+        txt.textContent = `Sincronizado (${fileName})`;
+      } else if (state === 'pending') {
+        btn.classList.add('sync-pending');
+        dot.textContent = '🟡';
+        txt.textContent = `Reconectar Pasta (${fileName})`;
+      } else if (state === 'unsupported') {
+        btn.classList.add('sync-disconnected');
+        dot.textContent = '⚪';
+        txt.textContent = 'Use Exportar/Importar neste navegador';
+      } else {
+        btn.classList.add('sync-disconnected');
+        dot.textContent = '⚪';
+        txt.textContent = 'Vincular Arquivo da Pasta';
+      }
+    }
+
+    async function handleFolderSyncClick() {
+      if (!('showSaveFilePicker' in window)) {
+        alert('Seu navegador atual bloqueia gravação direta em pasta. Use o Chrome, Edge ou Brave, ou utilize os botões Exportar/Importar ao lado.');
+        return;
+      }
+
+      try {
+        // Se já existe um arquivo vinculado aguardando apenas 1 clique de permissão
+        if (fileHandle) {
+          const perm = await fileHandle.requestPermission({ mode: 'readwrite' });
+          if (perm === 'granted') {
+            await writeToLinkedFile();
+            updateSyncBadge('connected', fileHandle.name);
+            return;
+          }
+        }
+
+        // Cria ou seleciona o arquivo meus_dados.json na pasta do usuário
+        fileHandle = await window.showSaveFilePicker({
+          suggestedName: 'meus_dados.json',
+          types: [{
+            description: 'Banco de Dados JSON',
+            accept: { 'application/json': ['.json'] }
+          }]
+        });
+
+        await saveHandleToIDB(fileHandle);
+        await writeToLinkedFile();
+        updateSyncBadge('connected', fileHandle.name);
+      } catch (err) {
+        // Usuário cancelou a janela
+      }
+    }
+
+    async function writeToLinkedFile() {
+      if (!fileHandle) return;
+      try {
+        const perm = await fileHandle.queryPermission({ mode: 'readwrite' });
+        if (perm !== 'granted') {
+          updateSyncBadge('pending', fileHandle.name);
+          return;
+        }
+        const writable = await fileHandle.createWritable();
+        await writable.write(JSON.stringify(appState, null, 2));
+        await writable.close();
+        updateSyncBadge('connected', fileHandle.name);
+      } catch (e) {
+        updateSyncBadge('pending', fileHandle.name);
+      }
+    }
+
+    function exportBackupJson() {
+      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `meus_dados_${getLocalDateStr()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importBackupJson(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && Array.isArray(imported.subjects)) {
+            appState = imported;
+            await saveState();
+            refreshCharts();
+            alert('Backup carregado com sucesso!');
+          } else {
+            alert('Arquivo JSON inválido.');
+          }
+        } catch {
+          alert('Erro ao ler o arquivo JSON.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    // =========================================================================
+    // GAMIFICAÇÃO (XP, NÍVEIS, PATENTES, STREAK)
+    // =========================================================================
+    function calculateGamification() {
+      let totalXP = 0;
+
+      // +2 XP por minuto estudado
+      const totalMins = appState.sessions.reduce((acc, s) => acc + (Number(s.minutes) || 0), 0);
+      totalXP += totalMins * 2;
+
+      // +25 XP por aula concluída e +15 XP por acerto nos exercícios (0/5 a 5/5)
+      appState.subjects.forEach(sub => {
+        sub.units.forEach(u => {
+          u.lessons.forEach(l => {
+            if (l.done) totalXP += 25;
+          });
+          if (u.score !== null && u.score !== undefined) {
+            totalXP += Number(u.score) * 15;
+          }
+        });
+      });
+
+      // +50 XP por tarefa/prova concluída
+      appState.tasks.forEach(t => {
+        if (t.status === 'done') totalXP += 50;
+      });
+
+      // Cada nível requer 250 XP
+      const xpPerLevel = 250;
+      const level = Math.floor(totalXP / xpPerLevel) + 1;
+      const xpInCurrentLevel = totalXP % xpPerLevel;
+      const progressPct = Math.min(100, Math.round((xpInCurrentLevel / xpPerLevel) * 100));
+
+      let rank = 'Iniciante';
+      if (level >= 19) rank = 'Mestre da Lógica';
+      else if (level >= 13) rank = 'Arquiteto de Sistemas';
+      else if (level >= 8) rank = 'Compilador de Conhecimento';
+      else if (level >= 4) rank = 'Estudante Dedicado';
+
+      return { totalXP, level, xpInCurrentLevel, xpPerLevel, progressPct, rank };
+    }
+
+    function calculateStreak() {
+      const studiedDates = new Set(appState.sessions.map(s => s.date));
+      let streak = 0;
+      const cursor = new Date();
+
+      const todayStr = getLocalDateStr(cursor);
+      if (!studiedDates.has(todayStr)) {
+        // Verifica se estudou ontem para manter o streak vivo hoje
+        cursor.setDate(cursor.getDate() - 1);
+        if (!studiedDates.has(getLocalDateStr(cursor))) {
+          return 0;
+        }
+      }
+
+      while (studiedDates.has(getLocalDateStr(cursor))) {
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      return streak;
+    }
+
+    function changeDailyGoal() {
+      const val = prompt('Qual sua meta diária de estudo (em minutos)?', appState.settings.dailyGoalMinutes || 120);
+      if (val !== null && !isNaN(val) && Number(val) > 0) {
+        appState.settings.dailyGoalMinutes = Number(val);
+        saveState();
+      }
+    }
+
+    // =========================================================================
+    // GERENCIAMENTO DE MATÉRIAS (4 UNIDADES x 5 AULAS + NOTAS X/5)
+    // =========================================================================
+    function handleCreateSubject(e) {
+      e.preventDefault();
+      const name = document.getElementById('newSubName').value.trim();
+      const targetHours = document.getElementById('newSubTargetHours').value;
+      const color = document.getElementById('newSubColor').value;
+      if (!name) return;
+
+      appState.subjects.push(createSubjectTemplate(name, color, targetHours));
+      document.getElementById('newSubName').value = '';
+      saveState();
+      refreshCharts();
+    }
+
+    function deleteSubject(subId) {
+      if (!confirm('Deseja realmente excluir esta matéria?')) return;
+      appState.subjects = appState.subjects.filter(s => s.id !== subId);
+      saveState();
+      refreshCharts();
+    }
+
+    function renameSubject(subId, newName) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      if (sub && newName.trim()) {
+        sub.name = newName.trim();
+        saveState();
+        refreshCharts();
+      }
+    }
+
+    function renameUnit(subId, unitId, newName) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      const unit = sub?.units.find(u => u.id === unitId);
+      if (unit && newName.trim()) {
+        unit.name = newName.trim();
+        saveState();
+      }
+    }
+
+    function renameLesson(subId, unitId, lessonId, newName) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      const unit = sub?.units.find(u => u.id === unitId);
+      const lesson = unit?.lessons.find(l => l.id === lessonId);
+      if (lesson && newName.trim()) {
+        lesson.name = newName.trim();
+        saveState();
+      }
+    }
+
+    function toggleLessonDone(subId, unitId, lessonId, checked) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      const unit = sub?.units.find(u => u.id === unitId);
+      const lesson = unit?.lessons.find(l => l.id === lessonId);
+      if (lesson) {
+        lesson.done = checked;
+        saveState();
+      }
+    }
+
+    function updateUnitScore(subId, unitId, value) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      const unit = sub?.units.find(u => u.id === unitId);
+      if (unit) {
+        unit.score = value === '' ? null : Number(value);
+        saveState();
+        refreshCharts();
+      }
+    }
+
+    function renderSubjects() {
+      const container = document.getElementById('subjectsContainer');
+      if (appState.subjects.length === 0) {
+        container.innerHTML = `<div class="nexus-card p-4 text-center text-secondary">Nenhuma matéria cadastrada. Adicione sua primeira matéria acima!</div>`;
+        return;
+      }
+
+      container.innerHTML = appState.subjects.map(sub => {
+        // Cálculos da Matéria (20 aulas totais)
+        let lessonsDone = 0;
+        let totalScore = 0;
+        let unitsScored = 0;
+
+        sub.units.forEach(u => {
+          u.lessons.forEach(l => { if (l.done) lessonsDone++; });
+          if (u.score !== null && u.score !== undefined) {
+            totalScore += Number(u.score);
+            unitsScored++;
+          }
+        });
+
+        const progressPct = Math.round((lessonsDone / 20) * 100);
+        const hoursStudied = (sub.minutesStudied / 60).toFixed(1);
+        const maxPossibleScore = unitsScored * 5;
+        const quizDisplay = unitsScored > 0
+          ? `${totalScore}/${maxPossibleScore} acertos (${Math.round((totalScore / maxPossibleScore) * 100)}%)`
+          : 'Sem notas registradas';
+
+        return `
+          <div class="nexus-card p-3 p-md-4" style="border-left: 4px solid ${sub.color};">
+            <!-- Cabeçalho da Matéria -->
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+              <div class="flex-grow-1">
+                <input type="text" class="editable-input fs-5 fw-bold" value="${escapeHtml(sub.name)}"
+                  onchange="renameSubject('${sub.id}', this.value)" title="Clique para renomear a matéria">
+                <div class="d-flex flex-wrap gap-3 mt-1 small text-secondary px-1">
+                  <span><i class="bi bi-clock me-1 text-info"></i>${hoursStudied}h / ${sub.targetHours}h</span>
+                  <span><i class="bi bi-check2-square me-1 text-primary"></i>${lessonsDone}/20 aulas (${progressPct}%)</span>
+                  <span><i class="bi bi-journal-check me-1 text-warning"></i>Exercícios: <strong class="text-white">${quizDisplay}</strong></span>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-outline-nexus btn-sm" onclick="openSubjectRepoModal('${sub.id}', 'prompts')" title="Biblioteca de Prompts e Comandos">
+                  <i class="bi bi-terminal me-1"></i> Prompts
+                </button>
+                <button class="btn btn-outline-nexus btn-sm" onclick="openSubjectRepoModal('${sub.id}', 'formulas')" title="Biblioteca de Fórmulas e Conceitos">
+                  <i class="bi bi-calculator me-1"></i> Fórmulas
+                </button>
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteSubject('${sub.id}')" title="Excluir matéria">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Barra de Progresso Geral da Matéria -->
+            <div class="progress mb-4" style="height: 8px; background-color: #181d30;">
+              <div class="progress-bar" style="width: ${progressPct}%; background-color: ${sub.color};"></div>
+            </div>
+
+            <!-- Grade das 4 Unidades -->
+            <div class="row g-3">
+              ${sub.units.map((u, uIdx) => {
+                const uDone = u.lessons.filter(l => l.done).length;
+                const uPct = uDone * 20;
+                return `
+                  <div class="col-12 col-md-6 col-xl-3">
+                    <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" style="background: #0b0e18; border: 1px solid #1e253d;">
+                      <div>
+                        <!-- Título Editável da Unidade -->
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                          <input type="text" class="editable-input fw-bold text-info" value="${escapeHtml(u.name)}"
+                            onchange="renameUnit('${sub.id}', '${u.id}', this.value)" title="Clique para renomear a Unidade ${uIdx + 1}">
+                          <span class="badge bg-dark border border-secondary text-secondary ms-1">${uPct}%</span>
+                        </div>
+
+                        <div class="progress mb-3" style="height: 4px; background-color: #161b2e;">
+                          <div class="progress-bar bg-info" style="width: ${uPct}%"></div>
+                        </div>
+
+                        <!-- 5 Aulas da Unidade -->
+                        <div class="d-flex flex-column gap-2 mb-3">
+                          ${u.lessons.map(l => `
+                            <div class="d-flex align-items-center gap-2">
+                              <input type="checkbox" class="form-check-input mt-0" style="cursor:pointer;"
+                                ${l.done ? 'checked' : ''}
+                                onchange="toggleLessonDone('${sub.id}', '${u.id}', '${l.id}', this.checked)">
+                              <input type="text" class="editable-input small ${l.done ? 'lesson-done' : ''}"
+                                value="${escapeHtml(l.name)}"
+                                onchange="renameLesson('${sub.id}', '${u.id}', '${l.id}', this.value)"
+                                title="Clique para editar o nome da aula">
+                              <button type="button" class="lesson-note-btn ${l.note ? 'has-notes' : ''}"
+                                onclick="openLessonNoteModal('${sub.id}', '${u.id}', '${l.id}')"
+                                title="${l.note ? 'Ver/Editar Anotação' : 'Adicionar Anotação'}">
+                                <i class="bi bi-journal-text"></i>
+                              </button>
+                            </div>
+                          `).join('')}
+                        </div>
+                      </div>
+
+                      <!-- Seletor de Nota dos Exercícios (0/5 a 5/5) -->
+                      <div class="pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                        <small class="text-secondary">Exercícios:</small>
+                        <select class="form-select form-select-sm bg-dark border-secondary text-white" style="width: 115px;"
+                          onchange="updateUnitScore('${sub.id}', '${u.id}', this.value)">
+                          <option value="" ${u.score === null ? 'selected' : ''}>Pendente</option>
+                          <option value="0" ${u.score === 0 ? 'selected' : ''}>0 / 5 (0%)</option>
+                          <option value="1" ${u.score === 1 ? 'selected' : ''}>1 / 5 (20%)</option>
+                          <option value="2" ${u.score === 2 ? 'selected' : ''}>2 / 5 (40%)</option>
+                          <option value="3" ${u.score === 3 ? 'selected' : ''}>3 / 5 (60%)</option>
+                          <option value="4" ${u.score === 4 ? 'selected' : ''}>4 / 5 (80%)</option>
+                          <option value="5" ${u.score === 5 ? 'selected' : ''}>5 / 5 (100%)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // POMODORO TIMER & GERADOR DE SOM AMBIENTE (WEB AUDIO API)
+    // =========================================================================
+    let pomoMode = 'focus'; // 'focus' | 'short' | 'long'
+    let pomoSecondsLeft = 25 * 60;
+    let pomoTotalSeconds = 25 * 60;
+    let pomoInterval = null;
+    let pendingSessionMinutes = 0;
+
+    function setPomodoroMode(mode) {
+      pausePomodoro();
+      pomoMode = mode;
+      document.getElementById('modeBtnFocus').classList.toggle('active', mode === 'focus');
+      document.getElementById('modeBtnShort').classList.toggle('active', mode === 'short');
+      document.getElementById('modeBtnLong').classList.toggle('active', mode === 'long');
+
+      const banner = document.getElementById('breakHydrationBanner');
+      if (mode === 'focus') {
+        const mins = appState.settings.focusMinutes || 25;
+        pomoTotalSeconds = mins * 60;
+        banner.classList.add('d-none');
+      } else if (mode === 'short') {
+        pomoTotalSeconds = 5 * 60;
+        banner.classList.remove('d-none');
+      } else {
+        pomoTotalSeconds = 15 * 60;
+        banner.classList.remove('d-none');
+      }
+      pomoSecondsLeft = pomoTotalSeconds;
+      updatePomodoroClockUI();
+    }
+
+    function changeCustomFocusTime(mins) {
+      appState.settings.focusMinutes = mins;
+      document.getElementById('lblFocusMins').textContent = mins;
+      saveState();
+      setPomodoroMode('focus');
+    }
+
+    function updatePomodoroClockUI() {
+      const m = String(Math.floor(pomoSecondsLeft / 60)).padStart(2, '0');
+      const s = String(pomoSecondsLeft % 60).padStart(2, '0');
+      document.getElementById('pomoClockDisplay').textContent = `${m}:${s}`;
+      document.title = pomoInterval ? `(${m}:${s}) Nexus Study` : 'Nexus Study // Painel de Estudos';
+    }
+
+    function togglePomodoro() {
+      if (pomoInterval) {
+        pausePomodoro();
+      } else {
+        startPomodoro();
+      }
+    }
+
+    function startPomodoro() {
+      if (pomoMode === 'focus' && appState.subjects.length === 0) {
+        alert('Cadastre pelo menos uma matéria antes de iniciar o Pomodoro!');
+        return;
+      }
+      const btn = document.getElementById('pomoStartPauseBtn');
+      btn.innerHTML = `<i class="bi bi-pause-fill me-1"></i> Pausar`;
+
+      pomoInterval = setInterval(() => {
+        pomoSecondsLeft--;
+        updatePomodoroClockUI();
+        if (pomoSecondsLeft <= 0) {
+          pausePomodoro();
+          playFinishBeep();
+          if (pomoMode === 'focus') {
+            openSessionModal(Math.round(pomoTotalSeconds / 60));
+          } else {
+            setPomodoroMode('focus');
+          }
+        }
+      }, 1000);
+    }
+
+    function pausePomodoro() {
+      clearInterval(pomoInterval);
+      pomoInterval = null;
+      document.getElementById('pomoStartPauseBtn').innerHTML = `<i class="bi bi-play-fill me-1"></i> Iniciar`;
+      updatePomodoroClockUI();
+    }
+
+    function resetPomodoro() {
+      pausePomodoro();
+      pomoSecondsLeft = pomoTotalSeconds;
+      updatePomodoroClockUI();
+    }
+
+    function finishFocusSessionEarly() {
+      if (pomoMode !== 'focus') return;
+      pausePomodoro();
+      const elapsedMins = Math.max(1, Math.round((pomoTotalSeconds - pomoSecondsLeft) / 60));
+      openSessionModal(elapsedMins);
+    }
+
+    function openSessionModal(mins) {
+      pendingSessionMinutes = mins;
+      document.getElementById('modalSessionMins').textContent = mins;
+      document.getElementById('modalSessionNote').value = '';
+      const modal = new bootstrap.Modal(document.getElementById('sessionCompleteModal'));
+      modal.show();
+    }
+
+    function confirmSaveSession() {
+      const subId = document.getElementById('pomoSubjectSelect').value;
+      const note = document.getElementById('modalSessionNote').value.trim() || 'Sessão de foco Pomodoro';
+      const sub = appState.subjects.find(s => s.id === subId);
+
+      if (sub) {
+        sub.minutesStudied = (Number(sub.minutesStudied) || 0) + pendingSessionMinutes;
+      }
+
+      appState.sessions.unshift({
+        id: 'sess_' + Date.now(),
+        date: getLocalDateStr(),
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        subjectId: subId,
+        minutes: pendingSessionMinutes,
+        note
+      });
+
+      const modalEl = document.getElementById('sessionCompleteModal');
+      bootstrap.Modal.getInstance(modalEl).hide();
+      resetPomodoro();
+      saveState();
+      refreshCharts();
+    }
+
+    function toggleFocusMode() {
+      document.body.classList.toggle('focus-mode');
+    }
+
+    // Atalho Global: Barra de Espaço para Play/Pause quando na aba Pomodoro
+    document.addEventListener('keydown', (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      const pomoTab = document.getElementById('tab-pomodoro');
+      if (e.code === 'Space' && pomoTab.classList.contains('active')) {
+        e.preventDefault();
+        togglePomodoro();
+      }
+    });
+
+    // =========================================================================
+    // GERADOR DE SOM AMBIENTE OFFLINE (WEB AUDIO API)
+    // =========================================================================
+    let audioCtx = null;
+    let ambientSource = null;
+    let ambientGain = null;
+    let currentAmbientVolume = 0.4;
+
+    function ensureAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function setAmbientSound(type) {
+      ['off', 'brown', 'pink', 'rain'].forEach(t => {
+        const btn = document.getElementById(`soundBtn-${t}`);
+        if (!btn) return;
+        const badge = btn.querySelector('.badge');
+        if (badge) badge.remove();
+        if (t === type) {
+          btn.insertAdjacentHTML('beforeend', '<span class="badge bg-primary">Ativo</span>');
+        }
+      });
+
+      if (ambientSource) {
+        try { ambientSource.stop(); } catch {}
+        ambientSource.disconnect();
+        ambientSource = null;
+      }
+      if (type === 'off') return;
+
+      ensureAudioContext();
+      const bufferSize = 2 * audioCtx.sampleRate;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+
+      if (type === 'brown') {
+        let lastOut = 0.0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          output[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = output[i];
+          output[i] *= 3.5;
+        }
+      } else if (type === 'rain') {
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = (Math.random() * 2 - 1) * 0.25;
+        }
+      }
+
+      ambientSource = audioCtx.createBufferSource();
+      ambientSource.buffer = noiseBuffer;
+      ambientSource.loop = true;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = type === 'rain' ? 1100 : 650;
+
+      ambientGain = audioCtx.createGain();
+      ambientGain.gain.value = currentAmbientVolume * 0.35;
+
+      ambientSource.connect(filter).connect(ambientGain).connect(audioCtx.destination);
+      ambientSource.start();
+    }
+
+    function changeAmbientVolume(val) {
+      currentAmbientVolume = Number(val) / 100;
+      document.getElementById('ambientVolLabel').textContent = `${val}%`;
+      if (ambientGain) {
+        ambientGain.gain.value = currentAmbientVolume * 0.35;
+      }
+    }
+
+    // =========================================================================
+    // GESTÃO DE PRAZOS & PROVAS (KANBAN)
+    // =========================================================================
+    function handleCreateTask(e) {
+      e.preventDefault();
+      const title = document.getElementById('taskTitle').value.trim();
+      const subjectId = document.getElementById('taskSubjectSelect').value;
+      const type = document.getElementById('taskType').value;
+      const dueDate = document.getElementById('taskDate').value;
+      const dueTime = document.getElementById('taskTime').value;
+      if (!title || !dueDate) return;
+
+      appState.tasks.push({
+        id: 'task_' + Date.now(),
+        title,
+        subjectId,
+        type,
+        dueDate,
+        dueTime: dueTime || '',
+        status: 'todo'
+      });
+
+      document.getElementById('taskTitle').value = '';
+      saveState();
+    }
+
+    function moveTaskStatus(taskId, newStatus) {
+      const task = appState.tasks.find(t => t.id === taskId);
+      if (task) {
+        task.status = newStatus;
+        saveState();
+      }
+    }
+
+    function deleteTask(taskId) {
+      appState.tasks = appState.tasks.filter(t => t.id !== taskId);
+      saveState();
+    }
+
+    function getDaysRemainingBadge(dueDateStr, status) {
+      if (status === 'done') return `<span class="badge bg-success bg-opacity-25 text-success">Concluído</span>`;
+      const today = new Date(getLocalDateStr() + 'T00:00:00');
+      const due = new Date(dueDateStr + 'T00:00:00');
+      const diffDays = Math.round((due - today) / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) return `<span class="badge bg-danger">Atrasado (${Math.abs(diffDays)}d)</span>`;
+      if (diffDays === 0) return `<span class="badge bg-danger">É Hoje!</span>`;
+      if (diffDays === 1) return `<span class="badge bg-warning text-dark">Amanhã!</span>`;
+      if (diffDays <= 5) return `<span class="badge bg-warning bg-opacity-25 text-warning">Faltam ${diffDays} dias</span>`;
+      return `<span class="badge bg-secondary bg-opacity-25 text-secondary">Em ${diffDays} dias</span>`;
+    }
+
+    function renderTasks() {
+      const cols = { todo: [], doing: [], done: [] };
+      appState.tasks.forEach(t => {
+        const sub = appState.subjects.find(s => s.id === t.subjectId);
+        const subName = sub ? sub.name : 'Geral';
+        const subColor = sub ? sub.color : '#64748b';
+        const cardHtml = `
+          <div class="p-3 rounded-3" style="background:#0b0e18; border:1px solid #1f2640; border-left: 3px solid ${subColor};">
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+              <span class="fw-bold small">${escapeHtml(t.title)}</span>
+              ${getDaysRemainingBadge(t.dueDate, t.status)}
+            </div>
+            <div class="small text-secondary mb-2">
+              <span class="me-2">${t.type}</span> • <span class="ms-1">${escapeHtml(subName)}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+              <small class="text-secondary" style="font-size:0.75rem;">
+                <i class="bi bi-calendar-event me-1"></i>${t.dueDate.split('-').reverse().join('/')}${t.dueTime ? ` às <strong class="text-info">${t.dueTime}</strong>` : ''}
+              </small>
+              <div class="btn-group btn-group-sm">
+                ${t.status !== 'todo' ? `<button class="btn btn-outline-secondary py-0 px-2" onclick="moveTaskStatus('${t.id}','todo')" title="Mover para Pendente"><i class="bi bi-arrow-left"></i></button>` : ''}
+                ${t.status !== 'doing' ? `<button class="btn btn-outline-info py-0 px-2" onclick="moveTaskStatus('${t.id}','doing')" title="Mover para Em Andamento"><i class="bi bi-play"></i></button>` : ''}
+                ${t.status !== 'done' ? `<button class="btn btn-outline-success py-0 px-2" onclick="moveTaskStatus('${t.id}','done')" title="Concluir"><i class="bi bi-check2"></i></button>` : ''}
+                <button class="btn btn-outline-danger py-0 px-2" onclick="deleteTask('${t.id}')" title="Excluir"><i class="bi bi-x"></i></button>
+              </div>
+            </div>
+          </div>
+        `;
+        cols[t.status]?.push(cardHtml);
+      });
+
+      document.getElementById('kanban-todo').innerHTML = cols.todo.join('') || `<small class="text-secondary">Nenhum item pendente.</small>`;
+      document.getElementById('kanban-doing').innerHTML = cols.doing.join('') || `<small class="text-secondary">Nenhum item em andamento.</small>`;
+      document.getElementById('kanban-done').innerHTML = cols.done.join('') || `<small class="text-secondary">Nenhum item concluído.</small>`;
+    }
+
+    // =========================================================================
+    // DASHBOARD, HEATMAP & GRÁFICOS (CHART.JS)
+    // =========================================================================
+    let chartWeeklyInst = null;
+    let chartSubjectTimeInst = null;
+    let chartSubjectGradesInst = null;
+
+    function renderHeatmap() {
+      const container = document.getElementById('heatmapContainer');
+      const minsByDate = {};
+      appState.sessions.forEach(s => {
+        minsByDate[s.date] = (minsByDate[s.date] || 0) + Number(s.minutes);
+      });
+
+      const totalDays = 28 * 7; // 28 semanas
+      const today = new Date();
+      const cells = [];
+
+      for (let i = totalDays - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const dateStr = getLocalDateStr(d);
+        const mins = minsByDate[dateStr] || 0;
+
+        let levelClass = '';
+        if (mins >= 120) levelClass = 'heat-l4';
+        else if (mins >= 60) levelClass = 'heat-l3';
+        else if (mins >= 25) levelClass = 'heat-l2';
+        else if (mins > 0) levelClass = 'heat-l1';
+
+        const formattedDate = d.toLocaleDateString('pt-BR');
+        cells.push(`<div class="heat-cell ${levelClass}" title="${formattedDate}: ${mins} min estudados"></div>`);
+      }
+      container.innerHTML = cells.join('');
+    }
+
+    function refreshCharts() {
+      if (!appState) return;
+
+      // 1. Gráfico de Ritmo dos Últimos 7 Dias
+      const labels7 = [];
+      const data7 = [];
+      const today = new Date();
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const dStr = getLocalDateStr(d);
+        labels7.push(d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit' }));
+        const mins = appState.sessions
+          .filter(s => s.date === dStr)
+          .reduce((acc, s) => acc + Number(s.minutes), 0);
+        data7.push(mins);
+      }
+
+      if (chartWeeklyInst) chartWeeklyInst.destroy();
+      chartWeeklyInst = new Chart(document.getElementById('chartWeekly'), {
+        type: 'bar',
+        data: {
+          labels: labels7,
+          datasets: [{
+            label: 'Minutos Estudados',
+            data: data7,
+            backgroundColor: 'rgba(59, 130, 246, 0.75)',
+            borderColor: '#38bdf8',
+            borderWidth: 1,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+            x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+
+      // 2. Gráfico de Rosca: Tempo por Matéria
+      const subNames = appState.subjects.map(s => s.name);
+      const subMins = appState.subjects.map(s => s.minutesStudied || 0);
+      const subColors = appState.subjects.map(s => s.color);
+
+      if (chartSubjectTimeInst) chartSubjectTimeInst.destroy();
+      chartSubjectTimeInst = new Chart(document.getElementById('chartSubjectTime'), {
+        type: 'doughnut',
+        data: {
+          labels: subNames.length ? subNames : ['Sem dados'],
+          datasets: [{
+            data: subMins.some(m => m > 0) ? subMins : [1],
+            backgroundColor: subMins.some(m => m > 0) ? subColors : ['#1e293b'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#cbd5e1', boxWidth: 12, font: { size: 11 } } }
+          }
+        }
+      });
+
+      // 3. Gráfico de Notas nos Exercícios por Unidade (0 a 5 acertos)
+      const unitColors = ['#38bdf8', '#3b82f6', '#8b5cf6', '#a855f7'];
+      const unitDatasets = [0, 1, 2, 3].map(uIdx => ({
+        label: `Unidade ${uIdx + 1}`,
+        data: appState.subjects.map(s => s.units[uIdx]?.score ?? 0),
+        backgroundColor: unitColors[uIdx],
+        borderRadius: 4
+      }));
+
+      if (chartSubjectGradesInst) chartSubjectGradesInst.destroy();
+      chartSubjectGradesInst = new Chart(document.getElementById('chartSubjectGrades'), {
+        type: 'bar',
+        data: {
+          labels: appState.subjects.map(s => s.name.length > 16 ? s.name.slice(0, 16) + '…' : s.name),
+          datasets: unitDatasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#cbd5e1', boxWidth: 10, font: { size: 11 } } }
+          },
+          scales: {
+            y: { min: 0, max: 5, ticks: { stepSize: 1, color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // ATUALIZAÇÃO GERAL DA INTERFACE
+    // =========================================================================
+    function updateAllUI() {
+      // 1. Header Gamificação
+      const g = calculateGamification();
+      document.getElementById('uiLevelBadge').textContent = g.level;
+      document.getElementById('uiRankTitle').textContent = g.rank;
+      document.getElementById('uiXpText').textContent = `${g.xpInCurrentLevel} / ${g.xpPerLevel} XP (Total: ${g.totalXP})`;
+      document.getElementById('uiXpBar').style.width = `${g.progressPct}%`;
+
+      // 2. Streak e Meta Diária
+      document.getElementById('uiStreakCount').textContent = calculateStreak();
+      const todayStr = getLocalDateStr();
+      const todayMins = appState.sessions
+        .filter(s => s.date === todayStr)
+        .reduce((acc, s) => acc + Number(s.minutes), 0);
+      const goal = appState.settings.dailyGoalMinutes || 120;
+      document.getElementById('uiTodayMins').textContent = todayMins;
+      document.getElementById('uiDailyGoal').textContent = goal;
+      document.getElementById('uiDailyGoalBar').style.width = `${Math.min(100, Math.round((todayMins / goal) * 100))}%`;
+
+      // 3. Cards de Resumo da Dashboard
+      const totalMins = appState.sessions.reduce((acc, s) => acc + Number(s.minutes), 0);
+      const h = Math.floor(totalMins / 60);
+      const m = totalMins % 60;
+      document.getElementById('statTotalHours').textContent = `${h}h ${String(m).padStart(2, '0')}m`;
+
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+      const sevenStr = getLocalDateStr(sevenDaysAgo);
+      const weekMins = appState.sessions
+        .filter(s => s.date >= sevenStr)
+        .reduce((acc, s) => acc + Number(s.minutes), 0);
+      document.getElementById('statWeekHours').textContent = `${weekMins} min nos últimos 7 dias`;
+
+      let totalLessons = appState.subjects.length * 20;
+      let doneLessons = 0;
+      let sumScores = 0;
+      let scoredUnitsCount = 0;
+
+      appState.subjects.forEach(s => {
+        s.units.forEach(u => {
+          u.lessons.forEach(l => { if (l.done) doneLessons++; });
+          if (u.score !== null && u.score !== undefined) {
+            sumScores += Number(u.score);
+            scoredUnitsCount++;
+          }
+        });
+      });
+
+      const lessonsPct = totalLessons > 0 ? Math.round((doneLessons / totalLessons) * 100) : 0;
+      document.getElementById('statLessonsDone').textContent = `${doneLessons} / ${totalLessons}`;
+      document.getElementById('statLessonsPct').textContent = `${lessonsPct}% da grade concluída`;
+
+      const maxQuizPts = scoredUnitsCount * 5;
+      const quizPct = maxQuizPts > 0 ? Math.round((sumScores / maxQuizPts) * 100) : 0;
+      document.getElementById('statQuizScore').textContent = `${sumScores} / ${maxQuizPts}`;
+      document.getElementById('statQuizPct').textContent = `Aproveitamento médio: ${quizPct}%`;
+
+      // Próximo Prazo
+      const pendingTasks = appState.tasks
+        .filter(t => t.status !== 'done')
+        .sort((a, b) => `${a.dueDate} ${a.dueTime || '23:59'}`.localeCompare(`${b.dueDate} ${b.dueTime || '23:59'}`));
+      if (pendingTasks.length > 0) {
+        const next = pendingTasks[0];
+        const timeTag = next.dueTime ? ` às ${next.dueTime}` : '';
+        document.getElementById('statNextDeadlineTitle').textContent = next.title;
+        document.getElementById('statNextDeadlineCountdown').innerHTML = `${next.type}${timeTag} • ${getDaysRemainingBadge(next.dueDate, next.status)}`;
+      } else {
+        document.getElementById('statNextDeadlineTitle').textContent = 'Sem prazos pendentes';
+        document.getElementById('statNextDeadlineCountdown').textContent = 'Tudo em dia!';
+      }
+
+      // 4. Selects de Matérias (Pomodoro e Tarefas)
+      const optionsHtml = appState.subjects.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+      const pomoSel = document.getElementById('pomoSubjectSelect');
+      const prevPomoVal = pomoSel.value;
+      pomoSel.innerHTML = optionsHtml || `<option value="">Cadastre uma matéria primeiro</option>`;
+      if (prevPomoVal && appState.subjects.some(s => s.id === prevPomoVal)) pomoSel.value = prevPomoVal;
+
+      const taskSel = document.getElementById('taskSubjectSelect');
+      taskSel.innerHTML = `<option value="geral">Geral</option>` + optionsHtml;
+
+      // 5. Tabela de Log de Estudo
+      const tbody = document.getElementById('studyLogTableBody');
+      if (appState.sessions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-3">Nenhuma sessão registrada ainda.</td></tr>`;
+      } else {
+        tbody.innerHTML = appState.sessions.slice(0, 15).map(s => {
+          const sub = appState.subjects.find(sub => sub.id === s.subjectId);
+          return `
+            <tr>
+              <td class="small text-secondary">${s.date.split('-').reverse().join('/')} ${s.timestamp || ''}</td>
+              <td><span class="badge" style="background-color:${sub?.color || '#475569'}">${escapeHtml(sub?.name || 'Matéria')}</span></td>
+              <td class="fw-semibold text-info">${s.minutes} min</td>
+              <td class="small">${escapeHtml(s.note || '')}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // 6. Renderizações de Componentes
+      renderHeatmap();
+      renderSubjects();
+      renderTasks();
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Inicialização ao abrir o arquivo
+    window.addEventListener('DOMContentLoaded', async () => {
+      loadState();
+      document.getElementById('lblFocusMins').textContent = appState.settings.focusMinutes || 25;
+      setPomodoroMode('focus');
+      document.getElementById('taskDate').value = getLocalDateStr();
+
+      // <--- COLE ESTAS LINHAS AQUI DENTRO: --->
+      if (appState.settings && appState.settings.youtubeUrl) {
+        document.getElementById('ytLinkInput').value = appState.settings.youtubeUrl;
+        loadCustomYouTubePlayer();
+      }
+      // ----------------------------------------
+
+      updateAllUI();
+      refreshCharts();
+      await initFolderSyncStatus();
+    });
+
+    // =========================================================================
+    // SISTEMA DE ANOTAÇÕES POR AULA COM ACE EDITOR (ESTILO VS CODE)
+    // =========================================================================
+    let currentNoteTarget = { subId: null, unitId: null, lessonId: null };
+    let aceEditorInstance = null;
+
+    // Inicializa o Ace Editor assim que a página carrega
+    window.addEventListener('DOMContentLoaded', () => {
+      // Pequeno atraso para garantir que o modal e o DOM renderizaram
+      setTimeout(() => {
+        const container = document.getElementById('editorContainer');
+        if (container && !aceEditorInstance) {
+          aceEditorInstance = ace.edit("editorContainer");
+          aceEditorInstance.setTheme("ace/theme/one_dark"); // Tema escuro estilo VS Code
+          aceEditorInstance.session.setMode("ace/mode/markdown"); // Modo padrão (reconhece markdown/c/python)
+          aceEditorInstance.setOptions({
+            fontSize: "14px",
+            showPrintMargin: false,
+            highlightActiveLine: true,
+            tabSize: 2,
+            useSoftTabs: true
+          });
+        }
+      }, 500);
+    });
+
+    function openLessonNoteModal(subId, unitId, lessonId) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      const unit = sub?.units.find(u => u.id === unitId);
+      const lesson = unit?.lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+
+      currentNoteTarget = { subId, unitId, lessonId };
+      document.getElementById('modalNoteTitle').innerHTML = `<i class="bi bi-journal-richtext text-purple me-2"></i>Anotações: ${escapeHtml(sub.name)} &gt; ${escapeHtml(unit.name)} &gt; ${escapeHtml(lesson.name)}`;
+      
+      const modal = new bootstrap.Modal(document.getElementById('lessonNoteModal'));
+      modal.show();
+
+      // Insere o texto salvo no editor e redimensiona para encaixar perfeitamente na janela
+      setTimeout(() => {
+        if (aceEditorInstance) {
+          aceEditorInstance.setValue(lesson.note || '', -1); // -1 move o cursor para o início
+          aceEditorInstance.resize();
+          aceEditorInstance.focus();
+        }
+      }, 200);
+    }
+
+    function saveCurrentLessonNote() {
+      const { subId, unitId, lessonId } = currentNoteTarget;
+      const sub = appState.subjects.find(s => s.id === subId);
+      const unit = sub?.units.find(u => u.id === unitId);
+      const lesson = unit?.lessons.find(l => l.id === lessonId);
+
+      if (lesson && aceEditorInstance) {
+        lesson.note = aceEditorInstance.getValue().trim();
+        saveState();
+        const modalEl = document.getElementById('lessonNoteModal');
+        bootstrap.Modal.getInstance(modalEl).hide();
+      }
+    }
+
+    // =========================================================================
+    // SISTEMA DE PROMPTS E FÓRMULAS POR MATÉRIA (COM ACE EDITOR)
+    // =========================================================================
+    let currentRepo = { subId: null, type: null }; // type: 'prompts' | 'formulas'
+    let repoAceInstance = null;
+
+    // Inicializa o editor do repositório junto com o DOM
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const el = document.getElementById('repoEditorContainer');
+        if (el && !repoAceInstance) {
+          repoAceInstance = ace.edit("repoEditorContainer");
+          repoAceInstance.setTheme("ace/theme/one_dark");
+          repoAceInstance.session.setMode("ace/mode/markdown");
+          repoAceInstance.setOptions({ fontSize: "13px", showPrintMargin: false, tabSize: 2, useSoftTabs: true });
+        }
+      }, 600);
+    });
+
+    function openSubjectRepoModal(subId, type) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      if (!sub) return;
+
+      currentRepo = { subId, type };
+      const isPrompt = type === 'prompts';
+      
+      document.getElementById('repoModalTitle').innerHTML = isPrompt 
+        ? `<i class="bi bi-terminal text-purple me-2"></i>Prompts & Comandos — ${escapeHtml(sub.name)}`
+        : `<i class="bi bi-calculator text-purple me-2"></i>Fórmulas & Conceitos — ${escapeHtml(sub.name)}`;
+      
+      document.getElementById('repoFormHeading').textContent = isPrompt ? 'Adicionar Novo Prompt / Comando' : 'Adicionar Nova Fórmula / Conceito';
+      document.getElementById('repoItemTitle').value = '';
+      
+      if (repoAceInstance) {
+        repoAceInstance.setValue('', -1);
+      }
+
+      renderRepoItemsList();
+      const modal = new bootstrap.Modal(document.getElementById('subjectRepoModal'));
+      modal.show();
+      setTimeout(() => repoAceInstance?.resize(), 250);
+    }
+
+    function handleSaveRepoItem(e) {
+      e.preventDefault();
+      const title = document.getElementById('repoItemTitle').value.trim();
+      const content = repoAceInstance ? repoAceInstance.getValue().trim() : '';
+      if (!title) return;
+
+      const sub = appState.subjects.find(s => s.id === currentRepo.subId);
+      if (sub) {
+        const list = currentRepo.type === 'prompts' ? sub.prompts : sub.formulas;
+        list.push({
+          id: 'item_' + Date.now(),
+          title,
+          content
+        });
+        saveState();
+        document.getElementById('repoItemTitle').value = '';
+        repoAceInstance.setValue('', -1);
+        renderRepoItemsList();
+      }
+    }
+
+    function deleteRepoItem(itemId) {
+      const sub = appState.subjects.find(s => s.id === currentRepo.subId);
+      if (sub) {
+        if (currentRepo.type === 'prompts') {
+          sub.prompts = sub.prompts.filter(i => i.id !== itemId);
+        } else {
+          sub.formulas = sub.formulas.filter(i => i.id !== itemId);
+        }
+        saveState();
+        renderRepoItemsList();
+      }
+    }
+
+    function copyRepoItemContent(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Copiado para a área de transferência!');
+      });
+    }
+
+    function renderRepoItemsList() {
+      const container = document.getElementById('repoItemsListContainer');
+      const sub = appState.subjects.find(s => s.id === currentRepo.subId);
+      if (!sub) return;
+
+      const list = currentRepo.type === 'prompts' ? sub.prompts : sub.formulas;
+      if (!list || list.length === 0) {
+        container.innerHTML = `<div class="text-secondary text-center py-4 small">Nenhum item cadastrado ainda. Use o formulário ao lado para adicionar.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div class="p-3 rounded-3" style="background: #070913; border: 1px solid var(--border-subtle);">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-info small">${escapeHtml(item.title)}</span>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-nexus py-0 px-2" onclick="copyRepoItemContent(${encodeURIComponent(JSON.stringify(item.content))})" title="Copiar conteúdo">
+                <i class="bi bi-clipboard"></i> Copiar
+              </button>
+              <button class="btn btn-outline-danger py-0 px-2" onclick="deleteRepoItem('${item.id}')" title="Excluir">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+          <pre class="bg-dark p-2 rounded small text-light font-monospace mb-0" style="max-height: 120px; overflow-y: auto; font-size: 0.8rem;">${escapeHtml(item.content || '(Sem conteúdo detalhado)')}</pre>
+        </div>
+      `).join('');
+    }
+
+    // =========================================================================
+    // CRONOGRAMA SEMESTRAL INTERATIVO
+    // =========================================================================
+    const daysOfWeek = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+
+    // Mapeia o dia da semana do JS (0 = Domingo, 1 = Segunda...) para o nosso array
+    function getTodayDayName() {
+      const jsDay = new Date().getDay();
+      const map = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+      return map[jsDay];
+    }
+
+    function renderScheduleUI() {
+      const container = document.getElementById('scheduleFormContainer');
+      const overview = document.getElementById('scheduleOverviewContainer');
+      
+      if (!appState.schedule) {
+        appState.schedule = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
+      }
+
+      const subjectOptions = `<option value="">-- Nenhuma matéria definida --</option>` + 
+        appState.subjects.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+
+      // Formulário de configuração por dia
+      container.innerHTML = daysOfWeek.map(day => {
+        const currentSubId = appState.schedule[day] || '';
+        const isToday = day === getTodayDayName();
+        return `
+          <div class="p-2 rounded-2 ${isToday ? 'border border-info' : ''}" style="background: #0b0e18;">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="fw-bold small ${isToday ? 'text-info' : 'text-white'}">${day} ${isToday ? '(Hoje)' : ''}</span>
+            </div>
+            <select class="form-select form-select-sm bg-dark border-secondary text-white" onchange="updateDaySchedule('${day}', this.value)">
+              ${subjectOptions.replace(`value="${currentSubId}"`, `value="${currentSubId}" selected`)}
+            </select>
+          </div>
+        `;
+      }).join('');
+
+      // Visão Geral lateral
+      overview.innerHTML = daysOfWeek.map(day => {
+        const subId = appState.schedule[day];
+        const sub = appState.subjects.find(s => s.id === subId);
+        const isToday = day === getTodayDayName();
+
+        return `
+          <div class="p-3 rounded-3 d-flex justify-content-between align-items-center" style="background: #0b0e18; border-left: 4px solid ${sub ? sub.color : '#334155'};">
+            <div>
+              <span class="fw-bold ${isToday ? 'text-info' : 'text-white'}">${day}</span>
+              ${isToday ? '<span class="badge bg-info bg-opacity-25 text-info ms-2">Hoje</span>' : ''}
+            </div>
+            <span class="badge" style="background-color: ${sub ? sub.color : '#1e293b'}; font-size: 0.85rem;">
+              ${sub ? escapeHtml(sub.name) : 'Dia Livre / Sem Matéria'}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateDaySchedule(day, subId) {
+      if (!appState.schedule) appState.schedule = {};
+      appState.schedule[day] = subId;
+      saveState();
+      renderScheduleUI();
+    }
+
+    // Seleciona automaticamente a matéria do dia no Pomodoro ao abrir a aba
+    function checkTodayScheduleSelection() {
+      if (!appState.schedule) return;
+      const todayDay = getTodayDayName();
+      const scheduledSubId = appState.schedule[todayDay];
+      if (scheduledSubId && appState.subjects.some(s => s.id === scheduledSubId)) {
+        const pomoSel = document.getElementById('pomoSubjectSelect');
+        if (pomoSel) {
+          pomoSel.value = scheduledSubId;
+        }
+      }
+    }
+
+    // =========================================================================
+    // MINI PLAYER YOUTUBE CUSTOMIZÁVEL
+    // =========================================================================
+    function extractYouTubeId(urlOrId) {
+      if (!urlOrId) return '';
+      urlOrId = urlOrId.trim();
+      // Se for um ID direto de 11 caracteres
+      if (/^[a-zA-Z0-9_-]{11}$/.test(urlOrId)) return urlOrId;
+      
+      // Se for link do YouTube (watch?v=xxx ou youtu.be/xxx)
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = urlOrId.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : '';
+    }
+
+    function loadCustomYouTubePlayer() {
+      const inputVal = document.getElementById('ytLinkInput').value;
+      const videoId = extractYouTubeId(inputVal);
+      const wrapper = document.getElementById('ytPlayerWrapper');
+
+      if (!videoId) {
+        alert('Link ou ID do YouTube inválido. Verifique o endereço digitado.');
+        return;
+      }
+
+      appState.settings.youtubeUrl = inputVal;
+      saveState();
+
+      wrapper.innerHTML = `
+        <iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1" 
+          title="YouTube video player" frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+      `;
+    }
+    // =========================================================================
+    // SINCRONIZAÇÃO EM TEMPO REAL NA NUVEM (FIREBASE REST API - PC & CELULAR)
+    // =========================================================================
+    const CLOUD_URL_KEY = 'nexus_firebase_db_url';
+    let isSyncingFromCloud = false;
+
+    function getCleanCloudUrl() {
+      let url = localStorage.getItem(CLOUD_URL_KEY) || '';
+      if (!url) return '';
+      url = url.trim().replace(/\/+$/, ''); // Remove barra final se houver
+      return `${url}/nexus_state.json`;
+    }
+
+    function updateCloudUIStatus(status) {
+      const btn = document.getElementById('btnCloudSync');
+      const icon = document.getElementById('cloudSyncIcon');
+      const text = document.getElementById('cloudSyncText');
+      if (!btn || !icon || !text) return;
+
+      if (status === 'connected') {
+        btn.className = 'btn btn-outline-success btn-sm d-flex align-items-center gap-2';
+        icon.className = 'bi bi-cloud-check-fill';
+        text.textContent = 'Nuvem Ativa';
+      } else if (status === 'syncing') {
+        btn.className = 'btn btn-outline-warning btn-sm d-flex align-items-center gap-2';
+        icon.className = 'bi bi-arrow-repeat';
+        text.textContent = 'Sincronizando...';
+      } else if (status === 'error') {
+        btn.className = 'btn btn-outline-danger btn-sm d-flex align-items-center gap-2';
+        icon.className = 'bi bi-cloud-slash-fill';
+        text.textContent = 'Erro na Nuvem';
+      } else {
+        btn.className = 'btn btn-outline-info btn-sm d-flex align-items-center gap-2';
+        icon.className = 'bi bi-cloud-plus';
+        text.textContent = 'Conectar Nuvem';
+      }
+    }
+
+    async function configureCloudSync() {
+      const current = localStorage.getItem(CLOUD_URL_KEY) || '';
+      const input = prompt(
+        'Cole a URL do seu Firebase Realtime Database (ex: https://seu-projeto-default-rtdb.firebaseio.com/):\n\n(Deixe em branco para desconectar)',
+        current
+      );
+
+      if (input === null) return; // Cancelou
+      const clean = input.trim();
+
+      if (!clean) {
+        localStorage.removeItem(CLOUD_URL_KEY);
+        updateCloudUIStatus('disconnected');
+        return;
+      }
+
+      localStorage.setItem(CLOUD_URL_KEY, clean);
+      await pullStateFromCloud(true);
+    }
+
+    // Envia os dados locais para a nuvem
+    async function pushStateToCloud() {
+      const endpoint = getCleanCloudUrl();
+      if (!endpoint || isSyncingFromCloud) return;
+
+      try {
+        updateCloudUIStatus('syncing');
+        appState.lastUpdated = Date.now();
+        const res = await fetch(endpoint, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(appState)
+        });
+        if (res.ok) {
+          updateCloudUIStatus('connected');
+        } else {
+          updateCloudUIStatus('error');
+        }
+      } catch (err) {
+        console.error('Falha ao enviar para a nuvem:', err);
+        updateCloudUIStatus('error');
+      }
+    }
+
+    // Baixa os dados da nuvem e atualiza a tela (e o meus_dados.json no PC)
+    async function pullStateFromCloud(isInitialSetup = false) {
+      const endpoint = getCleanCloudUrl();
+      if (!endpoint) {
+        updateCloudUIStatus('disconnected');
+        return;
+      }
+
+      try {
+        updateCloudUIStatus('syncing');
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error('Status ' + res.status);
+        const cloudData = await res.json();
+
+        if (cloudData && cloudData.subjects) {
+          isSyncingFromCloud = true;
+          appState = cloudData;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+          
+          // Se estiver no PC com a pasta conectada, já atualiza o meus_dados.json local!
+          if (typeof saveToLocalFolder === 'function') {
+            saveToLocalFolder();
+          }
+
+          updateAllUI();
+          if (typeof refreshCharts === 'function') refreshCharts();
+          if (typeof renderScheduleUI === 'function') renderScheduleUI();
+          isSyncingFromCloud = false;
+          updateCloudUIStatus('connected');
+        } else if (isInitialSetup) {
+          // Banco na nuvem ainda está vazio: envia os dados atuais do PC pela primeira vez
+          await pushStateToCloud();
+        }
+      } catch (err) {
+        console.error('Erro ao puxar dados da nuvem:', err);
+        updateCloudUIStatus('error');
+      }
+    }
+
+    // Sincroniza automaticamente ao abrir a página e quando você troca de aba/desbloqueia o celular
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem(CLOUD_URL_KEY)) {
+        pullStateFromCloud();
+      }
+    });
+
+    window.addEventListener('focus', () => {
+      if (localStorage.getItem(CLOUD_URL_KEY)) {
+        pullStateFromCloud();
+      }
+    });
+  </script>
+</body>
+</html>
