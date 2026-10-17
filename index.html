@@ -343,13 +343,36 @@
     body.focus-mode #mainNavTabs { display: none !important; }
     body.focus-mode #tab-pomodoro { padding-top: 4vh; }
 
-    body.oled-mode { background: #000000 !important; background-image: none !important; }
+   /* Modo OLED / Relógio de Mesa Absoluto (#000000 Puro) */
+    body.oled-mode {
+      background: #000000 !important;
+      background-image: none !important;
+    }
     body.oled-mode .nexus-header,
     body.oled-mode #mainNavTabs,
-    body.oled-mode #pomoRightCol { display: none !important; }
-    body.oled-mode #pomoLeftCol { width: 100% !important; max-width: 760px; margin: 0 auto; }
-    body.oled-mode .nexus-card { background: #000000 !important; border-color: #111111 !important; box-shadow: none !important; }
-    body.oled-mode .pomodoro-display { font-size: clamp(4.8rem, 16vw, 9rem); text-shadow: none !important; }
+    body.oled-mode #pomoRightCol,
+    body.oled-mode .mobile-bottom-nav,
+    body.oled-mode .mob-more-drawer,
+    body.oled-mode .section-title {
+      display: none !important;
+    }
+    body.oled-mode #tab-pomodoro {
+      padding-top: 1rem !important;
+    }
+    body.oled-mode #pomoLeftCol {
+      width: 100% !important;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    body.oled-mode .nexus-card {
+      background: #000000 !important;
+      border-color: #111111 !important;
+      box-shadow: none !important;
+    }
+    body.oled-mode .pomodoro-display {
+      font-size: clamp(4.8rem, 18vw, 9rem);
+      text-shadow: none !important;
+    }
 
     .flashcard-box {
       min-height: 240px;
@@ -4781,7 +4804,7 @@
         }
       }, { passive: true });
     })();
-    
+
   </script>
 </body>
 </html>
