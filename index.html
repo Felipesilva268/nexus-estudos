@@ -2,7 +2,7 @@
 <html lang="pt-BR" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <!-- Configurações de Web App para Celular (PWA) -->
   <meta name="theme-color" content="#0f1820">
   <meta name="mobile-web-app-capable" content="yes">
@@ -85,14 +85,31 @@
       margin-bottom: 2.5rem;
     }
 
-    /* Topbar Minimalista */
+    /* Topbar Minimalista com Auto-Hide e Modo Slim Mobile */
     .nexus-header {
-      background: rgba(12, 20, 27, 0.95);
+      background: rgba(12, 20, 27, 0.96);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-subtle);
       position: sticky;
       top: 0;
       z-index: 1020;
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), padding 0.2s ease;
+    }
+    .nexus-header.header-hidden {
+      transform: translateY(-105%);
+    }
+    @media (max-width: 991.98px) {
+      .nexus-header {
+        padding-top: 0.45rem !important;
+        padding-bottom: 0.45rem !important;
+      }
+      .brand-logo {
+        font-size: 1.25rem;
+      }
+      .brand-sub {
+        font-size: 0.55rem;
+        letter-spacing: 2px;
+      }
     }
 
     .brand-logo {
@@ -425,94 +442,314 @@
     ::-webkit-scrollbar-track { background: var(--bg-deep); }
     ::-webkit-scrollbar-thumb { background: #223548; }
     ::-webkit-scrollbar-thumb:hover { background: var(--accent-crimson); }
+
+    /* =========================================================
+       ETAPA 2 MOBILE: BARRA DE NAVEGAÇÃO INFERIOR (BOTTOM NAV)
+       ========================================================= */
+    @media (max-width: 991.98px) {
+      #mainNavTabs {
+        display: none !important;
+      }
+      body {
+        padding-bottom: 74px !important;
+      }
+    }
+
+    .mobile-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(11, 18, 24, 0.98);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border-subtle);
+      z-index: 1035;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .mob-nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      height: 100%;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      gap: 2px;
+      transition: color 0.2s ease;
+      position: relative;
+    }
+    .mob-nav-btn i {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    .mob-nav-btn.active {
+      color: var(--accent-cyan);
+    }
+    .mob-nav-btn.active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 36px;
+      height: 2px;
+      background: var(--accent-crimson);
+    }
+
+    /* Gaveta Flutuante do Botão "Mais" */
+    .mob-more-drawer {
+      position: fixed;
+      bottom: 64px;
+      left: 0;
+      right: 0;
+      background: #121d28;
+      border-top: 2px solid var(--accent-crimson);
+      box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.6);
+      z-index: 1034;
+      padding: 1rem;
+      transform: translateY(120%);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .mob-more-drawer.show {
+      transform: translateY(0);
+    }
+
+    body.focus-mode .mobile-bottom-nav,
+    body.focus-mode .mob-more-drawer,
+    body.oled-mode .mobile-bottom-nav,
+    body.oled-mode .mob-more-drawer {
+      display: none !important;
+    }
+    /* =========================================================
+       ETAPA 3 MOBILE: INTERFACE TOUCH-FRIENDLY & ANTI-ZOOM
+       ========================================================= */
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button, .btn, .nav-link, .mob-nav-btn, .sync-badge, input[type="checkbox"] {
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    @media (max-width: 991.98px) {
+      /* 1. Impede o zoom automático do Android/iOS ao tocar em inputs */
+      .form-control,
+      .form-select,
+      .editable-input {
+        font-size: 16px !important;
+        min-height: 42px;
+      }
+
+      /* 2. Checkboxes de aulas e botões de anotação maiores para o polegar */
+      .unit-menu-card .form-check-input {
+        width: 1.4rem;
+        height: 1.4rem;
+        flex-shrink: 0;
+      }
+
+      .lesson-note-btn {
+        min-width: 40px;
+        min-height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+      }
+
+      /* 3. Botões de ação no Kanban e Repositórios mais confortáveis */
+      .btn-group-sm > .btn, .btn-sm {
+        padding: 0.42rem 0.75rem;
+        font-size: 0.82rem;
+      }
+
+      /* 4. Ajuste de respiro nos Cards, Banner e Relógio Pomodoro */
+      .crimson-hero-banner {
+        padding: 1.4rem 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+      .crimson-hero-banner h2 {
+        font-size: 1.65rem !important;
+      }
+      .section-title {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+      }
+      .nexus-card {
+        padding: 1.15rem !important;
+      }
+      .unit-menu-card {
+        padding: 1.15rem 1rem;
+      }
+      .pomodoro-display {
+        font-size: clamp(3.8rem, 18vw, 5.2rem);
+      }
+
+      /* 5. Ajuste da Agenda (Upcoming Events) em telas estreitas */
+      .event-row {
+        gap: 0.75rem;
+        padding: 1rem 0.25rem;
+      }
+      .event-day-split {
+        font-size: 2.1rem;
+        min-width: 44px;
+      }
+
+      /* 6. Modais e Ace Editor adaptados para quando o teclado do celular abrir */
+      .modal-dialog {
+        margin: 0.5rem;
+      }
+      #editorContainer {
+        height: 260px !important;
+      }
+      #repoEditorContainer, #pyAceContainer {
+        height: 200px !important;
+      }
+    }
+
+    /* =========================================================
+       ETAPA 4 MOBILE: INDICADOR PULL-TO-REFRESH & TOAST NATIVO
+       ========================================================= */
+    .ptr-indicator {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translate(-50%, -80px);
+      background: #121d28;
+      border: 1px solid var(--accent-cyan);
+      color: var(--text-main);
+      padding: 6px 16px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.8px;
+      z-index: 2000;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ptr-indicator.show {
+      transform: translate(-50%, 0);
+    }
+
   </style>
 </head>
 <body>
 
-  <!-- ================= HEADER FIXO MINIMALISTA ================= -->
-  <header class="nexus-header py-3 px-3 px-md-4 mb-4">
+  <!-- ================= HEADER FIXO MINIMALISTA (SLIM & AUTO-HIDE) ================= -->
+  <header class="nexus-header py-2 py-lg-3 px-3 px-md-4 mb-3 mb-lg-4" id="mainAppHeader">
     <div class="container-fluid">
       <div class="row align-items-center gy-2">
         
-        <!-- Esquerda: Logo Estilo LAVO + Nível XP -->
-        <div class="col-12 col-lg-4 d-flex align-items-center gap-3">
-          <div class="pe-3 border-end border-secondary border-opacity-25">
-            <div class="brand-logo">NEXUS</div>
-            <span class="brand-sub">STUDY CLUB</span>
+        <!-- Linha Principal (No celular fica tudo em 1 linha compacta) -->
+        <div class="col-12 col-lg-4 d-flex align-items-center justify-content-between justify-content-lg-start gap-2 gap-sm-3">
+          <div class="d-flex align-items-center gap-2 flex-grow-1">
+            <div class="pe-2 pe-sm-3 border-end border-secondary border-opacity-25">
+              <div class="brand-logo">NEXUS</div>
+              <span class="brand-sub">STUDY CLUB</span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-center bg-gradient-primary text-white fw-bold display-font" style="width:34px; height:34px; font-size:1.05rem; flex-shrink:0;">
+              <span id="uiLevelBadge">1</span>
+            </div>
+
+            <div class="flex-grow-1" style="max-width: 180px;">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-white text-uppercase text-truncate" style="font-size:0.72rem;" id="uiRankTitle">Iniciante</span>
+                <small class="text-secondary ms-1" style="font-size:0.68rem;" id="uiXpText">0 / 250 XP</small>
+              </div>
+              <div class="progress mt-1" style="height: 4px; background-color: #0b1218; border-radius:0;">
+                <div id="uiXpBar" class="progress-bar bg-gradient-primary" style="width: 0%"></div>
+              </div>
+            </div>
           </div>
 
-          <div class="d-flex align-items-center justify-content-center bg-gradient-primary text-white fw-bold display-font" style="width:40px; height:40px; font-size:1.25rem;">
-            <span id="uiLevelBadge">1</span>
-          </div>
-          <div class="flex-grow-1">
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-bold text-white small text-uppercase" id="uiRankTitle">Iniciante</span>
-              <small class="text-secondary" style="font-size:0.75rem;" id="uiXpText">0 / 250 XP</small>
-            </div>
-            <div class="progress mt-1" style="height: 5px; background-color: #0b1218; border-radius:0;">
-              <div id="uiXpBar" class="progress-bar bg-gradient-primary" style="width: 0%"></div>
-            </div>
+          <!-- Botões Rápidos Mobile (Visíveis apenas no celular para economizar espaço) -->
+          <div class="d-flex d-lg-none align-items-center gap-1">
+            <button class="btn btn-nexus btn-sm py-1 px-2" onclick="openMicroStudyModal()" title="Micro-Estudo 10m">
+              <i class="bi bi-lightning-charge-fill"></i> 10m
+            </button>
+            <button class="btn btn-outline-nexus btn-sm py-1 px-2" type="button" data-bs-toggle="collapse" data-bs-target="#mobileHeaderCollapse" aria-expanded="false" title="Abrir Sincronização e Metas">
+              <i class="bi bi-sliders"></i>
+            </button>
           </div>
         </div>
 
-        <!-- Centro: Streak, Hidratação Rápida & Meta Diária -->
-        <div class="col-12 col-lg-4 d-flex justify-content-lg-center align-items-center gap-4 flex-wrap">
-          <div class="d-flex align-items-center gap-2" title="Dias consecutivos estudando">
-            <i class="bi bi-fire fs-4 text-danger"></i>
-            <div>
-              <div class="fw-bold lh-1 display-font fs-5"><span id="uiStreakCount">0</span> DIAS</div>
-              <small class="text-secondary" style="font-size:0.7rem;">OFENSIVA</small>
+        <!-- Gaveta Colapsável no Mobile / Sempre Visível no PC (d-lg-flex) -->
+        <div class="col-12 col-lg-8 collapse d-lg-block" id="mobileHeaderCollapse">
+          <div class="row align-items-center gy-2 pt-2 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0">
+            
+            <!-- Centro: Streak, Hidratação Rápida & Meta Diária -->
+            <div class="col-12 col-lg-6 d-flex justify-content-between justify-content-lg-center align-items-center gap-3 flex-wrap">
+              <div class="d-flex align-items-center gap-2" title="Dias consecutivos estudando">
+                <i class="bi bi-fire fs-5 text-danger"></i>
+                <div>
+                  <div class="fw-bold lh-1 display-font" style="font-size:0.95rem;"><span id="uiStreakCount">0</span> DIAS</div>
+                  <small class="text-secondary" style="font-size:0.65rem;">OFENSIVA</small>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2" style="cursor:pointer;" onclick="addWaterMl(250)" title="Clique para registrar +250ml de água">
+                <i class="bi bi-droplet-half fs-5 text-info"></i>
+                <div>
+                  <div class="fw-bold lh-1 text-info display-font" style="font-size:0.95rem;"><span id="uiHeaderWater">0</span> ML</div>
+                  <small class="text-secondary" style="font-size:0.65rem;">+250ML</small>
+                </div>
+              </div>
+
+              <div class="flex-grow-1" style="max-width: 175px;">
+                <div class="d-flex justify-content-between align-items-center">
+                  <small class="text-secondary" style="font-size:0.68rem;">META</small>
+                  <small class="fw-semibold text-info" style="font-size:0.68rem; cursor:pointer;" onclick="changeDailyGoal()">
+                    <span id="uiTodayMins">0</span>/<span id="uiDailyGoal">120</span>m <i class="bi bi-pencil-square"></i>
+                  </small>
+                </div>
+                <div class="progress mt-1" style="height: 4px; background-color: #0b1218; border-radius:0;">
+                  <div id="uiDailyGoalBar" class="progress-bar bg-info" style="width: 0%"></div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div class="d-flex align-items-center gap-2" style="cursor:pointer;" onclick="addWaterMl(250)" title="Clique para registrar +250ml de água">
-            <i class="bi bi-droplet-half fs-5 text-info"></i>
-            <div>
-              <div class="fw-bold lh-1 text-info display-font fs-6"><span id="uiHeaderWater">0</span> ML</div>
-              <small class="text-secondary" style="font-size:0.68rem;">+250ML</small>
+            <!-- Direita: Ações Rápidas & Sincronização -->
+            <div class="col-12 col-lg-6 d-flex justify-content-between justify-content-lg-end align-items-center gap-2 flex-wrap">
+              <button class="btn btn-nexus btn-sm px-3 d-none d-lg-inline-block" onclick="openMicroStudyModal()" title="Sessão relâmpago de 10 minutos">
+                <i class="bi bi-lightning-charge-fill me-1"></i> Micro 10m
+              </button>
+
+              <button class="btn btn-outline-nexus btn-sm" onclick="exportCleanAcademicReport()" title="Gerar Relatório PDF">
+                <i class="bi bi-printer"></i> PDF
+              </button>
+
+              <div id="syncStatusBtn" class="sync-badge sync-disconnected" onclick="handleFolderSyncClick()" title="Vincular arquivo meus_dados.json na pasta">
+                <span id="syncDot">⚪</span>
+                <span id="syncText">Pasta</span>
+              </div>
+
+              <button class="btn btn-outline-nexus btn-sm" onclick="exportBackupJson()" title="Exportar JSON">
+                <i class="bi bi-download"></i>
+              </button>
+              <label class="btn btn-outline-nexus btn-sm mb-0" title="Importar JSON">
+                <i class="bi bi-upload"></i>
+                <input type="file" accept=".json" hidden onchange="importBackupJson(event)">
+              </label>
+
+              <button class="btn btn-outline-nexus btn-sm d-flex align-items-center gap-1" onclick="configureCloudSync()" id="btnCloudSync" title="Sincronização em Tempo Real (PC & Celular)">
+                <i class="bi bi-cloud-check-fill" id="cloudSyncIcon"></i>
+                <span id="cloudSyncText">Nuvem</span>
+              </button>
             </div>
+
           </div>
-
-          <div class="flex-grow-1" style="max-width: 185px;">
-            <div class="d-flex justify-content-between align-items-center">
-              <small class="text-secondary" style="font-size:0.72rem;">META DIÁRIA</small>
-              <small class="fw-semibold text-info" style="font-size:0.72rem; cursor:pointer;" onclick="changeDailyGoal()" title="Clique para alterar sua meta diária">
-                <span id="uiTodayMins">0</span>/<span id="uiDailyGoal">120</span>m <i class="bi bi-pencil-square"></i>
-              </small>
-            </div>
-            <div class="progress mt-1" style="height: 5px; background-color: #0b1218; border-radius:0;">
-              <div id="uiDailyGoalBar" class="progress-bar bg-info" style="width: 0%"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Direita: Ações Rápidas & Sincronização -->
-        <div class="col-12 col-lg-4 d-flex justify-content-lg-end align-items-center gap-2 flex-wrap">
-          <button class="btn btn-nexus btn-sm px-3" onclick="openMicroStudyModal()" title="Sessão relâmpago de 10 minutos">
-            <i class="bi bi-lightning-charge-fill me-1"></i> Micro 10m
-          </button>
-
-          <button class="btn btn-outline-nexus btn-sm" onclick="exportCleanAcademicReport()" title="Gerar Relatório Limpo para Impressão ou PDF">
-            <i class="bi bi-printer"></i> PDF
-          </button>
-
-          <div id="syncStatusBtn" class="sync-badge sync-disconnected" onclick="handleFolderSyncClick()" title="Vincular arquivo meus_dados.json na pasta">
-            <span id="syncDot">⚪</span>
-            <span id="syncText">Pasta</span>
-          </div>
-
-          <button class="btn btn-outline-nexus btn-sm" onclick="exportBackupJson()" title="Exportar JSON">
-            <i class="bi bi-download"></i>
-          </button>
-          <label class="btn btn-outline-nexus btn-sm mb-0" title="Importar JSON">
-            <i class="bi bi-upload"></i>
-            <input type="file" accept=".json" hidden onchange="importBackupJson(event)">
-          </label>
-
-          <button class="btn btn-outline-nexus btn-sm d-flex align-items-center gap-1" onclick="configureCloudSync()" id="btnCloudSync" title="Sincronização em Tempo Real (PC & Celular)">
-            <i class="bi bi-cloud-check-fill" id="cloudSyncIcon"></i>
-            <span id="cloudSyncText">Nuvem</span>
-          </button>
         </div>
 
       </div>
@@ -1360,8 +1597,69 @@
           <div class="row g-3" id="badgesWallContainer"></div>
         </div>
       </div>
-
     </div>
+
+    <!-- ================= BARRA DE NAVEGAÇÃO INFERIOR MOBILE ================= -->
+  <div class="mob-more-drawer d-lg-none" id="mobMoreDrawer">
+    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-25">
+      <span class="fw-bold small text-info text-uppercase display-font">Mais Ambientes</span>
+      <button class="btn btn-sm text-secondary p-0" onclick="toggleMobMoreDrawer(false)">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="row g-2">
+      <div class="col-6">
+        <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-schedule" onclick="switchMobileTab('#tab-schedule')">
+          <i class="bi bi-calendar-week text-info me-2"></i> Cronograma
+        </button>
+      </div>
+      <div class="col-6">
+        <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-flashcards" onclick="switchMobileTab('#tab-flashcards')">
+          <i class="bi bi-collection-play text-warning me-2"></i> Flashcards
+        </button>
+      </div>
+      <div class="col-6">
+        <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-lab" onclick="switchMobileTab('#tab-lab')">
+          <i class="bi bi-cpu text-success me-2"></i> Laboratório
+        </button>
+      </div>
+      <div class="col-6">
+        <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-metrics" onclick="switchMobileTab('#tab-metrics')">
+          <i class="bi bi-graph-up-arrow text-danger me-2"></i> Métricas
+        </button>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-outline-nexus w-100 text-center py-2 mob-drawer-link" data-target="#tab-gallery" onclick="switchMobileTab('#tab-gallery')">
+          <i class="bi bi-trophy-fill text-warning me-2"></i> Galeria de 100 Conquistas
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="mobile-bottom-nav d-lg-none" id="mobileBottomNav">
+    <button type="button" class="mob-nav-btn active" data-target="#tab-dashboard" onclick="switchMobileTab('#tab-dashboard')">
+      <i class="bi bi-grid-1x2-fill"></i>
+      <span>Início</span>
+    </button>
+    <button type="button" class="mob-nav-btn" data-target="#tab-subjects" onclick="switchMobileTab('#tab-subjects')">
+      <i class="bi bi-journal-bookmark-fill"></i>
+      <span>Matérias</span>
+    </button>
+    <button type="button" class="mob-nav-btn" data-target="#tab-pomodoro" onclick="switchMobileTab('#tab-pomodoro')">
+      <i class="bi bi-stopwatch-fill"></i>
+      <span>Pomodoro</span>
+    </button>
+    <button type="button" class="mob-nav-btn" data-target="#tab-tasks" onclick="switchMobileTab('#tab-tasks')">
+      <i class="bi bi-calendar2-check-fill"></i>
+      <span>Prazos</span>
+    </button>
+    <button type="button" class="mob-nav-btn" id="mobBtnMore" onclick="toggleMobMoreDrawer()">
+      <i class="bi bi-list"></i>
+      <span>Mais</span>
+    </button>
+  </nav>
+
+
   </main>
 
   <!-- ================= MODAL: REGISTRAR SESSÃO POMODORO ================= -->
@@ -4212,7 +4510,278 @@
         console.error('Erro ao puxar dados da nuvem:', err);
         updateCloudUIStatus('error');
       }
+    };
+
+    // =========================================================================
+    // ETAPA 1 MOBILE: AUTO-HIDE HEADER AO ROLAR A TELA
+    // =========================================================================
+    (function initAutoHideHeader() {
+      let lastScrollY = window.scrollY;
+      const headerEl = document.getElementById('mainAppHeader');
+
+      window.addEventListener('scroll', () => {
+        if (!headerEl) return;
+        const currentScrollY = window.scrollY;
+
+        // Esconde ao rolar para baixo após 70px; mostra imediatamente ao subir
+        if (currentScrollY > lastScrollY && currentScrollY > 70) {
+          headerEl.classList.add('header-hidden');
+          // Fecha a gaveta mobile caso estivesse aberta
+          const mobCollapse = document.getElementById('mobileHeaderCollapse');
+          if (mobCollapse && mobCollapse.classList.contains('show')) {
+            bootstrap.Collapse.getInstance(mobCollapse)?.hide();
+          }
+        } else if (currentScrollY < lastScrollY - 8 || currentScrollY <= 20) {
+          headerEl.classList.remove('header-hidden');
+        }
+
+        lastScrollY = currentScrollY;
+      }, { passive: true });
+    })();
+
+    // =========================================================================
+    // ETAPA 2 MOBILE: CONTROLE DA BARRA INFERIOR & GAVETA "MAIS"
+    // =========================================================================
+    function toggleMobMoreDrawer(forceState) {
+      const drawer = document.getElementById('mobMoreDrawer');
+      if (!drawer) return;
+      const shouldOpen = typeof forceState === 'boolean' ? forceState : !drawer.classList.contains('show');
+      drawer.classList.toggle('show', shouldOpen);
     }
+
+    function switchMobileTab(targetSelector) {
+      toggleMobMoreDrawer(false);
+      const desktopTabBtn = document.querySelector(`#mainNavTabs [data-bs-target="${targetSelector}"]`);
+      if (desktopTabBtn) {
+        desktopTabBtn.click();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      syncMobileBottomNavHighlight(targetSelector);
+    }
+
+    function syncMobileBottomNavHighlight(targetSelector) {
+      const mainBtns = document.querySelectorAll('#mobileBottomNav .mob-nav-btn[data-target]');
+      const drawerBtns = document.querySelectorAll('#mobMoreDrawer .mob-drawer-link');
+      const moreBtn = document.getElementById('mobBtnMore');
+
+      let matchedMain = false;
+      mainBtns.forEach(btn => {
+        const isMatch = btn.getAttribute('data-target') === targetSelector;
+        btn.classList.toggle('active', isMatch);
+        if (isMatch) matchedMain = true;
+      });
+
+      drawerBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-target') === targetSelector);
+      });
+
+      if (moreBtn) {
+        moreBtn.classList.toggle('active', !matchedMain);
+      }
+    }
+
+    // Mantém a barra inferior sincronizada mesmo se a aba mudar por outro botão da tela
+    document.addEventListener('shown.bs.tab', (e) => {
+      const target = e.target?.getAttribute('data-bs-target');
+      if (target) syncMobileBottomNavHighlight(target);
+    });
+
+    // =========================================================================
+    // ETAPA 4 MOBILE: VIBRAÇÃO TÁTIL, SWIPE, PULL-TO-REFRESH & TIMER BLINDADO
+    // =========================================================================
+
+    // 1. Motor de Feedback Tátil (Web Vibration API)
+    function triggerHaptic(pattern = 12) {
+      try {
+        if ('vibrate' in navigator) {
+          navigator.vibrate(pattern);
+        }
+      } catch {}
+    }
+
+    // Adiciona vibração subtil aos botões, checkboxes e flashcards
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button, .btn, .mob-nav-btn, .sync-badge, input[type="checkbox"]');
+      if (btn) {
+        triggerHaptic(12);
+      } else if (e.target.closest('#fcStudyBox')) {
+        triggerHaptic([15, 30, 15]);
+      }
+    }, { passive: true });
+
+    // Reforça o alarme de fim do Pomodoro com vibração de pulso
+    const _originalPlayFinishBeep = playFinishBeep;
+    playFinishBeep = function() {
+      triggerHaptic([200, 100, 200, 100, 350]);
+      _originalPlayFinishBeep();
+    };
+
+    // 2. Blindagem do Temporizador em Segundo Plano (Timestamp Real Date.now)
+    let pomoTargetEndTime = null;
+    let microTargetEndTime = null;
+
+    startPomodoro = function() {
+      if (pomoMode === 'focus' && appState.subjects.length === 0) {
+        alert('Cadastre pelo menos uma matéria antes de iniciar o Pomodoro!');
+        return;
+      }
+      const btn = document.getElementById('pomoStartPauseBtn');
+      if (btn) btn.innerHTML = `<i class="bi bi-pause-fill me-1"></i> Pausar`;
+
+      pomoTargetEndTime = Date.now() + (pomoSecondsLeft * 1000);
+      clearInterval(pomoInterval);
+
+      pomoInterval = setInterval(() => {
+        const now = Date.now();
+        pomoSecondsLeft = Math.max(0, Math.round((pomoTargetEndTime - now) / 1000));
+        updatePomodoroClockUI();
+
+        const elapsed = pomoTotalSeconds - pomoSecondsLeft;
+        if (appState.settings?.ergo2020Enabled && elapsed > 0 && elapsed % 1200 === 0) {
+          playSoftErgoChime();
+          triggerHaptic([40, 60, 40]);
+          const ergoEl = document.getElementById('ergoPostureStatus');
+          if (ergoEl) {
+            ergoEl.innerHTML = `<span class="text-warning fw-bold">👀 Regra 20-20-20: Olhe a 6m por 20s e alinhe a coluna!</span>`;
+            setTimeout(() => { ergoEl.textContent = '🪑 Postura ereta • Olhos relaxados'; }, 20000);
+          }
+        }
+
+        if (pomoSecondsLeft <= 0) {
+          pomoTargetEndTime = null;
+          pausePomodoro(true);
+          playFinishBeep();
+          if (pomoMode === 'focus') {
+            openSessionModal(Math.round(pomoTotalSeconds / 60));
+          } else {
+            setPomodoroMode('focus');
+          }
+        }
+      }, 1000);
+    };
+
+    const _originalPausePomodoro = pausePomodoro;
+    pausePomodoro = function(skipGate = false) {
+      pomoTargetEndTime = null;
+      _originalPausePomodoro(skipGate);
+    };
+
+    // Blindagem também para o Micro-Estudo de 10 minutos
+    toggleMicroTimer = function() {
+      const btn = document.getElementById('btnMicroStart');
+      if (microInterval) {
+        microTargetEndTime = null;
+        stopMicroTimer();
+      } else {
+        if (btn) btn.textContent = 'Pausar';
+        microTargetEndTime = Date.now() + (microSecondsLeft * 1000);
+        microInterval = setInterval(() => {
+          microSecondsLeft = Math.max(0, Math.round((microTargetEndTime - Date.now()) / 1000));
+          updateMicroTimerUI();
+          if (microSecondsLeft <= 0) {
+            microTargetEndTime = null;
+            stopMicroTimer();
+            playFinishBeep();
+            finishMicroStudySession();
+          }
+        }, 1000);
+      }
+    };
+
+    // Sincroniza o relógio imediatamente ao desbloquear o ecrã do telemóvel
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        if (pomoInterval && pomoTargetEndTime) {
+          pomoSecondsLeft = Math.max(0, Math.round((pomoTargetEndTime - Date.now()) / 1000));
+          updatePomodoroClockUI();
+        }
+        if (microInterval && microTargetEndTime) {
+          microSecondsLeft = Math.max(0, Math.round((microTargetEndTime - Date.now()) / 1000));
+          updateMicroTimerUI();
+        }
+      }
+    });
+
+    // 3. Indicador Visual & Pull-to-Refresh + Swipe Horizontal entre Abas
+    (function initTouchGestures() {
+      const ptrEl = document.createElement('div');
+      ptrEl.className = 'ptr-indicator';
+      ptrEl.id = 'ptrBanner';
+      ptrEl.innerHTML = `<i class="bi bi-arrow-repeat text-info"></i> <span id="ptrText">Puxe para sincronizar</span>`;
+      document.body.appendChild(ptrEl);
+
+      const mainMobileTabs = ['#tab-dashboard', '#tab-subjects', '#tab-pomodoro', '#tab-tasks'];
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let isIgnoredElement = false;
+      let isPullingTop = false;
+
+      document.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isPullingTop = (window.scrollY <= 5);
+
+        // Ignora gestos se o toque foi em sliders, tabelas, heatmap, modais ou Ace Editor
+        isIgnoredElement = Boolean(
+          e.target.closest('input[type="range"], .table-responsive, .heatmap-grid, .ace_editor, .modal.show, select, input, textarea')
+        );
+      }, { passive: true });
+
+      document.addEventListener('touchmove', (e) => {
+        if (!isPullingTop || isIgnoredElement || window.scrollY > 5) return;
+        const dy = e.touches[0].clientY - touchStartY;
+        const dx = Math.abs(e.touches[0].clientX - touchStartX);
+        if (dy > 65 && dy > dx * 2) {
+          ptrEl.classList.add('show');
+          document.getElementById('ptrText').textContent = 'Solte para atualizar a Nuvem...';
+        }
+      }, { passive: true });
+
+      document.addEventListener('touchend', async (e) => {
+        if (isIgnoredElement || e.changedTouches.length !== 1) {
+          ptrEl.classList.remove('show');
+          return;
+        }
+
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+
+        // A. Dispara Pull-to-Refresh se puxou para baixo no topo da página
+        if (isPullingTop && dy > 95 && Math.abs(dy) > Math.abs(dx) * 2) {
+          triggerHaptic([15, 40, 20]);
+          document.getElementById('ptrText').textContent = 'Sincronizando dados...';
+          if (localStorage.getItem(CLOUD_URL_KEY)) {
+            await pullStateFromCloud();
+          } else {
+            updateAllUI();
+          }
+          setTimeout(() => ptrEl.classList.remove('show'), 700);
+          return;
+        }
+        ptrEl.classList.remove('show');
+
+        // B. Dispara Swipe Horizontal entre as 4 abas principais no telemóvel
+        if (window.innerWidth <= 991 && Math.abs(dx) > 85 && Math.abs(dx) > Math.abs(dy) * 2.2) {
+          const activePane = document.querySelector('.tab-content > .tab-pane.active');
+          if (!activePane) return;
+          const currentSelector = `#${activePane.id}`;
+          const currentIndex = mainMobileTabs.indexOf(currentSelector);
+          if (currentIndex === -1) return;
+
+          if (dx < 0 && currentIndex < mainMobileTabs.length - 1) {
+            // Deslizou para a esquerda -> Próxima aba
+            triggerHaptic(15);
+            switchMobileTab(mainMobileTabs[currentIndex + 1]);
+          } else if (dx > 0 && currentIndex > 0) {
+            // Deslizou para a direita -> Aba anterior
+            triggerHaptic(15);
+            switchMobileTab(mainMobileTabs[currentIndex - 1]);
+          }
+        }
+      }, { passive: true });
+    })();
+    
   </script>
 </body>
 </html>
