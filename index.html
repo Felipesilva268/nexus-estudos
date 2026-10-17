@@ -4082,6 +4082,128 @@
         pullStateFromCloud();
       }
     });
+    // =========================================================================
+    // SINCRONIZAÇÃO EM TEMPO REAL NA NUVEM (FIREBASE REST API)
+    // =========================================================================
+    const CLOUD_URL_KEY = 'nexus_firebase_db_url';
+    let isSyncingFromCloud = false;
+
+    function getCleanCloudUrl() {
+      let url = localStorage.getItem(CLOUD_URL_KEY) || '';
+      if (!url) return '';
+      url = url.trim().replace(/\/+$/, '');
+      return `${url}/nexus_state.json`;
+    }
+
+    function updateCloudUIStatus(status) {
+      const btn = document.getElementById('btnCloudSync');
+      const icon = document.getElementById('cloudSyncIcon');
+      const text = document.getElementById('cloudSyncText');
+      if (!btn || !icon || !text) return;
+
+      if (status === 'connected') {
+        btn.className = 'btn btn-outline-success btn-sm d-flex align-items-center gap-1';
+        icon.className = 'bi bi-cloud-check-fill';
+        text.textContent = 'Nuvem Ativa';
+      } else if (status === 'syncing') {
+        btn.className = 'btn btn-outline-warning btn-sm d-flex align-items-center gap-1';
+        icon.className = 'bi bi-arrow-repeat';
+        text.textContent = 'Sinc...';
+      } else if (status === 'error') {
+        btn.className = 'btn btn-outline-danger btn-sm d-flex align-items-center gap-1';
+        icon.className = 'bi bi-cloud-slash-fill';
+        text.textContent = 'Erro Nuvem';
+      } else {
+        btn.className = 'btn btn-outline-nexus btn-sm d-flex align-items-center gap-1';
+        icon.className = 'bi bi-cloud-plus';
+        text.textContent = 'Nuvem';
+      }
+    }
+
+    async function configureCloudSync() {
+      const current = localStorage.getItem(CLOUD_URL_KEY) || '';
+      const input = prompt(
+        'Cole a URL do seu Firebase Realtime Database (ex: https://seu-projeto-default-rtdb.firebaseio.com/):\n\n(Deixe em branco para desconectar)',
+        current
+      );
+
+      if (input === null) return;
+      const clean = input.trim();
+
+      if (!clean) {
+        localStorage.removeItem(CLOUD_URL_KEY);
+        updateCloudUIStatus('disconnected');
+        return;
+      }
+
+      localStorage.setItem(CLOUD_URL_KEY, clean);
+      await pullStateFromCloud(true);
+    }
+
+    async function pushStateToCloud() {
+      const endpoint = getCleanCloudUrl();
+      if (!endpoint || isSyncingFromCloud) return;
+
+      try {
+        updateCloudUIStatus('syncing');
+        appState.lastUpdated = Date.now();
+        const res = await fetch(endpoint, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(appState)
+        });
+        if (res.ok) updateCloudUIStatus('connected');
+        else updateCloudUIStatus('error');
+      } catch (err) {
+        console.error('Falha ao enviar para a nuvem:', err);
+        updateCloudUIStatus('error');
+      }
+    }
+
+    async function pullStateFromCloud(isInitialSetup = false) {
+      const endpoint = getCleanCloudUrl();
+      if (!endpoint) {
+        updateCloudUIStatus('disconnected');
+        return;
+      }
+
+      try {
+        updateCloudUIStatus('syncing');
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error('Status ' + res.status);
+        const cloudData = await res.json();
+
+        if (cloudData && (cloudData.subjects || cloudData.settings)) {
+          isSyncingFromCloud = true;
+          appState = normalizeCloudData(cloudData);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+          
+          try {
+            if (typeof writeToLinkedFile === 'function' && fileHandle) {
+              await writeToLinkedFile();
+            }
+          } catch (fileErr) {}
+
+          try {
+            updateAllUI();
+            if (typeof refreshCharts === 'function') refreshCharts();
+            if (typeof renderScheduleUI === 'function') renderScheduleUI();
+            if (typeof renderFlashcardsTab === 'function') renderFlashcardsTab();
+          } catch (uiErr) {}
+
+          isSyncingFromCloud = false;
+          updateCloudUIStatus('connected');
+        } else if (isInitialSetup) {
+          await pushStateToCloud();
+        } else {
+          updateCloudUIStatus('connected');
+        }
+      } catch (err) {
+        isSyncingFromCloud = false;
+        console.error('Erro ao puxar dados da nuvem:', err);
+        updateCloudUIStatus('error');
+      }
+    }
   </script>
 </body>
 </html>
