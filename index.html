@@ -1628,6 +1628,15 @@
       const d = String(dateObj.getDate()).padStart(2, '0');
       return `${y}-${m}-${d}`;
     }
+    
+    // Utilitário para escapar caracteres HTML e evitar XSS/Erros
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
 
     // =========================================================================
     // PERSISTÊNCIA: LOCALSTORAGE + INDEXEDDB + FILE SYSTEM ACCESS API
