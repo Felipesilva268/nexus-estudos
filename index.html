@@ -21,7 +21,7 @@
   <!-- Ace Editor CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js" type="text/javascript" charset="utf-8"></script>
 
-  <style>
+ <style>
     :root {
       --bg-deep: #0f1820;
       --bg-card: #15222e;
@@ -39,6 +39,13 @@
       --accent-red: #f2295b;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
+    }
+
+    * { -webkit-tap-highlight-color: transparent; }
+
+    button, .btn, .nav-link, .mob-nav-btn, .sync-badge, input[type="checkbox"] {
+      touch-action: manipulation;
+      user-select: none;
     }
 
     body {
@@ -60,7 +67,6 @@
       letter-spacing: 0.6px;
     }
 
-    /* Títulos de Seção Estilo "Welcome .", "Bar Menu .", "Gallery ." */
     .section-title {
       font-family: 'Oswald', sans-serif;
       font-weight: 700;
@@ -70,12 +76,8 @@
       margin-bottom: 1.5rem;
       line-height: 1.1;
     }
-    .section-title::after {
-      content: " .";
-      color: var(--accent-cyan);
-    }
+    .section-title::after { content: " ."; color: var(--accent-cyan); }
 
-    /* Faixa de Destaque Carmesim (Estilo "Get ready for an epic party!") */
     .crimson-hero-banner {
       background: linear-gradient(90deg, rgba(168, 20, 58, 0.94), rgba(132, 16, 46, 0.92)),
                   radial-gradient(circle at 80% 50%, rgba(0, 200, 255, 0.15), transparent 60%);
@@ -85,7 +87,6 @@
       margin-bottom: 2.5rem;
     }
 
-    /* Topbar Minimalista com Auto-Hide e Modo Slim Mobile */
     .nexus-header {
       background: rgba(12, 20, 27, 0.96);
       backdrop-filter: blur(12px);
@@ -95,22 +96,7 @@
       z-index: 1020;
       transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), padding 0.2s ease;
     }
-    .nexus-header.header-hidden {
-      transform: translateY(-105%);
-    }
-    @media (max-width: 991.98px) {
-      .nexus-header {
-        padding-top: 0.45rem !important;
-        padding-bottom: 0.45rem !important;
-      }
-      .brand-logo {
-        font-size: 1.25rem;
-      }
-      .brand-sub {
-        font-size: 0.55rem;
-        letter-spacing: 2px;
-      }
-    }
+    .nexus-header.header-hidden { transform: translateY(-105%); }
 
     .brand-logo {
       font-family: 'Oswald', sans-serif;
@@ -129,7 +115,6 @@
       margin-top: 2px;
     }
 
-    /* Cards Limpos e Retos (Estilo Bar Menu) */
     .nexus-card {
       background-color: var(--bg-card);
       border: 1px solid var(--border-subtle);
@@ -137,11 +122,8 @@
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
       transition: border-color 0.2s ease, background-color 0.2s ease;
     }
-    .nexus-card:hover {
-      border-color: rgba(0, 200, 255, 0.35);
-    }
+    .nexus-card:hover { border-color: rgba(0, 200, 255, 0.35); }
 
-    /* Unidade Estilo "Vodka / Tequila / Rum" */
     .unit-menu-card {
       background: #131f2a;
       border: 1px solid rgba(255, 255, 255, 0.06);
@@ -166,7 +148,6 @@
       letter-spacing: 0.8px;
     }
 
-    /* Eventos / Prazos Estilo "Upcoming events ." */
     .event-row {
       display: flex;
       align-items: center;
@@ -193,19 +174,14 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+    .bg-gradient-primary { background: linear-gradient(90deg, var(--accent-crimson), var(--accent-cyan)); }
 
-    .bg-gradient-primary {
-      background: linear-gradient(90deg, var(--accent-crimson), var(--accent-cyan));
-    }
-
-    /* Botões Retos (Crimson Solid & Cyan Outline) */
     .btn {
       border-radius: 0px !important;
       font-family: 'Oswald', sans-serif;
       letter-spacing: 0.8px;
       text-transform: uppercase;
     }
-
     .btn-nexus {
       background: var(--accent-crimson);
       border: 1px solid var(--accent-crimson);
@@ -213,12 +189,7 @@
       font-weight: 600;
       transition: all 0.2s;
     }
-    .btn-nexus:hover {
-      background: #d91b4b;
-      border-color: #d91b4b;
-      color: #fff;
-      transform: translateY(-1px);
-    }
+    .btn-nexus:hover { background: #d91b4b; border-color: #d91b4b; color: #fff; transform: translateY(-1px); }
 
     .btn-white-solid {
       background: #ffffff;
@@ -228,10 +199,7 @@
       padding: 0.6rem 1.5rem;
       transition: all 0.2s;
     }
-    .btn-white-solid:hover {
-      background: var(--accent-cyan);
-      color: #0f1820;
-    }
+    .btn-white-solid:hover { background: var(--accent-cyan); color: #0f1820; }
 
     .btn-outline-nexus {
       background: transparent;
@@ -245,7 +213,6 @@
       color: #fff;
     }
 
-    /* Menu de Navegação Minimalista em Texto (Estilo Topbar Lavo) */
     .nav-pills {
       border-bottom: 1px solid var(--border-subtle);
       padding-bottom: 0.5rem;
@@ -264,10 +231,7 @@
       padding: 0.55rem 0.6rem;
       transition: all 0.2s;
     }
-    .nav-pills .nav-link:hover {
-      color: #fff;
-      border-bottom-color: rgba(0, 200, 255, 0.5);
-    }
+    .nav-pills .nav-link:hover { color: #fff; border-bottom-color: rgba(0, 200, 255, 0.5); }
     .nav-pills .nav-link.active {
       background: transparent;
       color: #fff;
@@ -275,9 +239,7 @@
       box-shadow: none;
     }
 
-    .form-control, .form-select {
-      border-radius: 0px !important;
-    }
+    .form-control, .form-select { border-radius: 0px !important; }
 
     .editable-input {
       background: transparent;
@@ -339,40 +301,26 @@
       transition: font-size 0.3s ease;
     }
 
+    /* Modos Foco e OLED Unificados */
     body.focus-mode .nexus-header,
-    body.focus-mode #mainNavTabs { display: none !important; }
+    body.focus-mode #mainNavTabs,
+    body.focus-mode .mobile-bottom-nav,
+    body.focus-mode .mob-more-drawer,
+    body.focus-mode .mob-drawer-backdrop { display: none !important; }
     body.focus-mode #tab-pomodoro { padding-top: 4vh; }
 
-   /* Modo OLED / Relógio de Mesa Absoluto (#000000 Puro) */
-    body.oled-mode {
-      background: #000000 !important;
-      background-image: none !important;
-    }
+    body.oled-mode { background: #000000 !important; background-image: none !important; }
     body.oled-mode .nexus-header,
     body.oled-mode #mainNavTabs,
     body.oled-mode #pomoRightCol,
     body.oled-mode .mobile-bottom-nav,
     body.oled-mode .mob-more-drawer,
-    body.oled-mode .section-title {
-      display: none !important;
-    }
-    body.oled-mode #tab-pomodoro {
-      padding-top: 1rem !important;
-    }
-    body.oled-mode #pomoLeftCol {
-      width: 100% !important;
-      max-width: 760px;
-      margin: 0 auto;
-    }
-    body.oled-mode .nexus-card {
-      background: #000000 !important;
-      border-color: #111111 !important;
-      box-shadow: none !important;
-    }
-    body.oled-mode .pomodoro-display {
-      font-size: clamp(4.8rem, 18vw, 9rem);
-      text-shadow: none !important;
-    }
+    body.oled-mode .mob-drawer-backdrop,
+    body.oled-mode .section-title { display: none !important; }
+    body.oled-mode #tab-pomodoro { padding-top: 1rem !important; }
+    body.oled-mode #pomoLeftCol { width: 100% !important; max-width: 760px; margin: 0 auto; }
+    body.oled-mode .nexus-card { background: #000000 !important; border-color: #111111 !important; box-shadow: none !important; }
+    body.oled-mode .pomodoro-display { font-size: clamp(4.8rem, 18vw, 9rem); text-shadow: none !important; }
 
     .flashcard-box {
       min-height: 240px;
@@ -416,7 +364,6 @@
       to { background-position: -12px 40px; }
     }
 
-    /* Mural de 100 Conquistas & Insígnias (Estilo Galeria) */
     .badge-item {
       background: #111b24;
       border: 1px solid var(--border-subtle);
@@ -429,14 +376,8 @@
       border-color: rgba(0, 200, 255, 0.35);
       background: linear-gradient(135deg, rgba(242, 41, 91, 0.1), rgba(0, 200, 255, 0.08));
     }
-    .badge-item.unlocked:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent-cyan);
-    }
-    .badge-item.locked {
-      opacity: 0.35;
-      filter: grayscale(1);
-    }
+    .badge-item.unlocked:hover { transform: translateY(-2px); border-color: var(--accent-cyan); }
+    .badge-item.locked { opacity: 0.35; filter: grayscale(1); }
 
     .sync-badge {
       cursor: pointer;
@@ -454,46 +395,24 @@
     .sync-pending { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border-color: rgba(245, 158, 11, 0.4); }
     .sync-connected { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.4); }
 
-    @media print {
-      body { background: #fff !important; color: #000 !important; }
-      .nexus-header, #mainNavTabs, .btn, .no-print { display: none !important; }
-      .nexus-card { border: 1px solid #ccc !important; box-shadow: none !important; background: #fff !important; color: #000 !important; break-inside: avoid; }
-      .text-secondary, .text-white, .text-info { color: #111 !important; }
-    }
-
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-deep); }
-    ::-webkit-scrollbar-thumb { background: #223548; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--accent-crimson); }
-
-    /* =========================================================
-       ETAPA 2 MOBILE: BARRA DE NAVEGAÇÃO INFERIOR (BOTTOM NAV)
-       ========================================================= */
-    @media (max-width: 991.98px) {
-      #mainNavTabs {
-        display: none !important;
-      }
-      body {
-        padding-bottom: 74px !important;
-      }
-    }
-
+    /* Barra Inferior Mobile, Gaveta "Mais" e Pull-to-Refresh */
     .mobile-bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 64px;
-      background: rgba(11, 18, 24, 0.98);
-      backdrop-filter: blur(14px);
-      border-top: 1px solid var(--border-subtle);
-      z-index: 1035;
+      height: auto;
+      min-height: 70px;
+      background-color: #0b1218 !important;
+      border-top: 1px solid rgba(0, 200, 255, 0.28);
+      box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.8);
+      z-index: 1055;
       display: flex;
       justify-content: space-around;
       align-items: center;
-      padding-bottom: env(safe-area-inset-bottom);
+      padding-top: 8px;
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
     }
-
     .mob-nav-btn {
       background: transparent;
       border: none;
@@ -503,144 +422,54 @@
       align-items: center;
       justify-content: center;
       flex: 1;
-      height: 100%;
+      padding: 4px 0;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 0.68rem;
       font-weight: 600;
-      gap: 2px;
+      gap: 3px;
       transition: color 0.2s ease;
       position: relative;
     }
-    .mob-nav-btn i {
-      font-size: 1.25rem;
-      line-height: 1;
-    }
-    .mob-nav-btn.active {
-      color: var(--accent-cyan);
-    }
+    .mob-nav-btn i { font-size: 1.25rem; line-height: 1; }
+    .mob-nav-btn.active { color: var(--accent-cyan); }
     .mob-nav-btn.active::before {
       content: "";
       position: absolute;
-      top: 0;
+      top: -8px;
       width: 36px;
       height: 2px;
       background: var(--accent-crimson);
     }
 
-    /* Gaveta Flutuante do Botão "Mais" */
+    .mob-drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 9, 14, 0.72);
+      backdrop-filter: blur(3px);
+      z-index: 1053;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .mob-drawer-backdrop.show { opacity: 1; pointer-events: auto; }
+
     .mob-more-drawer {
       position: fixed;
-      bottom: 64px;
+      bottom: 74px;
       left: 0;
       right: 0;
+      max-height: 72vh;
+      overflow-y: auto;
       background: #121d28;
       border-top: 2px solid var(--accent-crimson);
-      box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.6);
-      z-index: 1034;
-      padding: 1rem;
-      transform: translateY(120%);
+      box-shadow: 0 -14px 34px rgba(0, 0, 0, 0.85);
+      z-index: 1054;
+      padding: 1.1rem 1rem 1.35rem 1rem;
+      transform: translateY(130%);
       transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .mob-more-drawer.show {
-      transform: translateY(0);
-    }
+    .mob-more-drawer.show { transform: translateY(0); }
 
-    body.focus-mode .mobile-bottom-nav,
-    body.focus-mode .mob-more-drawer,
-    body.oled-mode .mobile-bottom-nav,
-    body.oled-mode .mob-more-drawer {
-      display: none !important;
-    }
-    /* =========================================================
-       ETAPA 3 MOBILE: INTERFACE TOUCH-FRIENDLY & ANTI-ZOOM
-       ========================================================= */
-    * {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button, .btn, .nav-link, .mob-nav-btn, .sync-badge, input[type="checkbox"] {
-      touch-action: manipulation;
-      user-select: none;
-    }
-
-    @media (max-width: 991.98px) {
-      /* 1. Impede o zoom automático do Android/iOS ao tocar em inputs */
-      .form-control,
-      .form-select,
-      .editable-input {
-        font-size: 16px !important;
-        min-height: 42px;
-      }
-
-      /* 2. Checkboxes de aulas e botões de anotação maiores para o polegar */
-      .unit-menu-card .form-check-input {
-        width: 1.4rem;
-        height: 1.4rem;
-        flex-shrink: 0;
-      }
-
-      .lesson-note-btn {
-        min-width: 40px;
-        min-height: 38px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.95rem;
-      }
-
-      /* 3. Botões de ação no Kanban e Repositórios mais confortáveis */
-      .btn-group-sm > .btn, .btn-sm {
-        padding: 0.42rem 0.75rem;
-        font-size: 0.82rem;
-      }
-
-      /* 4. Ajuste de respiro nos Cards, Banner e Relógio Pomodoro */
-      .crimson-hero-banner {
-        padding: 1.4rem 1.2rem;
-        margin-bottom: 1.5rem;
-      }
-      .crimson-hero-banner h2 {
-        font-size: 1.65rem !important;
-      }
-      .section-title {
-        font-size: 1.75rem;
-        margin-bottom: 1rem;
-      }
-      .nexus-card {
-        padding: 1.15rem !important;
-      }
-      .unit-menu-card {
-        padding: 1.15rem 1rem;
-      }
-      .pomodoro-display {
-        font-size: clamp(3.8rem, 18vw, 5.2rem);
-      }
-
-      /* 5. Ajuste da Agenda (Upcoming Events) em telas estreitas */
-      .event-row {
-        gap: 0.75rem;
-        padding: 1rem 0.25rem;
-      }
-      .event-day-split {
-        font-size: 2.1rem;
-        min-width: 44px;
-      }
-
-      /* 6. Modais e Ace Editor adaptados para quando o teclado do celular abrir */
-      .modal-dialog {
-        margin: 0.5rem;
-      }
-      #editorContainer {
-        height: 260px !important;
-      }
-      #repoEditorContainer, #pyAceContainer {
-        height: 200px !important;
-      }
-    }
-
-    /* =========================================================
-       ETAPA 4 MOBILE: INDICADOR PULL-TO-REFRESH & TOAST NATIVO
-       ========================================================= */
     .ptr-indicator {
       position: fixed;
       top: 12px;
@@ -661,12 +490,153 @@
       align-items: center;
       gap: 8px;
     }
-    .ptr-indicator.show {
-      transform: translate(-50%, 0);
+    .ptr-indicator.show { transform: translate(-50%, 0); }
+
+    /* Media Query Mobile Unificada */
+    @media (max-width: 991.98px) {
+      #mainNavTabs { display: none !important; }
+      body { padding-bottom: 105px !important; }
+      .nexus-header {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 28px) !important;
+        padding-bottom: 0.55rem !important;
+      }
+      .brand-logo { font-size: 1.25rem; }
+      .brand-sub { font-size: 0.55rem; letter-spacing: 2px; }
+      .form-control, .form-select, .editable-input { font-size: 16px !important; min-height: 42px; }
+      .unit-menu-card .form-check-input { width: 1.4rem; height: 1.4rem; flex-shrink: 0; }
+      .lesson-note-btn { min-width: 40px; min-height: 38px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+      .btn-group-sm > .btn, .btn-sm { padding: 0.42rem 0.75rem; font-size: 0.82rem; }
+      .crimson-hero-banner { padding: 1.4rem 1.2rem; margin-bottom: 1.5rem; }
+      .crimson-hero-banner h2 { font-size: 1.65rem !important; }
+      .section-title { font-size: 1.75rem; margin-bottom: 1rem; }
+      .nexus-card { padding: 1.15rem !important; }
+      .unit-menu-card { padding: 1.15rem 1rem; }
+      .pomodoro-display { font-size: clamp(3.8rem, 18vw, 5.2rem); }
+      .event-row { gap: 0.75rem; padding: 1rem 0.25rem; }
+      .event-day-split { font-size: 2.1rem; min-width: 44px; }
+      .modal-dialog { margin: 0.5rem; }
+      #editorContainer { height: 260px !important; }
+      #repoEditorContainer, #pyAceContainer { height: 200px !important; }
     }
 
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .nexus-header, #mainNavTabs, .btn, .no-print { display: none !important; }
+      .nexus-card { border: 1px solid #ccc !important; box-shadow: none !important; background: #fff !important; color: #000 !important; break-inside: avoid; }
+      .text-secondary, .text-white, .text-info { color: #111 !important; }
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: #223548; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-crimson); }
+
+    /* Central de Hidratação Semanal & Mensal */
+    .hydro-week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      align-items: end;
+      height: 170px;
+      padding-top: 18px;
+    }
+    .hydro-day-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      cursor: pointer;
+    }
+    .hydro-bar-track {
+      width: 100%;
+      max-width: 34px;
+      flex-grow: 1;
+      background: #0b1218;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: flex-end;
+      padding: 2px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .hydro-day-col:hover .hydro-bar-track {
+      border-color: var(--accent-cyan);
+    }
+    .hydro-bar-fill {
+      width: 100%;
+      background: linear-gradient(180deg, var(--accent-cyan), #0284c7);
+      transition: height 0.35s ease;
+    }
+    .hydro-bar-fill.goal-met {
+      background: linear-gradient(180deg, #10b981, #059669);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+    }
+    .hydro-month-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+    }
+    .hydro-month-Dot {
+      height: 22px;
+      background: #0b1218;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .hydro-month-Dot:hover {
+      transform: scale(1.15);
+      border-color: #fff;
+      z-index: 2;
+    }
+    .hydro-month-Dot.partial { background: rgba(0, 200, 255, 0.22); color: #fff; border-color: rgba(0, 200, 255, 0.5); }
+    .hydro-month-Dot.met { background: rgba(16, 185, 129, 0.3); color: #6ee7b7; border-color: #10b981; font-weight: 700; }
+
+    /* =========================================================
+       FASE 4: CRONOGRAMA SEMANAL ESTILO DARK CLUB / LAVO
+       ========================================================= */
+    .sched-card {
+      background: #131f2a;
+      border: 1px solid var(--border-subtle);
+      padding: 1.35rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+    .sched-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 200, 255, 0.4);
+    }
+    .sched-card.is-today {
+      background: linear-gradient(180deg, rgba(242, 41, 91, 0.08) 0%, #131f2a 65%);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 10px 28px rgba(0, 200, 255, 0.12);
+    }
+    .sched-day-code {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, var(--accent-cyan) 50%, var(--accent-crimson) 50%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sched-header-line {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
+
 <body>
 
   <!-- ================= HEADER FIXO MINIMALISTA (SLIM & AUTO-HIDE) ================= -->
@@ -898,6 +868,87 @@
               <small class="text-secondary" id="statNextDeadlineCountdown">Tudo em dia!</small>
             </div>
           </div>
+        </div>
+
+
+        <!-- Central de Hidratação (Diário, Semanal & Mensal) -->
+        <h2 class="section-title">Central de Hidratação</h2>
+        <div class="row g-4 mb-5">
+          
+          <!-- Coluna Esquerda: Controle de Hoje + Gráfico Semanal (7 Dias) -->
+          <div class="col-12 col-lg-7">
+            <div class="nexus-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                  <div>
+                    <h5 class="fw-bold mb-0 text-info"><i class="bi bi-droplet-half me-2"></i>Desempenho Semanal (Últimos 7 Dias)</h5>
+                    <small class="text-secondary" id="homeHydroTodayLabel">Hoje: 0 / 3000 ml (0%)</small>
+                  </div>
+                  <div class="d-flex gap-1 flex-wrap">
+                    <button class="btn btn-nexus btn-sm py-1 px-2" onclick="addWaterMl(250)">+250ml</button>
+                    <button class="btn btn-outline-nexus btn-sm py-1 px-2" onclick="addWaterMl(500)">+500ml</button>
+                    <button class="btn btn-outline-nexus btn-sm py-1 px-2" onclick="changeWaterGoal()" title="Alterar meta diária"><i class="bi bi-sliders"></i> Meta</button>
+                  </div>
+                </div>
+
+                <!-- Barras Verticais dos 7 Dias -->
+                <div id="hydroWeeklyBarsContainer" class="hydro-week-grid"></div>
+              </div>
+
+              <small class="text-secondary mt-3 d-block" style="font-size:0.75rem;">
+                💡 Dica: Toque na barra de qualquer dia acima para corrigir ou registrar um valor passado.
+              </small>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Visão Mensal & Registro por Data -->
+          <div class="col-12 col-lg-5">
+            <div class="nexus-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold mb-0 text-info"><i class="bi bi-calendar3 me-2"></i>Balanço Mensal (30 Dias)</h5>
+                  <span class="badge bg-dark border border-secondary text-info" id="hydroMonthTitleBadge" style="border-radius:0;">Mês Atual</span>
+                </div>
+
+                <!-- 3 Indicadores do Mês -->
+                <div class="row g-2 text-center mb-3">
+                  <div class="col-4">
+                    <div class="p-2" style="background:#0b1218; border:1px solid var(--border-subtle);">
+                      <small class="text-secondary d-block" style="font-size:0.68rem;">TOTAL NO MÊS</small>
+                      <span class="fw-bold text-info display-font fs-5" id="hydroMonthTotalLiters">0.0 L</span>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="p-2" style="background:#0b1218; border:1px solid var(--border-subtle);">
+                      <small class="text-secondary d-block" style="font-size:0.68rem;">MÉDIA DIÁRIA</small>
+                      <span class="fw-bold text-white display-font fs-5" id="hydroMonthAvgMl">0 ml</span>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="p-2" style="background:#0b1218; border:1px solid var(--border-subtle);">
+                      <small class="text-secondary d-block" style="font-size:0.68rem;">METAS BATIDAS</small>
+                      <span class="fw-bold text-success display-font fs-5" id="hydroMonthGoalDays">0 d</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Grade Visual dos Últimos 30 Dias -->
+                <small class="text-secondary d-block mb-1" style="font-size:0.72rem;">Mapa dos últimos 30 dias (Verde = Meta Batida):</small>
+                <div id="hydroMonthlyGridContainer" class="hydro-month-grid mb-3"></div>
+              </div>
+
+              <!-- Lançamento Manual por Data -->
+              <div class="pt-2 border-top border-secondary border-opacity-25">
+                <label class="form-label small text-secondary mb-1" style="font-size:0.72rem;">Ajustar registro de um dia específico:</label>
+                <div class="input-group input-group-sm">
+                  <input type="date" id="hydroCustomDateInput" class="form-control bg-dark border-secondary text-white">
+                  <input type="number" id="hydroCustomMlInput" class="form-control bg-dark border-secondary text-info" placeholder="Ex: 3000 (ml)" step="50" min="0">
+                  <button class="btn btn-outline-nexus" type="button" onclick="saveCustomDateWater()">Salvar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- Gráficos Principais -->
@@ -1449,26 +1500,45 @@
       </div>
 
       <!-- =========================================================
-           ABA 7: CRONOGRAMA SEMANAL
+           ABA 7: CRONOGRAMA SEMANAL (ESTILO LINEUP / DARK CLUB)
            ========================================================= -->
       <div class="tab-pane fade" id="tab-schedule">
-        <h2 class="section-title">Cronograma Semanal</h2>
-        <div class="row g-4">
-          <div class="col-12 col-lg-5">
-            <div class="nexus-card p-4 h-100">
-              <h5 class="fw-bold mb-2 text-info">Definição da Grade Semanal</h5>
-              <p class="text-secondary small mb-4">Selecione qual matéria é a prioridade de estudo em cada dia da semana. O Pomodoro irá selecioná-la automaticamente para você.</p>
-              <div id="scheduleFormContainer" class="d-flex flex-column gap-3"></div>
-            </div>
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+          <div>
+            <h2 class="section-title mb-1">Cronograma Semanal</h2>
+            <p class="text-secondary small mb-0">Defina a disciplina prioritária de cada dia. O Pomodoro seleciona automaticamente a matéria do dia atual.</p>
           </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-nexus btn-sm px-3 py-2" onclick="autoDistributeSchedule()" title="Distribuir matérias automaticamente de Segunda a Sábado">
+              <i class="bi bi-magic me-1 text-info"></i> Auto-Distribuir
+            </button>
+            <button class="btn btn-outline-danger btn-sm px-3 py-2" onclick="clearEntireSchedule()" title="Limpar todos os dias">
+              <i class="bi bi-eraser me-1"></i> Limpar Grade
+            </button>
+          </div>
+        </div>
 
-          <div class="col-12 col-lg-7">
-            <div class="nexus-card p-4 h-100">
-              <h5 class="fw-bold mb-3 text-info">Visão Geral da Semana</h5>
-              <div id="scheduleOverviewContainer" class="d-flex flex-column gap-2"></div>
+        <!-- Barra de Resumo da Grade Semanal -->
+        <div class="nexus-card p-3 p-md-4 mb-4">
+          <div class="row g-3 align-items-center text-center text-md-start">
+            <div class="col-12 col-md-5 border-end border-secondary border-opacity-25">
+              <small class="text-secondary text-uppercase d-block" style="font-size:0.7rem;">PRIORIDADE DE HOJE</small>
+              <h4 class="fw-bold text-white mb-0 display-font mt-1" id="schedTodaySpotlight">Carregando...</h4>
+            </div>
+            <div class="col-6 col-md-3 border-end border-secondary border-opacity-25">
+              <small class="text-secondary text-uppercase d-block" style="font-size:0.7rem;">DIAS PLANEJADOS</small>
+              <h4 class="fw-bold text-info mb-0 display-font mt-1" id="schedDaysCount">0 / 7 DIAS</h4>
+            </div>
+            <div class="col-6 col-md-4 d-flex justify-content-center justify-content-md-end">
+              <button class="btn btn-nexus px-4 py-2 w-100" style="max-width: 240px;" onclick="startFocusForTodaySchedule()">
+                <i class="bi bi-play-fill me-1"></i> FOCAR NA MATÉRIA DE HOJE
+              </button>
             </div>
           </div>
         </div>
+
+        <!-- Grade dos 7 Dias da Semana -->
+        <div class="row g-4" id="scheduleCardsGrid"></div>
       </div>
 
       <!-- =========================================================
@@ -1622,67 +1692,67 @@
       </div>
     </div>
 
-    <!-- ================= BARRA DE NAVEGAÇÃO INFERIOR MOBILE ================= -->
-  <div class="mob-more-drawer d-lg-none" id="mobMoreDrawer">
-    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-25">
-      <span class="fw-bold small text-info text-uppercase display-font">Mais Ambientes</span>
-      <button class="btn btn-sm text-secondary p-0" onclick="toggleMobMoreDrawer(false)">
-        <i class="bi bi-x-lg"></i>
+     <!-- ================= BARRA DE NAVEGAÇÃO INFERIOR MOBILE ================= -->
+    <div class="mob-drawer-backdrop d-lg-none" id="mobDrawerBackdrop" onclick="toggleMobMoreDrawer(false)"></div>
+
+    <div class="mob-more-drawer d-lg-none" id="mobMoreDrawer">
+      <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-25">
+        <span class="fw-bold small text-info text-uppercase display-font">Mais Ambientes</span>
+        <button class="btn btn-sm text-secondary p-0" onclick="toggleMobMoreDrawer(false)">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="row g-2">
+        <div class="col-6">
+          <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-schedule" onclick="switchMobileTab('#tab-schedule')">
+            <i class="bi bi-calendar-week text-info me-2"></i> Cronograma
+          </button>
+        </div>
+        <div class="col-6">
+          <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-flashcards" onclick="switchMobileTab('#tab-flashcards')">
+            <i class="bi bi-collection-play text-warning me-2"></i> Flashcards
+          </button>
+        </div>
+        <div class="col-6">
+          <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-lab" onclick="switchMobileTab('#tab-lab')">
+            <i class="bi bi-cpu text-success me-2"></i> Laboratório
+          </button>
+        </div>
+        <div class="col-6">
+          <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-metrics" onclick="switchMobileTab('#tab-metrics')">
+            <i class="bi bi-graph-up-arrow text-danger me-2"></i> Métricas
+          </button>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-outline-nexus w-100 text-center py-2 mob-drawer-link" data-target="#tab-gallery" onclick="switchMobileTab('#tab-gallery')">
+            <i class="bi bi-trophy-fill text-warning me-2"></i> Galeria de 100 Conquistas
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="mobile-bottom-nav d-lg-none" id="mobileBottomNav">
+      <button type="button" class="mob-nav-btn active" data-target="#tab-dashboard" onclick="switchMobileTab('#tab-dashboard')">
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>Início</span>
       </button>
-    </div>
-    <div class="row g-2">
-      <div class="col-6">
-        <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-schedule" onclick="switchMobileTab('#tab-schedule')">
-          <i class="bi bi-calendar-week text-info me-2"></i> Cronograma
-        </button>
-      </div>
-      <div class="col-6">
-        <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-flashcards" onclick="switchMobileTab('#tab-flashcards')">
-          <i class="bi bi-collection-play text-warning me-2"></i> Flashcards
-        </button>
-      </div>
-      <div class="col-6">
-        <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-lab" onclick="switchMobileTab('#tab-lab')">
-          <i class="bi bi-cpu text-success me-2"></i> Laboratório
-        </button>
-      </div>
-      <div class="col-6">
-        <button class="btn btn-outline-nexus w-100 text-start py-2 px-3 mob-drawer-link" data-target="#tab-metrics" onclick="switchMobileTab('#tab-metrics')">
-          <i class="bi bi-graph-up-arrow text-danger me-2"></i> Métricas
-        </button>
-      </div>
-      <div class="col-12">
-        <button class="btn btn-outline-nexus w-100 text-center py-2 mob-drawer-link" data-target="#tab-gallery" onclick="switchMobileTab('#tab-gallery')">
-          <i class="bi bi-trophy-fill text-warning me-2"></i> Galeria de 100 Conquistas
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <nav class="mobile-bottom-nav d-lg-none" id="mobileBottomNav">
-    <button type="button" class="mob-nav-btn active" data-target="#tab-dashboard" onclick="switchMobileTab('#tab-dashboard')">
-      <i class="bi bi-grid-1x2-fill"></i>
-      <span>Início</span>
-    </button>
-    <button type="button" class="mob-nav-btn" data-target="#tab-subjects" onclick="switchMobileTab('#tab-subjects')">
-      <i class="bi bi-journal-bookmark-fill"></i>
-      <span>Matérias</span>
-    </button>
-    <button type="button" class="mob-nav-btn" data-target="#tab-pomodoro" onclick="switchMobileTab('#tab-pomodoro')">
-      <i class="bi bi-stopwatch-fill"></i>
-      <span>Pomodoro</span>
-    </button>
-    <button type="button" class="mob-nav-btn" data-target="#tab-tasks" onclick="switchMobileTab('#tab-tasks')">
-      <i class="bi bi-calendar2-check-fill"></i>
-      <span>Prazos</span>
-    </button>
-    <button type="button" class="mob-nav-btn" id="mobBtnMore" onclick="toggleMobMoreDrawer()">
-      <i class="bi bi-list"></i>
-      <span>Mais</span>
-    </button>
-  </nav>
-
-
+      <button type="button" class="mob-nav-btn" data-target="#tab-subjects" onclick="switchMobileTab('#tab-subjects')">
+        <i class="bi bi-journal-bookmark-fill"></i>
+        <span>Matérias</span>
+      </button>
+      <button type="button" class="mob-nav-btn" data-target="#tab-pomodoro" onclick="switchMobileTab('#tab-pomodoro')">
+        <i class="bi bi-stopwatch-fill"></i>
+        <span>Pomodoro</span>
+      </button>
+      <button type="button" class="mob-nav-btn" data-target="#tab-tasks" onclick="switchMobileTab('#tab-tasks')">
+        <i class="bi bi-calendar2-check-fill"></i>
+        <span>Prazos</span>
+      </button>
+      <button type="button" class="mob-nav-btn" id="mobBtnMore" onclick="toggleMobMoreDrawer()">
+        <i class="bi bi-list"></i>
+        <span>Mais</span>
+      </button>
+    </nav>
   </main>
 
   <!-- ================= MODAL: REGISTRAR SESSÃO POMODORO ================= -->
@@ -2278,19 +2348,135 @@
       }
     }
 
+    function promptEditWaterDate(dateStr, formattedLabel) {
+      if (!appState.hydration) appState.hydration = {};
+      const cur = Number(appState.hydration[dateStr]) || 0;
+      const val = prompt(`Registrar consumo de água em ${formattedLabel} (em ml):`, cur);
+      if (val !== null && !isNaN(val) && Number(val) >= 0) {
+        appState.hydration[dateStr] = Number(val);
+        saveState();
+      }
+    }
+
+    function saveCustomDateWater() {
+      const dInput = document.getElementById('hydroCustomDateInput');
+      const mlInput = document.getElementById('hydroCustomMlInput');
+      const dateStr = dInput?.value;
+      const ml = Number(mlInput?.value);
+      if (!dateStr || isNaN(ml) || ml < 0) {
+        alert('Selecione uma data válida e digite a quantidade em ml.');
+        return;
+      }
+      if (!appState.hydration) appState.hydration = {};
+      appState.hydration[dateStr] = ml;
+      if (mlInput) mlInput.value = '';
+      saveState();
+    }
+
     function updateHydrationUI() {
+      if (!appState.hydration) appState.hydration = {};
+      const todayStr = getLocalDateStr();
       const currentMl = getTodayWaterMl();
       const goalMl = Number(appState.settings?.waterGoalMl) || 3000;
       const pct = Math.min(100, Math.round((currentMl / goalMl) * 100));
 
+      // 1. Atualiza Header, Aba Pomodoro e Rótulo da Aba Início
       const headerEl = document.getElementById('uiHeaderWater');
       if (headerEl) headerEl.textContent = currentMl;
 
       const statusEl = document.getElementById('hydrationStatusText');
       if (statusEl) statusEl.textContent = `${currentMl} / ${goalMl} ml (${pct}%)`;
 
+      const homeLabelEl = document.getElementById('homeHydroTodayLabel');
+      if (homeLabelEl) homeLabelEl.textContent = `Hoje: ${currentMl} / ${goalMl} ml (${pct}% da meta)`;
+
       const barEl = document.getElementById('hydrationProgressBar');
       if (barEl) barEl.style.width = `${pct}%`;
+
+      const customDateEl = document.getElementById('hydroCustomDateInput');
+      if (customDateEl && !customDateEl.value) customDateEl.value = todayStr;
+
+      // 2. Renderiza Visão Semanal (Barras dos Últimos 7 Dias)
+      const weekContainer = document.getElementById('hydroWeeklyBarsContainer');
+      if (weekContainer) {
+        const today = new Date();
+        const colsHtml = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(today.getDate() - i);
+          const dStr = getLocalDateStr(d);
+          const dayMl = Number(appState.hydration[dStr]) || 0;
+          const dayPct = Math.min(100, Math.round((dayMl / goalMl) * 100));
+          const isMet = dayMl >= goalMl;
+          const isToday = (i === 0);
+          const shortWeekday = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').toUpperCase();
+          const dayMonthLabel = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+          const litersLabel = dayMl >= 1000 ? `${(dayMl / 1000).toFixed(1)}L` : `${dayMl}m`;
+
+          colsHtml.push(`
+            <div class="hydro-day-col" onclick="promptEditWaterDate('${dStr}', '${dayMonthLabel}')" title="${dayMonthLabel}: ${dayMl} ml / ${goalMl} ml (Clique para editar)">
+              <small class="fw-bold mb-1 ${isMet ? 'text-success' : 'text-info'}" style="font-size:0.68rem;">${litersLabel}</small>
+              <div class="hydro-bar-track ${isToday ? 'border-info' : ''}">
+                <div class="hydro-bar-fill ${isMet ? 'goal-met' : ''}" style="height: ${dayPct}%;"></div>
+              </div>
+              <small class="mt-1 fw-bold ${isToday ? 'text-white' : 'text-secondary'}" style="font-size:0.68rem;">${shortWeekday}</small>
+            </div>
+          `);
+        }
+        weekContainer.innerHTML = colsHtml.join('');
+      }
+
+      // 3. Renderiza Visão Mensal (Mês Atual + Mapa de 30 Dias)
+      const now = new Date();
+      const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const monthName = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      const monthBadge = document.getElementById('hydroMonthTitleBadge');
+      if (monthBadge) monthBadge.textContent = monthName.toUpperCase();
+
+      let monthTotalMl = 0;
+      let monthActiveDays = 0;
+      let monthGoalHitDays = 0;
+
+      Object.keys(appState.hydration).forEach(dateKey => {
+        if (dateKey.startsWith(currentYearMonth)) {
+          const val = Number(appState.hydration[dateKey]) || 0;
+          if (val > 0) {
+            monthTotalMl += val;
+            monthActiveDays++;
+          }
+          if (val >= goalMl) monthGoalHitDays++;
+        }
+      });
+
+      const avgMl = monthActiveDays > 0 ? Math.round(monthTotalMl / monthActiveDays) : 0;
+      const totalLitersEl = document.getElementById('hydroMonthTotalLiters');
+      const avgMlEl = document.getElementById('hydroMonthAvgMl');
+      const goalDaysEl = document.getElementById('hydroMonthGoalDays');
+
+      if (totalLitersEl) totalLitersEl.textContent = `${(monthTotalMl / 1000).toFixed(1)} L`;
+      if (avgMlEl) avgMlEl.textContent = `${avgMl} ml`;
+      if (goalDaysEl) goalDaysEl.textContent = `${monthGoalHitDays} dias`;
+
+      const monthGrid = document.getElementById('hydroMonthlyGridContainer');
+      if (monthGrid) {
+        const dotsHtml = [];
+        for (let i = 29; i >= 0; i--) {
+          const d = new Date(now);
+          d.setDate(now.getDate() - i);
+          const dStr = getLocalDateStr(d);
+          const ml = Number(appState.hydration[dStr]) || 0;
+          const dayNum = String(d.getDate()).padStart(2, '0');
+          const fullLabel = d.toLocaleDateString('pt-BR');
+          const statusClass = ml >= goalMl ? 'met' : (ml > 0 ? 'partial' : '');
+
+          dotsHtml.push(`
+            <div class="hydro-month-Dot ${statusClass}" onclick="promptEditWaterDate('${dStr}', '${fullLabel}')" title="${fullLabel}: ${ml} ml">
+              ${dayNum}
+            </div>
+          `);
+        }
+        monthGrid.innerHTML = dotsHtml.join('');
+      }
     }
 
     // =========================================================================
@@ -2715,21 +2901,28 @@
       }
     }
 
+    let pomoTargetEndTime = null;
+    let microTargetEndTime = null;
+
     function startPomodoro() {
       if (pomoMode === 'focus' && appState.subjects.length === 0) {
         alert('Cadastre pelo menos uma matéria antes de iniciar o Pomodoro!');
         return;
       }
       const btn = document.getElementById('pomoStartPauseBtn');
-      btn.innerHTML = `<i class="bi bi-pause-fill me-1"></i> Pausar`;
+      if (btn) btn.innerHTML = `<i class="bi bi-pause-fill me-1"></i> Pausar`;
+
+      pomoTargetEndTime = Date.now() + (pomoSecondsLeft * 1000);
+      clearInterval(pomoInterval);
 
       pomoInterval = setInterval(() => {
-        pomoSecondsLeft--;
+        pomoSecondsLeft = Math.max(0, Math.round((pomoTargetEndTime - Date.now()) / 1000));
         updatePomodoroClockUI();
 
         const elapsed = pomoTotalSeconds - pomoSecondsLeft;
         if (appState.settings?.ergo2020Enabled && elapsed > 0 && elapsed % 1200 === 0) {
           playSoftErgoChime();
+          triggerHaptic([40, 60, 40]);
           const ergoEl = document.getElementById('ergoPostureStatus');
           if (ergoEl) {
             ergoEl.innerHTML = `<span class="text-warning fw-bold">👀 Regra 20-20-20: Olhe a 6m por 20s e alinhe a coluna!</span>`;
@@ -2738,6 +2931,7 @@
         }
 
         if (pomoSecondsLeft <= 0) {
+          pomoTargetEndTime = null;
           pausePomodoro(true);
           playFinishBeep();
           if (pomoMode === 'focus') {
@@ -2751,6 +2945,7 @@
 
     function pausePomodoro(skipGate = false) {
       if (!skipGate && !verifyGatekeeperChallenge()) return;
+      pomoTargetEndTime = null;
       clearInterval(pomoInterval);
       pomoInterval = null;
       document.getElementById('pomoStartPauseBtn').innerHTML = `<i class="bi bi-play-fill me-1"></i> Iniciar`;
@@ -4014,6 +4209,10 @@
     // CRONOGRAMA SEMESTRAL INTERATIVO
     // =========================================================================
     const daysOfWeek = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+    const dayShortCodes = {
+      'Segunda': 'SEG', 'Terça': 'TER', 'Quarta': 'QUA',
+      'Quinta': 'QUI', 'Sexta': 'SEX', 'Sábado': 'SÁB', 'Domingo': 'DOM'
+    };
 
     function getTodayDayName() {
       const jsDay = new Date().getDay();
@@ -4022,45 +4221,121 @@
     }
 
     function renderScheduleUI() {
-      const container = document.getElementById('scheduleFormContainer');
-      const overview = document.getElementById('scheduleOverviewContainer');
-      
+      const grid = document.getElementById('scheduleCardsGrid');
+      if (!grid || !appState) return;
+
       if (!appState.schedule) {
         appState.schedule = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
       }
 
-      const subjectOptions = `<option value="">-- Nenhuma matéria definida --</option>` + 
-        appState.subjects.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+      const todayDay = getTodayDayName();
+      const todayStr = getLocalDateStr();
+      const todayMins = (appState.sessions || [])
+        .filter(s => s.date === todayStr)
+        .reduce((acc, s) => acc + (Number(s.minutes) || 0), 0);
 
-      container.innerHTML = daysOfWeek.map(day => {
+      // Atualiza Barra de Resumo no Topo do Cronograma
+      const todaySubId = appState.schedule[todayDay];
+      const todaySub = appState.subjects.find(s => s.id === todaySubId);
+      const spotlightEl = document.getElementById('schedTodaySpotlight');
+      if (spotlightEl) {
+        spotlightEl.innerHTML = todaySub
+          ? `<span style="color:${todaySub.color}">●</span> ${escapeHtml(todaySub.name)} <small class="text-secondary fs-6 ms-1">(${todayDay})</small>`
+          : `<span class="text-secondary">${todayDay}: Dia Livre / Sem Matéria Definida</span>`;
+      }
+
+      const filledCount = daysOfWeek.filter(d => {
+        const id = appState.schedule[d];
+        return id && appState.subjects.some(s => s.id === id);
+      }).length;
+      const countEl = document.getElementById('schedDaysCount');
+      if (countEl) countEl.textContent = `${filledCount} / 7 DIAS ATIVOS`;
+
+      // Renderiza os 7 Cards Estilo Dark Club / Lavo
+      grid.innerHTML = daysOfWeek.map(day => {
         const currentSubId = appState.schedule[day] || '';
-        const isToday = day === getTodayDayName();
-        return `
-          <div class="p-2 ${isToday ? 'border border-info' : ''}" style="background: #101923;">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="fw-bold small ${isToday ? 'text-info' : 'text-white'}">${day} ${isToday ? '(Hoje)' : ''}</span>
-            </div>
-            <select class="form-select form-select-sm bg-dark border-secondary text-white" onchange="updateDaySchedule('${day}', this.value)">
-              ${subjectOptions.replace(`value="${currentSubId}"`, `value="${currentSubId}" selected`)}
-            </select>
-          </div>
-        `;
-      }).join('');
+        const sub = appState.subjects.find(s => s.id === currentSubId);
+        const isToday = (day === todayDay);
+        const topBorderColor = sub ? sub.color : (isToday ? '#00c8ff' : 'rgba(255,255,255,0.12)');
 
-      overview.innerHTML = daysOfWeek.map(day => {
-        const subId = appState.schedule[day];
-        const sub = appState.subjects.find(s => s.id === subId);
-        const isToday = day === getTodayDayName();
+        const optionsHtml = `<option value="">-- Dia Livre / Revisão Geral --</option>` +
+          appState.subjects.map(s => `<option value="${s.id}" ${s.id === currentSubId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('');
+
+        let detailsHtml = '';
+        if (sub) {
+          const doneLessons = sub.units.reduce((acc, u) => acc + u.lessons.filter(l => l.done).length, 0);
+          const pct = Math.round((doneLessons / 20) * 100);
+          const hours = (sub.minutesStudied / 60).toFixed(1);
+
+          detailsHtml = `
+            <div class="p-3 mb-3" style="background:#0b1218; border:1px solid var(--border-subtle); border-left: 3px solid ${sub.color};">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="text-secondary">Aulas concluídas:</span>
+                <strong class="text-white">${doneLessons} / 20 (${pct}%)</strong>
+              </div>
+              <div class="progress mb-2" style="height: 4px; background:#15222e; border-radius:0;">
+                <div class="progress-bar" style="width:${pct}%; background:${sub.color};"></div>
+              </div>
+              <div class="d-flex justify-content-between small text-secondary">
+                <span>Carga acumulada:</span>
+                <span class="text-info fw-semibold">${hours}h / ${sub.targetHours}h</span>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button class="btn btn-nexus btn-sm flex-grow-1 py-2" onclick="startFocusForSubject('${sub.id}')">
+                <i class="bi bi-stopwatch me-1"></i> Iniciar Foco
+              </button>
+              <button class="btn btn-outline-nexus btn-sm px-2" onclick="openSubjectRepoModal('${sub.id}', 'prompts')" title="Prompts da Matéria">
+                <i class="bi bi-terminal"></i>
+              </button>
+              <button class="btn btn-outline-nexus btn-sm px-2" onclick="openSubjectRepoModal('${sub.id}', 'formulas')" title="Fórmulas da Matéria">
+                <i class="bi bi-calculator"></i>
+              </button>
+            </div>
+          `;
+        } else {
+          detailsHtml = `
+            <div class="p-3 mb-3 text-center text-secondary small" style="background:#0b1218; border:1px dashed var(--border-subtle);">
+              <i class="bi bi-cup-hot d-block fs-4 mb-1 text-muted"></i>
+              Dia livre para descanso, simulados ou colocar matérias em dia.
+            </div>
+            <button class="btn btn-outline-nexus btn-sm w-100 py-2" onclick="switchMobileTab('#tab-pomodoro')">
+              <i class="bi bi-play-circle me-1"></i> Abrir Estúdio Livre
+            </button>
+          `;
+        }
 
         return `
-          <div class="p-3 d-flex justify-content-between align-items-center" style="background: #101923; border-left: 3px solid ${sub ? sub.color : '#334155'};">
-            <div>
-              <span class="fw-bold ${isToday ? 'text-info' : 'text-white'}">${day}</span>
-              ${isToday ? '<span class="badge bg-info bg-opacity-25 text-info ms-2" style="border-radius:0;">Hoje</span>' : ''}
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="sched-card ${isToday ? 'is-today' : ''}" style="border-top: 3px solid ${topBorderColor};">
+              <div>
+                <div class="sched-header-line d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="sched-day-code">${dayShortCodes[day]}</span>
+                    <div>
+                      <h5 class="fw-bold text-white mb-0 display-font text-uppercase">${day}</h5>
+                      <small class="text-secondary" style="font-size:0.72rem;">
+                        ${isToday ? `🔥 Hoje (${todayMins}m focados)` : (sub ? 'Disciplina agendada' : 'Horário flexível')}
+                      </small>
+                    </div>
+                  </div>
+                  ${isToday
+                    ? `<span class="badge bg-info text-dark fw-bold" style="border-radius:0;">HOJE</span>`
+                    : (sub ? `<span class="badge" style="background:${sub.color}; border-radius:0;">ATIVA</span>` : `<span class="badge bg-dark border border-secondary text-secondary" style="border-radius:0;">LIVRE</span>`)
+                  }
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small text-secondary mb-1" style="font-size:0.72rem;">MATÉRIA PRIORITÁRIA:</label>
+                  <select class="form-select form-select-sm bg-dark border-secondary text-white fw-semibold" onchange="updateDaySchedule('${day}', this.value)">
+                    ${optionsHtml}
+                  </select>
+                </div>
+              </div>
+
+              <div>${detailsHtml}</div>
             </div>
-            <span class="badge" style="background-color: ${sub ? sub.color : '#16222d'}; font-size: 0.82rem; border-radius:0;">
-              ${sub ? escapeHtml(sub.name) : 'Dia Livre / Sem Matéria'}
-            </span>
           </div>
         `;
       }).join('');
@@ -4071,6 +4346,44 @@
       appState.schedule[day] = subId;
       saveState();
       renderScheduleUI();
+    }
+
+    function autoDistributeSchedule() {
+      if (!appState.subjects || appState.subjects.length === 0) {
+        alert('Cadastre pelo menos uma matéria antes de distribuir o cronograma!');
+        return;
+      }
+      if (!appState.schedule) appState.schedule = {};
+      daysOfWeek.forEach((day, idx) => {
+        if (day === 'Domingo') {
+          appState.schedule[day] = ''; // Deixa domingo livre por padrão
+        } else {
+          const sub = appState.subjects[idx % appState.subjects.length];
+          appState.schedule[day] = sub.id;
+        }
+      });
+      saveState();
+      renderScheduleUI();
+    }
+
+    function clearEntireSchedule() {
+      if (!confirm('Deseja limpar todas as matérias agendadas na semana?')) return;
+      appState.schedule = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
+      saveState();
+      renderScheduleUI();
+    }
+
+    function startFocusForSubject(subId) {
+      const pomoSel = document.getElementById('pomoSubjectSelect');
+      if (pomoSel && subId) pomoSel.value = subId;
+      switchMobileTab('#tab-pomodoro');
+    }
+
+    function startFocusForTodaySchedule() {
+      const todayDay = getTodayDayName();
+      const subId = appState.schedule?.[todayDay];
+      if (subId) startFocusForSubject(subId);
+      else switchMobileTab('#tab-pomodoro');
     }
 
     function checkTodayScheduleSelection() {
@@ -4567,9 +4880,20 @@
     // =========================================================================
     function toggleMobMoreDrawer(forceState) {
       const drawer = document.getElementById('mobMoreDrawer');
+      const backdrop = document.getElementById('mobDrawerBackdrop');
+      const bottomNav = document.getElementById('mobileBottomNav');
       if (!drawer) return;
+
       const shouldOpen = typeof forceState === 'boolean' ? forceState : !drawer.classList.contains('show');
+
+      if (shouldOpen && bottomNav) {
+        // Mede a altura exata da barra inferior no aparelho atual para nunca cortar o último botão
+        const navHeight = bottomNav.offsetHeight || 74;
+        drawer.style.bottom = `${navHeight}px`;
+      }
+
       drawer.classList.toggle('show', shouldOpen);
+      if (backdrop) backdrop.classList.toggle('show', shouldOpen);
     }
 
     function switchMobileTab(targetSelector) {
@@ -4609,109 +4933,21 @@
       if (target) syncMobileBottomNavHighlight(target);
     });
 
+   // =========================================================================
+    // ETAPA 4 MOBILE: VIBRAÇÃO TÁTIL, SWIPE, PULL-TO-REFRESH & SEGUNDO PLANO
     // =========================================================================
-    // ETAPA 4 MOBILE: VIBRAÇÃO TÁTIL, SWIPE, PULL-TO-REFRESH & TIMER BLINDADO
-    // =========================================================================
-
-    // 1. Motor de Feedback Tátil (Web Vibration API)
     function triggerHaptic(pattern = 12) {
-      try {
-        if ('vibrate' in navigator) {
-          navigator.vibrate(pattern);
-        }
-      } catch {}
+      try { if ('vibrate' in navigator) navigator.vibrate(pattern); } catch {}
     }
 
-    // Adiciona vibração subtil aos botões, checkboxes e flashcards
     document.addEventListener('click', (e) => {
-      const btn = e.target.closest('button, .btn, .mob-nav-btn, .sync-badge, input[type="checkbox"]');
-      if (btn) {
+      if (e.target.closest('button, .btn, .mob-nav-btn, .sync-badge, input[type="checkbox"]')) {
         triggerHaptic(12);
       } else if (e.target.closest('#fcStudyBox')) {
         triggerHaptic([15, 30, 15]);
       }
     }, { passive: true });
 
-    // Reforça o alarme de fim do Pomodoro com vibração de pulso
-    const _originalPlayFinishBeep = playFinishBeep;
-    playFinishBeep = function() {
-      triggerHaptic([200, 100, 200, 100, 350]);
-      _originalPlayFinishBeep();
-    };
-
-    // 2. Blindagem do Temporizador em Segundo Plano (Timestamp Real Date.now)
-    let pomoTargetEndTime = null;
-    let microTargetEndTime = null;
-
-    startPomodoro = function() {
-      if (pomoMode === 'focus' && appState.subjects.length === 0) {
-        alert('Cadastre pelo menos uma matéria antes de iniciar o Pomodoro!');
-        return;
-      }
-      const btn = document.getElementById('pomoStartPauseBtn');
-      if (btn) btn.innerHTML = `<i class="bi bi-pause-fill me-1"></i> Pausar`;
-
-      pomoTargetEndTime = Date.now() + (pomoSecondsLeft * 1000);
-      clearInterval(pomoInterval);
-
-      pomoInterval = setInterval(() => {
-        const now = Date.now();
-        pomoSecondsLeft = Math.max(0, Math.round((pomoTargetEndTime - now) / 1000));
-        updatePomodoroClockUI();
-
-        const elapsed = pomoTotalSeconds - pomoSecondsLeft;
-        if (appState.settings?.ergo2020Enabled && elapsed > 0 && elapsed % 1200 === 0) {
-          playSoftErgoChime();
-          triggerHaptic([40, 60, 40]);
-          const ergoEl = document.getElementById('ergoPostureStatus');
-          if (ergoEl) {
-            ergoEl.innerHTML = `<span class="text-warning fw-bold">👀 Regra 20-20-20: Olhe a 6m por 20s e alinhe a coluna!</span>`;
-            setTimeout(() => { ergoEl.textContent = '🪑 Postura ereta • Olhos relaxados'; }, 20000);
-          }
-        }
-
-        if (pomoSecondsLeft <= 0) {
-          pomoTargetEndTime = null;
-          pausePomodoro(true);
-          playFinishBeep();
-          if (pomoMode === 'focus') {
-            openSessionModal(Math.round(pomoTotalSeconds / 60));
-          } else {
-            setPomodoroMode('focus');
-          }
-        }
-      }, 1000);
-    };
-
-    const _originalPausePomodoro = pausePomodoro;
-    pausePomodoro = function(skipGate = false) {
-      pomoTargetEndTime = null;
-      _originalPausePomodoro(skipGate);
-    };
-
-    // Blindagem também para o Micro-Estudo de 10 minutos
-    toggleMicroTimer = function() {
-      const btn = document.getElementById('btnMicroStart');
-      if (microInterval) {
-        microTargetEndTime = null;
-        stopMicroTimer();
-      } else {
-        if (btn) btn.textContent = 'Pausar';
-        microTargetEndTime = Date.now() + (microSecondsLeft * 1000);
-        microInterval = setInterval(() => {
-          microSecondsLeft = Math.max(0, Math.round((microTargetEndTime - Date.now()) / 1000));
-          updateMicroTimerUI();
-          if (microSecondsLeft <= 0) {
-            microTargetEndTime = null;
-            stopMicroTimer();
-            playFinishBeep();
-            finishMicroStudySession();
-          }
-        }, 1000);
-      }
-    };
-
-    // Sincroniza o relógio imediatamente ao desbloquear o ecrã do telemóvel
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         if (pomoInterval && pomoTargetEndTime) {
@@ -4725,7 +4961,6 @@
       }
     });
 
-    // 3. Indicador Visual & Pull-to-Refresh + Swipe Horizontal entre Abas
     (function initTouchGestures() {
       const ptrEl = document.createElement('div');
       ptrEl.className = 'ptr-indicator';
@@ -4734,18 +4969,13 @@
       document.body.appendChild(ptrEl);
 
       const mainMobileTabs = ['#tab-dashboard', '#tab-subjects', '#tab-pomodoro', '#tab-tasks'];
-      let touchStartX = 0;
-      let touchStartY = 0;
-      let isIgnoredElement = false;
-      let isPullingTop = false;
+      let touchStartX = 0, touchStartY = 0, isIgnoredElement = false, isPullingTop = false;
 
       document.addEventListener('touchstart', (e) => {
         if (e.touches.length !== 1) return;
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
         isPullingTop = (window.scrollY <= 5);
-
-        // Ignora gestos se o toque foi em sliders, tabelas, heatmap, modais ou Ace Editor
         isIgnoredElement = Boolean(
           e.target.closest('input[type="range"], .table-responsive, .heatmap-grid, .ace_editor, .modal.show, select, input, textarea')
         );
@@ -4766,38 +4996,29 @@
           ptrEl.classList.remove('show');
           return;
         }
-
         const dx = e.changedTouches[0].clientX - touchStartX;
         const dy = e.changedTouches[0].clientY - touchStartY;
 
-        // A. Dispara Pull-to-Refresh se puxou para baixo no topo da página
         if (isPullingTop && dy > 95 && Math.abs(dy) > Math.abs(dx) * 2) {
           triggerHaptic([15, 40, 20]);
           document.getElementById('ptrText').textContent = 'Sincronizando dados...';
-          if (localStorage.getItem(CLOUD_URL_KEY)) {
-            await pullStateFromCloud();
-          } else {
-            updateAllUI();
-          }
+          if (localStorage.getItem(CLOUD_URL_KEY)) await pullStateFromCloud();
+          else updateAllUI();
           setTimeout(() => ptrEl.classList.remove('show'), 700);
           return;
         }
         ptrEl.classList.remove('show');
 
-        // B. Dispara Swipe Horizontal entre as 4 abas principais no telemóvel
         if (window.innerWidth <= 991 && Math.abs(dx) > 85 && Math.abs(dx) > Math.abs(dy) * 2.2) {
           const activePane = document.querySelector('.tab-content > .tab-pane.active');
           if (!activePane) return;
-          const currentSelector = `#${activePane.id}`;
-          const currentIndex = mainMobileTabs.indexOf(currentSelector);
+          const currentIndex = mainMobileTabs.indexOf(`#${activePane.id}`);
           if (currentIndex === -1) return;
 
           if (dx < 0 && currentIndex < mainMobileTabs.length - 1) {
-            // Deslizou para a esquerda -> Próxima aba
             triggerHaptic(15);
             switchMobileTab(mainMobileTabs[currentIndex + 1]);
           } else if (dx > 0 && currentIndex > 0) {
-            // Deslizou para a direita -> Aba anterior
             triggerHaptic(15);
             switchMobileTab(mainMobileTabs[currentIndex - 1]);
           }
