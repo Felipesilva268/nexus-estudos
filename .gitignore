@@ -1,0 +1,8 @@
+# Dados pessoais (backup do app) — não versionar
+meus_dados.json
+
+# Cópia de segurança da versão antiga
+index.original.html
+
+# Configurações locais do Claude Code
+.claude/
