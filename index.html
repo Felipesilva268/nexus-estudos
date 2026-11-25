@@ -4,11 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <!-- Configurações de Web App para Celular (PWA) -->
-  <meta name="theme-color" content="#0f1820">
+  <meta name="theme-color" content="#0e1116">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>NEXUS // STUDY CLUB</title>
+  <title>Nexus Study</title>
+  <meta name="description" content="Organize matérias, foco, prazos, flashcards e hábitos de estudo.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -148,14 +152,16 @@
 
         <!-- Destaque do dia -->
         <section class="hero-card">
-          <div>
-            <p class="eyebrow">Hoje</p>
+          <div class="min-w-0">
+            <p class="eyebrow" id="heroEyebrow">Hoje</p>
             <h2 id="heroBannerHeadline">Pronto para estudar?</h2>
             <p id="heroBannerSubtext">Mantenha a constância e avance nas unidades do semestre.</p>
           </div>
-          <button class="btn btn-nexus btn-lg px-4" onclick="document.querySelector('[data-bs-target=\'#tab-pomodoro\']').click()">
-            <i class="bi bi-play-fill me-1"></i> Começar foco
-          </button>
+          <div class="hero-actions" id="heroActions">
+            <button class="btn btn-nexus btn-lg px-4" onclick="switchMobileTab('#tab-pomodoro')">
+              <i class="bi bi-play-fill me-1"></i> Começar foco
+            </button>
+          </div>
         </section>
 
         <!-- Resumo -->
@@ -202,21 +208,29 @@
         <!-- Barra de Criação de Matéria -->
         <div class="nexus-card p-4 mb-5">
           <form id="addSubjectForm" class="row g-3 align-items-end" onsubmit="handleCreateSubject(event)">
-            <div class="col-12 col-md-5">
-              <label class="form-label small text-secondary mb-1">Nome da Nova Matéria</label>
+            <div class="col-12 col-lg-4">
+              <label class="form-label small text-secondary mb-1">Nome da nova matéria</label>
               <input type="text" id="newSubName" class="form-control bg-dark border-secondary text-white" placeholder="Ex: Algoritmos e Programação Estruturada" required>
             </div>
-            <div class="col-6 col-md-3">
-              <label class="form-label small text-secondary mb-1">Meta de Horas no Semestre</label>
+            <div class="col-4 col-lg-2">
+              <label class="form-label small text-secondary mb-1">Meta (h)</label>
               <input type="number" id="newSubTargetHours" class="form-control bg-dark border-secondary text-white" value="40" min="1" required>
             </div>
-            <div class="col-6 col-md-2">
-              <label class="form-label small text-secondary mb-1">Cor de Destaque</label>
+            <div class="col-4 col-lg-1">
+              <label class="form-label small text-secondary mb-1">Unidades</label>
+              <input type="number" id="newSubUnits" class="form-control" value="4" min="1" max="12" required>
+            </div>
+            <div class="col-4 col-lg-1">
+              <label class="form-label small text-secondary mb-1">Aulas/un.</label>
+              <input type="number" id="newSubLessons" class="form-control" value="5" min="1" max="30" required>
+            </div>
+            <div class="col-6 col-lg-2">
+              <label class="form-label small text-secondary mb-1">Cor</label>
               <input type="color" id="newSubColor" class="form-control form-control-color w-100 bg-dark border-secondary" value="#7c83ff">
             </div>
-            <div class="col-12 col-md-2">
+            <div class="col-6 col-lg-2">
               <button type="submit" class="btn btn-nexus w-100 py-2">
-                <i class="bi bi-plus-lg me-1"></i> Criar (4x5)
+                <i class="bi bi-plus-lg me-1"></i> Criar matéria
               </button>
             </div>
           </form>
@@ -497,22 +511,28 @@
               <div id="fcReviewControls" class="d-none">
                 <p class="text-center text-secondary small mb-2">Como foi lembrar desta resposta?</p>
                 <div class="row g-2">
-                  <div class="col-4">
-                    <button class="btn btn-outline-danger w-100" onclick="rateCurrentFlashcard(1)">
-                      😰 Difícil<br><small style="font-size:0.7rem;">Amanhã (1d)</small>
+                  <div class="col-6 col-md-3">
+                    <button class="btn btn-outline-danger w-100" onclick="rateCurrentFlashcard(0)">
+                      Errei<br><small class="fc-next" id="fcNext0">hoje</small>
                     </button>
                   </div>
-                  <div class="col-4">
+                  <div class="col-6 col-md-3">
                     <button class="btn btn-outline-warning w-100" onclick="rateCurrentFlashcard(3)">
-                      🤔 Médio<br><small style="font-size:0.7rem;">Em 3 dias</small>
+                      Difícil<br><small class="fc-next" id="fcNext3">1 dia</small>
                     </button>
                   </div>
-                  <div class="col-4">
-                    <button class="btn btn-outline-success w-100" onclick="rateCurrentFlashcard(7)">
-                      🚀 Fácil<br><small style="font-size:0.7rem;">Em 7 dias</small>
+                  <div class="col-6 col-md-3">
+                    <button class="btn btn-outline-nexus w-100" onclick="rateCurrentFlashcard(4)">
+                      Bom<br><small class="fc-next" id="fcNext4">1 dia</small>
+                    </button>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <button class="btn btn-outline-success w-100" onclick="rateCurrentFlashcard(5)">
+                      Fácil<br><small class="fc-next" id="fcNext5">3 dias</small>
                     </button>
                   </div>
                 </div>
+                <p class="text-center text-secondary small mt-2 mb-0">Atalhos: <kbd>Espaço</kbd> vira · <kbd>1</kbd>–<kbd>4</kbd> avaliam</p>
               </div>
 
             </div>
@@ -715,7 +735,7 @@
         <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
           <div>
             <h2 class="section-title mb-1">Cronograma Semanal</h2>
-            <p class="text-secondary small mb-0">Defina a disciplina prioritária de cada dia. O Pomodoro seleciona automaticamente a matéria do dia atual.</p>
+            <p class="text-secondary small mb-0">Monte blocos de estudo com horário. O foco escolhe sozinho a matéria do bloco atual.</p>
           </div>
           <div class="d-flex gap-2">
             <button class="btn btn-outline-nexus btn-sm px-3 py-2" onclick="autoDistributeSchedule()" title="Distribuir matérias automaticamente de Segunda a Sábado">
@@ -731,16 +751,16 @@
         <div class="nexus-card p-3 p-md-4 mb-4">
           <div class="row g-3 align-items-center text-center text-md-start">
             <div class="col-12 col-md-5 border-end border-secondary border-opacity-25">
-              <small class="text-secondary text-uppercase d-block" style="font-size:0.7rem;">PRIORIDADE DE HOJE</small>
+              <small class="text-secondary text-uppercase d-block" style="font-size:0.7rem;">Hoje</small>
               <h4 class="fw-bold text-white mb-0 display-font mt-1" id="schedTodaySpotlight">Carregando...</h4>
             </div>
             <div class="col-6 col-md-3 border-end border-secondary border-opacity-25">
-              <small class="text-secondary text-uppercase d-block" style="font-size:0.7rem;">DIAS PLANEJADOS</small>
+              <small class="text-secondary text-uppercase d-block" style="font-size:0.7rem;">Semana planejada</small>
               <h4 class="fw-bold text-info mb-0 display-font mt-1" id="schedDaysCount">0 / 7 DIAS</h4>
             </div>
             <div class="col-6 col-md-4 d-flex justify-content-center justify-content-md-end">
               <button class="btn btn-nexus px-4 py-2 w-100" style="max-width: 240px;" onclick="startFocusForTodaySchedule()">
-                <i class="bi bi-play-fill me-1"></i> FOCAR NA MATÉRIA DE HOJE
+                <i class="bi bi-play-fill me-1"></i> Focar no bloco de agora
               </button>
             </div>
           </div>
@@ -952,7 +972,7 @@
         <div class="nexus-card p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold mb-0 text-info">Histórico Recente de Sessões (Log de Estudo)</h5>
-            <small class="text-secondary">Últimos 15 registros</small>
+            <small class="text-secondary">Clique no lápis para corrigir uma sessão</small>
           </div>
           <div class="table-responsive">
             <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
@@ -962,6 +982,7 @@
                   <th>Matéria</th>
                   <th>Duração</th>
                   <th>O que foi estudado</th>
+                  <th class="text-end"></th>
                 </tr>
               </thead>
               <tbody id="studyLogTableBody">
@@ -1123,8 +1144,9 @@
           <div id="editorContainer" style="width: 100%; height: 380px; border:1px solid var(--border-subtle); border-radius:var(--radius-sm);"></div>
         </div>
         <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-nexus me-auto" onclick="createFlashcardFromNote()" title="Selecione um trecho e crie um flashcard com ele"><i class="bi bi-collection me-1"></i> Criar flashcard</button>
           <button type="button" class="btn btn-outline-nexus" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-nexus px-4" onclick="saveCurrentLessonNote()">Salvar Anotação</button>
+          <button type="button" class="btn btn-nexus px-4" onclick="saveCurrentLessonNote()">Salvar anotação</button>
         </div>
       </div>
     </div>

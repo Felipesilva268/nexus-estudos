@@ -2,11 +2,11 @@
     let appState = null;
     let fileHandle = null;
 
-    function createSubjectTemplate(name, color, targetHours) {
+    function createSubjectTemplate(name, color, targetHours, unitCount = 4, lessonCount = 5) {
       const units = [];
-      for (let u = 1; u <= 4; u++) {
+      for (let u = 1; u <= unitCount; u++) {
         const lessons = [];
-        for (let l = 1; l <= 5; l++) {
+        for (let l = 1; l <= lessonCount; l++) {
           lessons.push({
             id: `u${u}_l${l}_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
             name: `Aula ${l} - Tópico da Aula`,
@@ -56,9 +56,7 @@
         flashcards: [],
         hydration: {},
         sleepLog: {},
-        schedule: {
-          'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': ''
-        }
+        schedule: { 'Segunda': [], 'Terça': [], 'Quarta': [], 'Quinta': [], 'Sexta': [], 'Sábado': [], 'Domingo': [] }
       };
     }
 
@@ -80,9 +78,7 @@
       data.flashcards = Array.isArray(data.flashcards) ? data.flashcards : [];
       data.hydration = (data.hydration && typeof data.hydration === 'object') ? data.hydration : {};
       data.sleepLog = (data.sleepLog && typeof data.sleepLog === 'object') ? data.sleepLog : {};
-      data.schedule = data.schedule || {
-        'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': ''
-      };
+      data.schedule = (data.schedule && typeof data.schedule === 'object') ? data.schedule : {};
       data.subjects = Array.isArray(data.subjects) ? data.subjects : [];
 
       data.subjects.forEach(sub => {
@@ -647,14 +643,76 @@
     // =========================================================================
     // GERENCIAMENTO DE MATÉRIAS (ESTILO "BAR MENU ." - 4 UNIDADES x 5 AULAS)
     // =========================================================================
+
+    // ---------- Estrutura flexível: unidades e aulas ----------
+    function countLessons(sub) {
+      return sub.units.reduce((acc, u) => acc + u.lessons.length, 0);
+    }
+    function countDoneLessons(sub) {
+      return sub.units.reduce((acc, u) => acc + u.lessons.filter(l => l.done).length, 0);
+    }
+    function newLesson(n) {
+      return { id: `l_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, name: `Aula ${n} - Tópico da Aula`, done: false, note: '' };
+    }
+
+    function addLesson(subId, unitId) {
+      const unit = appState.subjects.find(s => s.id === subId)?.units.find(u => u.id === unitId);
+      if (!unit) return;
+      unit.lessons.push(newLesson(unit.lessons.length + 1));
+      saveState();
+    }
+
+    async function removeLesson(subId, unitId, lessonId) {
+      const unit = appState.subjects.find(s => s.id === subId)?.units.find(u => u.id === unitId);
+      const lesson = unit?.lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+      if (lesson.note && lesson.note.trim()) {
+        const ok = await uiConfirm(`"${lesson.name}" tem anotações. Remover mesmo assim?`, { title: 'Remover aula', okLabel: 'Remover', danger: true });
+        if (!ok) return;
+      }
+      undoable(`"${lesson.name}" removida.`, () => {
+        const u = appState.subjects.find(s => s.id === subId).units.find(x => x.id === unitId);
+        u.lessons = u.lessons.filter(l => l.id !== lessonId);
+      });
+    }
+
+    function addUnit(subId) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      if (!sub) return;
+      const n = sub.units.length + 1;
+      sub.units.push({
+        id: `u${n}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        name: `Unidade ${n}`,
+        score: null,
+        lessons: [1, 2, 3, 4, 5].map(newLesson),
+        quizQuestions: []
+      });
+      saveState();
+    }
+
+    async function removeUnit(subId, unitId) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      const unit = sub?.units.find(u => u.id === unitId);
+      if (!unit) return;
+      const ok = await uiConfirm(`Remover "${unit.name}" com ${unit.lessons.length} aulas, anotações e simulado?`, { title: 'Remover unidade', okLabel: 'Remover', danger: true });
+      if (!ok) return;
+      undoable(`"${unit.name}" removida.`, () => {
+        const s = appState.subjects.find(x => x.id === subId);
+        s.units = s.units.filter(u => u.id !== unitId);
+      });
+    }
+
     function handleCreateSubject(e) {
       e.preventDefault();
       const name = document.getElementById('newSubName').value.trim();
       const targetHours = document.getElementById('newSubTargetHours').value;
       const color = document.getElementById('newSubColor').value;
+      const unitCount = Math.min(12, Math.max(1, Number(document.getElementById('newSubUnits')?.value) || 4));
+      const lessonCount = Math.min(30, Math.max(1, Number(document.getElementById('newSubLessons')?.value) || 5));
       if (!name) return;
 
-      appState.subjects.push(createSubjectTemplate(name, color, targetHours));
+      appState.subjects.push(createSubjectTemplate(name, color, targetHours, unitCount, lessonCount));
+      uiToast(`"${name}" criada com ${unitCount} unidades de ${lessonCount} aulas.`, { type: 'success' });
       document.getElementById('newSubName').value = '';
       saveState();
       refreshCharts();
@@ -738,7 +796,8 @@
           }
         });
 
-        const progressPct = Math.round((lessonsDone / 20) * 100);
+        const totalLessonsSub = countLessons(sub);
+        const progressPct = totalLessonsSub ? Math.round((lessonsDone / totalLessonsSub) * 100) : 0;
         const hoursStudied = (sub.minutesStudied / 60).toFixed(1);
         const maxPossibleScore = unitsScored * 5;
         const quizDisplay = unitsScored > 0
@@ -757,7 +816,7 @@
                 </div>
                 <div class="d-flex flex-wrap gap-4 mt-1 small text-secondary px-1">
                   <span><strong class="text-white">${hoursStudied}h</strong> / ${sub.targetHours}h estudadas</span>
-                  <span><strong class="text-info">${lessonsDone}/20</strong> aulas (${progressPct}%)</span>
+                  <span><strong class="text-info">${lessonsDone}/${totalLessonsSub}</strong> aulas (${progressPct}%)</span>
                   <span>Exercícios: <strong class="text-white">${quizDisplay}</strong></span>
                 </div>
               </div>
@@ -782,7 +841,7 @@
             <div class="row g-4">
               ${sub.units.map((u, uIdx) => {
                 const uDone = u.lessons.filter(l => l.done).length;
-                const uPct = uDone * 20;
+                const uPct = u.lessons.length ? Math.round((uDone / u.lessons.length) * 100) : 0;
                 const qCount = (u.quizQuestions || []).length;
                 return `
                   <div class="col-12 col-md-6 col-xl-3">
@@ -791,7 +850,10 @@
                         <div class="unit-menu-header">
                           <input type="text" class="editable-input unit-menu-title" value="${escapeHtml(u.name)}"
                             onchange="renameUnit('${sub.id}', '${u.id}', this.value)" title="Renomear Unidade ${uIdx + 1}">
-                          <small class="text-secondary d-block mt-1 px-1" style="font-size:0.75rem;">${uDone}/5 aulas · ${uPct}%</small>
+                          <div class="d-flex justify-content-between align-items-center mt-1 px-1">
+                            <small class="text-secondary" style="font-size:0.75rem;">${uDone}/${u.lessons.length} aulas · ${uPct}%</small>
+                            <button type="button" class="lesson-remove-btn" onclick="removeUnit('${sub.id}', '${u.id}')" title="Remover unidade" aria-label="Remover unidade"><i class="bi bi-trash"></i></button>
+                          </div>
                         </div>
 
                         <div class="d-flex flex-column gap-2 mb-4">
@@ -803,6 +865,7 @@
                               <input type="text" class="editable-input small ${l.done ? 'lesson-done' : ''}"
                                 value="${escapeHtml(l.name)}"
                                 onchange="renameLesson('${sub.id}', '${u.id}', '${l.id}', this.value)">
+                              <button type="button" class="lesson-remove-btn" onclick="removeLesson('${sub.id}', '${u.id}', '${l.id}')" title="Remover aula" aria-label="Remover aula"><i class="bi bi-x"></i></button>
                               <button type="button" class="lesson-note-btn ${l.note ? 'has-notes' : ''}"
                                 onclick="openLessonNoteModal('${sub.id}', '${u.id}', '${l.id}')"
                                 title="${l.note ? 'Ver/Editar Anotação' : 'Adicionar Anotação'}">
@@ -810,6 +873,7 @@
                               </button>
                             </div>
                           `).join('')}
+                          <button type="button" class="btn btn-sm btn-link text-secondary text-start px-1" onclick="addLesson('${sub.id}', '${u.id}')"><i class="bi bi-plus"></i> Adicionar aula</button>
                         </div>
                       </div>
 
@@ -835,6 +899,9 @@
                   </div>
                 `;
               }).join('')}
+              <div class="col-12 col-md-6 col-xl-3">
+                <button type="button" class="add-unit-card" onclick="addUnit('${sub.id}')"><i class="bi bi-plus-lg"></i><span>Adicionar unidade</span></button>
+              </div>
             </div>
           </div>
         `;
@@ -1631,19 +1698,33 @@
 
       const card = currentDueFlashcards[currentFlashcardIndex];
       const sub = appState.subjects.find(s => s.id === card.subjectId);
-      subtitle.textContent = `Revisando ${currentFlashcardIndex + 1} de ${currentDueFlashcards.length} pendentes hoje`;
-      subBadge.textContent = sub ? sub.name : 'Matéria';
+      subtitle.textContent = `${currentDueFlashcards.length} ${currentDueFlashcards.length === 1 ? 'cartão pendente' : 'cartões pendentes'} hoje`;
+      subBadge.textContent = sub ? sub.name : 'Geral';
 
       if (!isFlashcardFlipped) {
-        sideLabel.textContent = 'FRENTE — PERGUNTA (Clique no cartão para virar)';
+        sideLabel.textContent = 'PERGUNTA · toque para virar';
         mainText.textContent = card.front;
         controls.classList.add('d-none');
       } else {
-        sideLabel.textContent = 'VERSO — RESPOSTA';
+        sideLabel.textContent = 'RESPOSTA';
         mainText.textContent = card.back;
         controls.classList.remove('d-none');
+        [0, 3, 4, 5].forEach(q => {
+          const el = document.getElementById(`fcNext${q}`);
+          if (el) el.textContent = describeInterval(sm2Next(card, q).interval);
+        });
       }
     }
+
+    // Atalhos na aba Flashcards: Espaço vira, 1-4 avaliam
+    document.addEventListener('keydown', (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || document.querySelector('.modal.show')) return;
+      if (!document.getElementById('tab-flashcards')?.classList.contains('active')) return;
+      if (e.code === 'Space') { e.preventDefault(); flipCurrentFlashcard(); return; }
+      const map = { Digit1: 0, Digit2: 3, Digit3: 4, Digit4: 5, Numpad1: 0, Numpad2: 3, Numpad3: 4, Numpad4: 5 };
+      if (isFlashcardFlipped && e.code in map) { e.preventDefault(); rateCurrentFlashcard(map[e.code]); }
+    });
 
     function flipCurrentFlashcard() {
       if (currentDueFlashcards.length === 0) return;
@@ -1651,18 +1732,85 @@
       updateFlashcardArenaUI();
     }
 
-    function rateCurrentFlashcard(daysToAdd) {
+    // ---------- Repetição espaçada (SM-2 simplificado) ----------
+    // Notas: 0 = Errei, 3 = Difícil, 4 = Bom, 5 = Fácil
+    function sm2Next(card, q) {
+      let ef = Number(card.ef) || 2.5;
+      let reps = Number(card.reps) || 0;
+      let interval = Number(card.interval) || 0;
+      if (q < 3) {
+        reps = 0;
+        interval = 0; // volta ainda hoje
+      } else {
+        if (reps === 0) interval = q === 3 ? 1 : (q === 4 ? 1 : 3);
+        else if (reps === 1) interval = q === 3 ? 3 : (q === 4 ? 4 : 7);
+        else interval = Math.max(1, Math.round(interval * ef * (q === 3 ? 0.8 : q === 5 ? 1.3 : 1)));
+        reps += 1;
+      }
+      ef = Math.max(1.3, ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)));
+      return { ef: Math.round(ef * 100) / 100, reps, interval };
+    }
+
+    function describeInterval(days) {
+      if (days <= 0) return 'hoje';
+      if (days === 1) return '1 dia';
+      if (days < 30) return `${days} dias`;
+      const months = Math.round(days / 30);
+      return months === 1 ? '1 mês' : `${months} meses`;
+    }
+
+    function rateCurrentFlashcard(q) {
       if (currentDueFlashcards.length === 0) return;
       const card = currentDueFlashcards[currentFlashcardIndex];
       const target = appState.flashcards.find(c => c.id === card.id);
       if (target) {
+        const next = sm2Next(target, Number(q));
+        Object.assign(target, next);
         const nextDate = new Date();
-        nextDate.setDate(nextDate.getDate() + Number(daysToAdd));
+        nextDate.setDate(nextDate.getDate() + next.interval);
         target.nextReview = getLocalDateStr(nextDate);
         target.reviewsCount = (Number(target.reviewsCount) || 0) + 1;
+        target.lastReview = getLocalDateStr();
       }
+      // Tira da fila; se errou, volta para o fim da fila de hoje
+      currentDueFlashcards.splice(currentFlashcardIndex, 1);
+      if (Number(q) < 3 && target) currentDueFlashcards.push(target);
+      if (currentFlashcardIndex >= currentDueFlashcards.length) currentFlashcardIndex = 0;
+      isFlashcardFlipped = false;
       saveState();
-      renderFlashcardsTab();
+      updateFlashcardArenaUI();
+      document.getElementById('fcTotalBadge').textContent = appState.flashcards.length;
+    }
+
+    // Cria um flashcard a partir da anotação aberta (usa o texto selecionado como resposta)
+    async function createFlashcardFromNote() {
+      const { subId, unitId, lessonId } = currentNoteTarget;
+      const sub = appState.subjects.find(s => s.id === subId);
+      const lesson = sub?.units.find(u => u.id === unitId)?.lessons.find(l => l.id === lessonId);
+      if (!sub || !lesson) return;
+      const selected = aceEditorInstance ? aceEditorInstance.getSelectedText().trim() : '';
+      const vals = await uiForm({
+        title: 'Novo flashcard',
+        message: selected ? 'O trecho selecionado virou a resposta. Escreva a pergunta.' : 'Dica: selecione um trecho da anotação antes para preencher a resposta.',
+        okLabel: 'Criar flashcard',
+        fields: [
+          { name: 'front', label: 'Pergunta (frente)', type: 'text', value: '', placeholder: `Ex: O que é ... ? (${lesson.name})` },
+          { name: 'back', label: 'Resposta (verso)', type: 'textarea', rows: 4, value: selected }
+        ],
+        validate: v => (!v.front.trim() ? 'Escreva a pergunta.' : !v.back.trim() ? 'Escreva a resposta.' : '')
+      });
+      if (!vals) return;
+      appState.flashcards.push({
+        id: 'fc_' + Date.now(),
+        subjectId: sub.id,
+        front: vals.front.trim(),
+        back: vals.back.trim(),
+        source: lesson.name,
+        nextReview: getLocalDateStr(),
+        reviewsCount: 0, ef: 2.5, reps: 0, interval: 0
+      });
+      saveState();
+      uiToast('Flashcard criado. Ele aparece na revisão de hoje.', { type: 'success' });
     }
 
     // =========================================================================
@@ -2222,7 +2370,8 @@
       if (ganttEl) {
         ganttEl.innerHTML = appState.subjects.map(s => {
           const doneL = s.units.reduce((acc, u) => acc + u.lessons.filter(l => l.done).length, 0);
-          const pct = Math.round((doneL / 20) * 100);
+          const totL = countLessons(s);
+          const pct = totL ? Math.round((doneL / totL) * 100) : 0;
           const subTasks = appState.tasks.filter(t => t.subjectId === s.id && t.status !== 'done');
           const nextTaskInfo = subTasks.length > 0 ? `Próxima entrega: ${subTasks[0].title} (${subTasks[0].dueDate.split('-').reverse().join('/')})` : 'Sem entregas pendentes';
           return `
@@ -2396,21 +2545,8 @@
       document.getElementById('uiStreakCount').textContent = streak;
       updateHydrationUI();
 
-      // Atualiza Banner Hero Carmesim Dinâmico
-      const todayDayName = getTodayDayName();
-      const scheduledSubId = appState.schedule?.[todayDayName];
-      const scheduledSub = appState.subjects.find(s => s.id === scheduledSubId);
-      const heroHeadline = document.getElementById('heroBannerHeadline');
-      const heroSubtext = document.getElementById('heroBannerSubtext');
-      if (heroHeadline && heroSubtext) {
-        if (scheduledSub) {
-          heroHeadline.textContent = scheduledSub.name;
-          heroSubtext.textContent = `Matéria de ${todayDayName} · ${streak} ${streak === 1 ? 'dia' : 'dias'} seguidos · meta de ${appState.settings.dailyGoalMinutes || 120} min`;
-        } else {
-          heroHeadline.textContent = `Pronto para estudar?`;
-          heroSubtext.textContent = `${streak} ${streak === 1 ? 'dia' : 'dias'} seguidos · escolha a matéria de ${todayDayName} no Cronograma`;
-        }
-      }
+      // Início: "Continuar de onde parou"
+      renderHomeContinue(streak);
 
       const todayStr = getLocalDateStr();
       const todayMins = appState.sessions
@@ -2434,7 +2570,7 @@
         .reduce((acc, s) => acc + Number(s.minutes), 0);
       document.getElementById('statWeekHours').textContent = `${weekMins} min nos últimos 7 dias`;
 
-      let totalLessons = appState.subjects.length * 20;
+      let totalLessons = appState.subjects.reduce((acc, s) => acc + countLessons(s), 0);
       let doneLessons = 0;
       let sumScores = 0;
       let scoredUnitsCount = 0;
@@ -2466,6 +2602,10 @@
         const timeTag = next.dueTime ? ` às ${next.dueTime}` : '';
         document.getElementById('statNextDeadlineTitle').textContent = next.title;
         document.getElementById('statNextDeadlineCountdown').innerHTML = `${next.type}${timeTag} • ${getDaysRemainingBadge(next.dueDate, next.status)}`;
+        if (next.dueDate < getLocalDateStr()) {
+          document.getElementById('statNextDeadlineCountdown').innerHTML +=
+            ` <button class="btn btn-link btn-sm p-0 ms-1 align-baseline" onclick="resolveTask('${next.id}')">Já fiz?</button>`;
+        }
       } else {
         document.getElementById('statNextDeadlineTitle').textContent = 'Sem prazos pendentes';
         document.getElementById('statNextDeadlineCountdown').textContent = 'Tudo em dia!';
@@ -2492,19 +2632,25 @@
 
       const tbody = document.getElementById('studyLogTableBody');
       if (appState.sessions.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-3">Nenhuma sessão registrada ainda.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-3">Nenhuma sessão registrada ainda.</td></tr>`;
       } else {
-        tbody.innerHTML = appState.sessions.slice(0, 15).map(s => {
+        const list = showAllSessions ? appState.sessions : appState.sessions.slice(0, 15);
+        tbody.innerHTML = list.map(s => {
           const sub = appState.subjects.find(sub => sub.id === s.subjectId);
           return `
             <tr>
-              <td class="small text-secondary">${s.date.split('-').reverse().join('/')} ${s.timestamp || ''}</td>
-              <td><span class="badge" style="background-color:${sub?.color || '#f2295b'};">${escapeHtml(sub?.name || 'Matéria')}</span></td>
-              <td class="fw-semibold text-info">${s.minutes} min</td>
+              <td class="small text-secondary text-nowrap">${s.date.split('-').reverse().join('/')} ${s.timestamp || ''}</td>
+              <td><span class="badge" style="background-color:${sub?.color || '#5d6573'};">${escapeHtml(sub?.name || 'Sem matéria')}</span></td>
+              <td class="fw-semibold text-nowrap">${s.minutes} min</td>
               <td class="small">${escapeHtml(s.note || '')}</td>
+              <td class="text-end text-nowrap">
+                <button class="btn btn-sm btn-outline-nexus px-2 py-0" onclick="editSession('${s.id}')" title="Editar"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-danger px-2 py-0" onclick="deleteSession('${s.id}')" title="Excluir"><i class="bi bi-trash"></i></button>
+              </td>
             </tr>
           `;
-        }).join('');
+        }).join('') + (appState.sessions.length > 15 ? `
+            <tr><td colspan="5" class="text-center"><button class="btn btn-link btn-sm" onclick="toggleAllSessions()">${showAllSessions ? 'Mostrar só as 15 últimas' : `Ver todas (${appState.sessions.length})`}</button></td></tr>` : '');
       }
 
       renderProductivityMetrics();
@@ -2513,6 +2659,149 @@
       renderTasks();
       renderBadgesWall();
     }
+
+    // ---------- Início: continuar de onde parou ----------
+    function findNextLesson(sub) {
+      for (const u of sub.units) {
+        const l = u.lessons.find(x => !x.done);
+        if (l) return { unit: u, lesson: l };
+      }
+      return null;
+    }
+
+    function pickContinueSubject() {
+      const scheduled = getCurrentScheduledSubjectId();
+      if (scheduled) return { subId: scheduled, reason: 'scheduled' };
+      const lastSess = appState.sessions.find(s => appState.subjects.some(x => x.id === s.subjectId));
+      if (lastSess) {
+        const sub = appState.subjects.find(x => x.id === lastSess.subjectId);
+        if (findNextLesson(sub)) return { subId: sub.id, reason: 'recent' };
+      }
+      const withPending = appState.subjects.find(s => findNextLesson(s));
+      return withPending ? { subId: withPending.id, reason: 'pending' } : null;
+    }
+
+    function renderHomeContinue(streak) {
+      const eyebrow = document.getElementById('heroEyebrow');
+      const headline = document.getElementById('heroBannerHeadline');
+      const subtext = document.getElementById('heroBannerSubtext');
+      const actions = document.getElementById('heroActions');
+      if (!headline || !actions) return;
+      const streakTxt = `${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'}`;
+
+      if (!appState.subjects.length) {
+        eyebrow.textContent = 'Bem-vindo';
+        headline.textContent = 'Cadastre sua primeira matéria';
+        subtext.textContent = 'Depois é só começar o foco por aqui.';
+        actions.innerHTML = `<button class="btn btn-nexus btn-lg px-4" onclick="switchMobileTab('#tab-subjects')"><i class="bi bi-plus-lg me-1"></i> Nova matéria</button>`;
+        return;
+      }
+
+      const pick = pickContinueSubject();
+      if (!pick) {
+        eyebrow.textContent = 'Parabéns';
+        headline.textContent = 'Todas as aulas concluídas 🎉';
+        subtext.textContent = `${streakTxt} · aproveite para revisar com flashcards`;
+        actions.innerHTML = `<button class="btn btn-nexus btn-lg px-4" onclick="switchMobileTab('#tab-flashcards')"><i class="bi bi-collection me-1"></i> Revisar</button>`;
+        return;
+      }
+
+      const sub = appState.subjects.find(s => s.id === pick.subId);
+      const next = findNextLesson(sub);
+      const labels = { scheduled: 'No cronograma de agora', recent: 'Continuar de onde parou', pending: 'Sugestão para agora' };
+      eyebrow.textContent = labels[pick.reason];
+      headline.textContent = sub.name;
+      subtext.textContent = next
+        ? `Próxima: ${next.unit.name} · ${next.lesson.name} — ${streakTxt}`
+        : `Todas as aulas desta matéria estão concluídas — ${streakTxt}`;
+      actions.innerHTML = `
+        <button class="btn btn-nexus btn-lg px-4" onclick="startFocusForSubject('${sub.id}')"><i class="bi bi-play-fill me-1"></i> Começar foco</button>
+        ${next ? `
+          <button class="btn btn-outline-nexus" onclick="completeLessonFromHome('${sub.id}', '${next.unit.id}', '${next.lesson.id}')" title="Marcar a próxima aula como concluída"><i class="bi bi-check2"></i> Concluí a aula</button>
+          <button class="btn btn-outline-nexus" onclick="openLessonNoteModal('${sub.id}', '${next.unit.id}', '${next.lesson.id}')" title="Anotações da aula"><i class="bi bi-journal-text"></i></button>` : ''}`;
+    }
+
+    function completeLessonFromHome(subId, unitId, lessonId) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      const lesson = sub?.units.find(u => u.id === unitId)?.lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+      undoable(`"${lesson.name}" concluída (+25 XP).`, () => { lesson.done = true; });
+    }
+
+    // ---------- Prazos vencidos: marcar como feito e lançar a nota ----------
+    async function resolveTask(taskId) {
+      const t = appState.tasks.find(x => x.id === taskId);
+      if (!t) return;
+      const vals = await uiForm({
+        title: t.title,
+        message: `Era para ${t.dueDate.split('-').reverse().join('/')}. Já foi feito?`,
+        okLabel: 'Salvar',
+        fields: [
+          { name: 'grade', label: 'Nota (opcional)', type: 'text', placeholder: 'Ex: 8,5 ou 9/10', value: t.grade || '' },
+          { name: 'newDate', label: 'Ainda não fiz — adiar para', type: 'date', value: '', hint: 'Deixe vazio para marcar como feito.' }
+        ]
+      });
+      if (!vals) return;
+      if (vals.newDate) {
+        t.dueDate = vals.newDate;
+        saveState();
+        uiToast('Prazo adiado.', { type: 'success' });
+        return;
+      }
+      t.status = 'done';
+      if (vals.grade.trim()) t.grade = vals.grade.trim();
+      saveState();
+      uiToast(`"${t.title}" concluído (+50 XP).`, { type: 'success' });
+    }
+
+    // ---------- Histórico de sessões: editar e excluir ----------
+    async function editSession(sessionId) {
+      const s = appState.sessions.find(x => x.id === sessionId);
+      if (!s) return;
+      const vals = await uiForm({
+        title: 'Editar sessão',
+        okLabel: 'Salvar',
+        fields: [
+          { name: 'subjectId', label: 'Matéria', type: 'select', value: s.subjectId,
+            options: [{ value: '', label: 'Sem matéria' }, ...appState.subjects.map(x => ({ value: x.id, label: x.name }))] },
+          { name: 'date', label: 'Data', type: 'date', value: s.date },
+          { name: 'minutes', label: 'Minutos', type: 'number', min: 1, max: 600, step: 1, value: s.minutes },
+          { name: 'note', label: 'O que foi estudado', type: 'text', value: s.note || '' }
+        ],
+        validate: v => {
+          if (!v.date) return 'Escolha uma data.';
+          if (!(Number(v.minutes) >= 1 && Number(v.minutes) <= 600)) return 'Os minutos devem ficar entre 1 e 600.';
+          return '';
+        }
+      });
+      if (!vals) return;
+      const oldSub = appState.subjects.find(x => x.id === s.subjectId);
+      if (oldSub) oldSub.minutesStudied = Math.max(0, (Number(oldSub.minutesStudied) || 0) - (Number(s.minutes) || 0));
+      s.subjectId = vals.subjectId;
+      s.date = vals.date;
+      s.minutes = Math.round(Number(vals.minutes));
+      s.note = vals.note.trim();
+      const newSub = appState.subjects.find(x => x.id === s.subjectId);
+      if (newSub) newSub.minutesStudied = (Number(newSub.minutesStudied) || 0) + s.minutes;
+      appState.sessions.sort((a, b) => `${b.date} ${b.timestamp || ''}`.localeCompare(`${a.date} ${a.timestamp || ''}`));
+      saveState();
+      refreshCharts();
+      uiToast('Sessão atualizada.', { type: 'success' });
+    }
+
+    function deleteSession(sessionId) {
+      const s = appState.sessions.find(x => x.id === sessionId);
+      if (!s) return;
+      undoable(`Sessão de ${s.minutes} min excluída.`, () => {
+        const sub = appState.subjects.find(x => x.id === s.subjectId);
+        if (sub) sub.minutesStudied = Math.max(0, (Number(sub.minutesStudied) || 0) - (Number(s.minutes) || 0));
+        appState.sessions = appState.sessions.filter(x => x.id !== sessionId);
+      });
+    }
+
+    let showAllSessions = false;
+    function toggleAllSessions() { showAllSessions = !showAllSessions; updateAllUI(); }
+
     // =========================================================================
     // SISTEMA DE ANOTAÇÕES POR AULA COM ACE EDITOR (ESTILO VS CODE)
     // =========================================================================
@@ -2659,13 +2948,55 @@
       return map[jsDay];
     }
 
+    // ---------- Cronograma: vários blocos por dia, com horário ----------
+    // appState.schedule[dia] = [{ id, subjectId, time: 'HH:MM' | '', minutes }]
+    function emptySchedule() {
+      return { 'Segunda': [], 'Terça': [], 'Quarta': [], 'Quinta': [], 'Sexta': [], 'Sábado': [], 'Domingo': [] };
+    }
+
+    // Aceita o formato antigo (uma matéria por dia, como texto) e devolve sempre uma lista ordenada
+    function getDaySlots(day) {
+      const raw = appState.schedule?.[day];
+      let slots = [];
+      if (typeof raw === 'string') slots = raw ? [{ id: 'slot_' + day, subjectId: raw, time: '', minutes: 60 }] : [];
+      else if (Array.isArray(raw)) slots = raw.filter(Boolean);
+      else if (raw && typeof raw === 'object') slots = Object.values(raw).filter(Boolean);
+      return slots
+        .filter(s => appState.subjects.some(sub => sub.id === s.subjectId))
+        .sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+    }
+
+    function normalizeSchedule(schedule) {
+      const out = emptySchedule();
+      daysOfWeek.forEach(day => {
+        const raw = schedule?.[day];
+        if (typeof raw === 'string') out[day] = raw ? [{ id: 'slot_' + day + '_0', subjectId: raw, time: '', minutes: 60 }] : [];
+        else if (Array.isArray(raw)) out[day] = raw.filter(Boolean);
+        else if (raw && typeof raw === 'object') out[day] = Object.values(raw).filter(Boolean);
+      });
+      return out;
+    }
+
+    // Matéria "da vez": o bloco de hoje em andamento ou o próximo; senão o primeiro do dia
+    function getCurrentScheduledSubjectId() {
+      const slots = getDaySlots(getTodayDayName());
+      if (!slots.length) return '';
+      const now = new Date();
+      const nowMin = now.getHours() * 60 + now.getMinutes();
+      const toMin = (t) => { const [h, m] = (t || '').split(':').map(Number); return isNaN(h) ? null : h * 60 + (m || 0); };
+      const current = slots.find(s => {
+        const start = toMin(s.time);
+        return start !== null && nowMin >= start && nowMin < start + (Number(s.minutes) || 60);
+      });
+      if (current) return current.subjectId;
+      const next = slots.find(s => { const start = toMin(s.time); return start !== null && start > nowMin; });
+      return (next || slots[0]).subjectId;
+    }
+
     function renderScheduleUI() {
       const grid = document.getElementById('scheduleCardsGrid');
       if (!grid || !appState) return;
-
-      if (!appState.schedule) {
-        appState.schedule = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
-      }
+      appState.schedule = normalizeSchedule(appState.schedule);
 
       const todayDay = getTodayDayName();
       const todayStr = getLocalDateStr();
@@ -2673,142 +3004,138 @@
         .filter(s => s.date === todayStr)
         .reduce((acc, s) => acc + (Number(s.minutes) || 0), 0);
 
-      // Atualiza Barra de Resumo no Topo do Cronograma
-      const todaySubId = appState.schedule[todayDay];
-      const todaySub = appState.subjects.find(s => s.id === todaySubId);
+      const subName = (id) => appState.subjects.find(s => s.id === id);
+      const todaySlots = getDaySlots(todayDay);
       const spotlightEl = document.getElementById('schedTodaySpotlight');
       if (spotlightEl) {
-        spotlightEl.innerHTML = todaySub
-          ? `<span style="color:${todaySub.color}">●</span> ${escapeHtml(todaySub.name)} <small class="text-secondary fs-6 ms-1">(${todayDay})</small>`
-          : `<span class="text-secondary">${todayDay}: Dia Livre / Sem Matéria Definida</span>`;
+        spotlightEl.innerHTML = todaySlots.length
+          ? todaySlots.map(sl => {
+              const s = subName(sl.subjectId);
+              return `<span class="sched-chip"><span class="subject-dot" style="background:${s.color}"></span>${sl.time ? `<b>${sl.time}</b> ` : ''}${escapeHtml(s.name)}</span>`;
+            }).join(' ')
+          : `<span class="text-secondary">${todayDay}: nada planejado</span>`;
       }
 
-      const filledCount = daysOfWeek.filter(d => {
-        const id = appState.schedule[d];
-        return id && appState.subjects.some(s => s.id === id);
-      }).length;
+      const filledCount = daysOfWeek.filter(d => getDaySlots(d).length > 0).length;
+      const plannedMins = daysOfWeek.reduce((acc, d) => acc + getDaySlots(d).reduce((a, s) => a + (Number(s.minutes) || 0), 0), 0);
       const countEl = document.getElementById('schedDaysCount');
-      if (countEl) countEl.textContent = `${filledCount} / 7 DIAS ATIVOS`;
+      if (countEl) countEl.textContent = `${filledCount}/7 dias · ${Math.round(plannedMins / 60 * 10) / 10}h na semana`;
 
-      // Renderiza os 7 Cards Estilo Dark Club / Lavo
       grid.innerHTML = daysOfWeek.map(day => {
-        const currentSubId = appState.schedule[day] || '';
-        const sub = appState.subjects.find(s => s.id === currentSubId);
+        const slots = getDaySlots(day);
         const isToday = (day === todayDay);
-        const topBorderColor = sub ? sub.color : (isToday ? '#00c8ff' : 'rgba(255,255,255,0.12)');
 
-        const optionsHtml = `<option value="">-- Dia Livre / Revisão Geral --</option>` +
-          appState.subjects.map(s => `<option value="${s.id}" ${s.id === currentSubId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('');
-
-        let detailsHtml = '';
-        if (sub) {
-          const doneLessons = sub.units.reduce((acc, u) => acc + u.lessons.filter(l => l.done).length, 0);
-          const pct = Math.round((doneLessons / 20) * 100);
-          const hours = (sub.minutesStudied / 60).toFixed(1);
-
-          detailsHtml = `
-            <div class="p-3 mb-3" style="background:var(--surface-inset); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); border-left: 3px solid ${sub.color};">
-              <div class="d-flex justify-content-between small mb-1">
-                <span class="text-secondary">Aulas concluídas:</span>
-                <strong class="text-white">${doneLessons} / 20 (${pct}%)</strong>
+        const slotsHtml = slots.length ? slots.map(sl => {
+          const sub = subName(sl.subjectId);
+          return `
+            <div class="sched-slot" style="--slot-color:${sub.color}">
+              <div class="sched-slot-time">${sl.time || '—'}</div>
+              <div class="flex-grow-1 min-w-0">
+                <div class="fw-semibold text-truncate">${escapeHtml(sub.name)}</div>
+                <small class="text-secondary">${Number(sl.minutes) || 60} min</small>
               </div>
-              <div class="progress mb-2" style="height: 4px; background:var(--surface-2);">
-                <div class="progress-bar" style="width:${pct}%; background:${sub.color};"></div>
-              </div>
-              <div class="d-flex justify-content-between small text-secondary">
-                <span>Carga acumulada:</span>
-                <span class="text-info fw-semibold">${hours}h / ${sub.targetHours}h</span>
-              </div>
-            </div>
-
-            <div class="d-flex gap-2">
-              <button class="btn btn-nexus btn-sm flex-grow-1 py-2" onclick="startFocusForSubject('${sub.id}')">
-                <i class="bi bi-stopwatch me-1"></i> Iniciar Foco
-              </button>
-              <button class="btn btn-outline-nexus btn-sm px-2" onclick="openSubjectRepoModal('${sub.id}', 'prompts')" title="Prompts da Matéria">
-                <i class="bi bi-terminal"></i>
-              </button>
-              <button class="btn btn-outline-nexus btn-sm px-2" onclick="openSubjectRepoModal('${sub.id}', 'formulas')" title="Fórmulas da Matéria">
-                <i class="bi bi-calculator"></i>
-              </button>
-            </div>
-          `;
-        } else {
-          detailsHtml = `
-            <div class="p-3 mb-3 text-center text-secondary small" style="background:var(--surface-inset); border:1px dashed var(--border-subtle); border-radius:var(--radius-sm);">
-              <i class="bi bi-cup-hot d-block fs-4 mb-1 text-muted"></i>
-              Dia livre para descanso, simulados ou colocar matérias em dia.
-            </div>
-            <button class="btn btn-outline-nexus btn-sm w-100 py-2" onclick="switchMobileTab('#tab-pomodoro')">
-              <i class="bi bi-play-circle me-1"></i> Abrir Estúdio Livre
-            </button>
-          `;
-        }
+              <button class="btn btn-sm btn-outline-nexus px-2" onclick="startFocusForSubject('${sub.id}')" title="Começar foco"><i class="bi bi-play-fill"></i></button>
+              <button class="btn btn-sm btn-outline-nexus px-2" onclick="editScheduleSlot('${day}', '${sl.id}')" title="Editar"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm btn-outline-danger px-2" onclick="removeScheduleSlot('${day}', '${sl.id}')" title="Remover"><i class="bi bi-x-lg"></i></button>
+            </div>`;
+        }).join('') : `
+          <div class="text-center text-secondary small py-3">
+            <i class="bi bi-cup-hot d-block fs-4 mb-1"></i>Dia livre
+          </div>`;
 
         return `
           <div class="col-12 col-md-6 col-xl-4">
-            <div class="sched-card ${isToday ? 'is-today' : ''}" style="border-top: 3px solid ${topBorderColor};">
+            <div class="sched-card ${isToday ? 'is-today' : ''}">
               <div>
                 <div class="sched-header-line d-flex justify-content-between align-items-center">
                   <div class="d-flex align-items-center gap-3">
                     <span class="sched-day-code">${dayShortCodes[day]}</span>
                     <div>
-                      <h5 class="fw-bold text-white mb-0 display-font text-uppercase">${day}</h5>
-                      <small class="text-secondary" style="font-size:0.72rem;">
-                        ${isToday ? `🔥 Hoje (${todayMins}m focados)` : (sub ? 'Disciplina agendada' : 'Horário flexível')}
-                      </small>
+                      <h5 class="fw-semibold mb-0">${day}</h5>
+                      <small class="text-secondary">${isToday ? `Hoje · ${todayMins} min focados` : `${slots.length} ${slots.length === 1 ? 'bloco' : 'blocos'}`}</small>
                     </div>
                   </div>
-                  ${isToday
-                    ? `<span class="badge bg-info text-dark fw-bold" >HOJE</span>`
-                    : (sub ? `<span class="badge" style="background:${sub.color};">ATIVA</span>` : `<span class="badge bg-dark border border-secondary text-secondary" >LIVRE</span>`)
-                  }
+                  ${isToday ? `<span class="badge bg-info text-dark">Hoje</span>` : ''}
                 </div>
-
-                <div class="mb-3">
-                  <label class="form-label small text-secondary mb-1" style="font-size:0.72rem;">MATÉRIA PRIORITÁRIA:</label>
-                  <select class="form-select form-select-sm bg-dark border-secondary text-white fw-semibold" onchange="updateDaySchedule('${day}', this.value)">
-                    ${optionsHtml}
-                  </select>
-                </div>
+                <div class="d-flex flex-column gap-2 mb-3">${slotsHtml}</div>
               </div>
-
-              <div>${detailsHtml}</div>
+              <button class="btn btn-outline-nexus btn-sm w-100" onclick="addScheduleSlot('${day}')">
+                <i class="bi bi-plus-lg me-1"></i> Adicionar matéria
+              </button>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    function updateDaySchedule(day, subId) {
-      if (!appState.schedule) appState.schedule = {};
-      appState.schedule[day] = subId;
+    async function scheduleSlotForm(day, slot) {
+      if (!appState.subjects.length) {
+        uiToast('Cadastre uma matéria primeiro.', { type: 'warning' });
+        return null;
+      }
+      return uiForm({
+        title: `${slot ? 'Editar' : 'Adicionar'} · ${day}`,
+        okLabel: 'Salvar',
+        fields: [
+          { name: 'subjectId', label: 'Matéria', type: 'select', value: slot?.subjectId || appState.subjects[0].id,
+            options: appState.subjects.map(s => ({ value: s.id, label: s.name })) },
+          { name: 'time', label: 'Horário (opcional)', type: 'time', value: slot?.time || '' },
+          { name: 'minutes', label: 'Duração (min)', type: 'number', min: 10, max: 600, step: 5, value: slot?.minutes || 60 }
+        ],
+        validate: v => (Number(v.minutes) >= 10 ? '' : 'A duração mínima é 10 minutos.')
+      });
+    }
+
+    async function addScheduleSlot(day) {
+      const vals = await scheduleSlotForm(day, null);
+      if (!vals) return;
+      appState.schedule = normalizeSchedule(appState.schedule);
+      appState.schedule[day].push({ id: 'slot_' + Date.now(), subjectId: vals.subjectId, time: vals.time, minutes: Number(vals.minutes) });
       saveState();
       renderScheduleUI();
     }
 
-    function autoDistributeSchedule() {
+    async function editScheduleSlot(day, slotId) {
+      appState.schedule = normalizeSchedule(appState.schedule);
+      const slot = appState.schedule[day].find(s => s.id === slotId);
+      if (!slot) return;
+      const vals = await scheduleSlotForm(day, slot);
+      if (!vals) return;
+      Object.assign(slot, { subjectId: vals.subjectId, time: vals.time, minutes: Number(vals.minutes) });
+      saveState();
+      renderScheduleUI();
+    }
+
+    function removeScheduleSlot(day, slotId) {
+      undoable('Bloco removido do cronograma.', () => {
+        appState.schedule = normalizeSchedule(appState.schedule);
+        appState.schedule[day] = appState.schedule[day].filter(s => s.id !== slotId);
+      });
+      renderScheduleUI();
+    }
+
+    async function autoDistributeSchedule() {
       if (!appState.subjects || appState.subjects.length === 0) {
         uiToast('Cadastre pelo menos uma matéria antes de distribuir o cronograma.', { type: 'warning' });
         return;
       }
-      if (!appState.schedule) appState.schedule = {};
-      daysOfWeek.forEach((day, idx) => {
-        if (day === 'Domingo') {
-          appState.schedule[day] = ''; // Deixa domingo livre por padrão
-        } else {
+      const hasAny = daysOfWeek.some(d => getDaySlots(d).length > 0);
+      if (hasAny && !(await uiConfirm('Isso substitui o cronograma atual por uma matéria por dia (segunda a sábado).', { title: 'Distribuir automaticamente', okLabel: 'Substituir' }))) return;
+      undoable('Cronograma distribuído.', () => {
+        const sched = emptySchedule();
+        daysOfWeek.forEach((day, idx) => {
+          if (day === 'Domingo') return;
           const sub = appState.subjects[idx % appState.subjects.length];
-          appState.schedule[day] = sub.id;
-        }
+          sched[day] = [{ id: `slot_${Date.now()}_${idx}`, subjectId: sub.id, time: '', minutes: 60 }];
+        });
+        appState.schedule = sched;
       });
-      saveState();
       renderScheduleUI();
     }
 
     async function clearEntireSchedule() {
       if (!(await uiConfirm('Limpar o cronograma da semana inteira?', { title: 'Limpar cronograma', okLabel: 'Limpar', danger: true }))) return;
-      appState.schedule = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
-      saveState();
+      undoable('Cronograma limpo.', () => { appState.schedule = emptySchedule(); });
       renderScheduleUI();
     }
 
@@ -2819,17 +3146,15 @@
     }
 
     function startFocusForTodaySchedule() {
-      const todayDay = getTodayDayName();
-      const subId = appState.schedule?.[todayDay];
+      const subId = getCurrentScheduledSubjectId();
       if (subId) startFocusForSubject(subId);
       else switchMobileTab('#tab-pomodoro');
     }
 
     function checkTodayScheduleSelection() {
-      if (!appState.schedule) return;
-      const todayDay = getTodayDayName();
-      const scheduledSubId = appState.schedule[todayDay];
-      if (scheduledSubId && appState.subjects.some(s => s.id === scheduledSubId)) {
+      if (!appState.schedule || pomoInterval) return;
+      const scheduledSubId = getCurrentScheduledSubjectId();
+      if (scheduledSubId) {
         const pomoSel = document.getElementById('pomoSubjectSelect');
         if (pomoSel) pomoSel.value = scheduledSubId;
       }
@@ -2889,7 +3214,7 @@
       const dailyGoal = Number(appState.settings?.dailyGoalMinutes) || 120;
 
       const subjects = appState.subjects || [];
-      const totalLessonsPossible = subjects.length * 20;
+      const totalLessonsPossible = subjects.reduce((acc, s) => acc + countLessons(s), 0);
       let totalLessonsDone = 0;
       let closedUnitsCount = 0;
       let closedSubjectsCount = 0;
@@ -2921,8 +3246,9 @@
           const uDone = (u.lessons || []).filter(l => l.done).length;
           totalLessonsDone += uDone;
           subLessonsDone += uDone;
-          if (uDone === 5) closedUnitsCount++;
-          if (uIdx === 0 && uDone < 5) allSubjectsUnit1Done = false;
+          const uTotal = (u.lessons || []).length;
+          if (uTotal > 0 && uDone === uTotal) closedUnitsCount++;
+          if (uIdx === 0 && uDone < uTotal) allSubjectsUnit1Done = false;
 
           if (u.score !== null && u.score !== undefined && u.score !== '') {
             const sc = Number(u.score);
@@ -2939,8 +3265,8 @@
           });
         });
 
-        if (subLessonsDone === 20) closedSubjectsCount++;
-        if (subPerfectUnits === 4) hasQuadraPerfeita = true;
+        if (countLessons(sub) > 0 && subLessonsDone === countLessons(sub)) closedSubjectsCount++;
+        if ((sub.units || []).length > 0 && subPerfectUnits === sub.units.length) hasQuadraPerfeita = true;
       });
 
       const lessonsCompletionPct = totalLessonsPossible > 0 ? (totalLessonsDone / totalLessonsPossible) * 100 : 0;
@@ -2950,7 +3276,7 @@
       const totalFlashcards = flashcards.length;
       const totalFcReviews = flashcards.reduce((acc, c) => acc + (Number(c.reviewsCount) || 0), 0);
 
-      const scheduleDaysFilled = Object.values(appState.schedule || {}).filter(v => Boolean(v)).length;
+      const scheduleDaysFilled = daysOfWeek.filter(d => getDaySlots(d).length > 0).length;
       const tasks = appState.tasks || [];
       const doneTasks = tasks.filter(t => t.status === 'done');
       const doingOrDoneTasks = tasks.filter(t => t.status === 'doing' || t.status === 'done');
@@ -3009,7 +3335,7 @@
         { id: 40, cat: 'academico', icon: '🧱', title: 'Fundação Sólida', desc: '10 aulas concluídas', unlocked: totalLessonsDone >= 10 },
         { id: 41, cat: 'academico', icon: '🏗️', title: 'Estrutura Erguida', desc: '30 aulas concluídas', unlocked: totalLessonsDone >= 30 },
         { id: 42, cat: 'academico', icon: '🏰', title: 'Fortaleza do Saber', desc: '50 aulas concluídas', unlocked: totalLessonsDone >= 50 },
-        { id: 43, cat: 'academico', icon: '📦', title: 'Unidade Fechada', desc: '5/5 aulas de uma unidade', unlocked: closedUnitsCount >= 1 },
+        { id: 43, cat: 'academico', icon: '📦', title: 'Unidade Fechada', desc: 'Todas as aulas de uma unidade', unlocked: closedUnitsCount >= 1 },
         { id: 44, cat: 'academico', icon: '⚖️', title: 'Largada Sincronizada', desc: 'Unidade 1 concluída em todas as matérias', unlocked: allSubjectsUnit1Done },
         { id: 45, cat: 'academico', icon: '🏛️', title: 'Pilar Concluído', desc: '20/20 aulas de uma matéria inteira', unlocked: closedSubjectsCount >= 1 },
         { id: 46, cat: 'academico', icon: '🎓', title: 'Tríade Acadêmica', desc: '20/20 aulas em 3 matérias', unlocked: closedSubjectsCount >= 3 },
@@ -3159,6 +3485,11 @@
       generateTruthTable();
       calcBitwise();
       await initFolderSyncStatus();
+
+      // App instalável e funcionando offline (PWA)
+      if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+        navigator.serviceWorker.register('sw.js').catch(err => console.warn('Service worker:', err));
+      }
     });
 
     // Sincronização na nuvem: ver js/cloud.js (login com Google + Firebase)

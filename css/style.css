@@ -949,3 +949,53 @@ body.oled-mode .pomodoro-display { font-size: clamp(4.8rem, 18vw, 9rem); text-sh
 .gear-dot.cloud-on { background: var(--success); }
 .gear-dot.cloud-wait { background: var(--warning); }
 .gear-dot.cloud-err { background: var(--danger); }
+
+/* ---------- Início e cronograma ---------- */
+.hero-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+@media (max-width: 991.98px) {
+  .hero-actions { width: 100%; }
+  .hero-actions .btn-lg { flex: 1 1 100%; }
+  .hero-actions .btn-outline-nexus { flex: 1; }
+}
+.sched-chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.2rem 0.6rem; margin: 0.15rem 0.25rem 0.15rem 0;
+  border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border);
+  font-size: 0.85rem; font-weight: 500;
+}
+.sched-chip .subject-dot { width: 8px; height: 8px; }
+.sched-slot {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 0.6rem 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--slot-color, var(--accent));
+}
+.sched-slot-time { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.85rem; min-width: 42px; color: var(--text-muted); }
+
+/* ---------- Matérias flexíveis ---------- */
+.lesson-remove-btn {
+  background: transparent; border: 0; padding: 2px 4px;
+  color: var(--text-faint); border-radius: 6px; font-size: 0.8rem;
+  opacity: 0; transition: opacity 0.15s, color 0.15s, background 0.15s;
+}
+.unit-menu-card :hover > .lesson-remove-btn,
+.unit-menu-header:hover .lesson-remove-btn,
+.lesson-remove-btn:focus-visible { opacity: 1; }
+.lesson-remove-btn:hover { color: var(--danger); background: rgba(248, 113, 113, 0.12); }
+@media (hover: none) { .lesson-remove-btn { opacity: 0.6; } }
+.add-unit-card {
+  width: 100%; height: 100%; min-height: 140px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
+  border: 1px dashed var(--border-strong); border-radius: var(--radius-md);
+  background: transparent; color: var(--text-muted); font-weight: 500;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.add-unit-card .bi { font-size: 1.4rem; }
+.add-unit-card:hover { border-color: rgba(var(--accent-rgb), 0.6); color: var(--accent); background: var(--accent-soft); }
+
+.fc-next { font-size: 0.72rem; opacity: 0.8; }
+
+.btn-link { text-decoration: none; color: var(--accent); }
+.btn-link:hover { text-decoration: underline; }
