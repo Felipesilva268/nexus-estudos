@@ -205,7 +205,7 @@
 
     async function handleFolderSyncClick() {
       if (!('showSaveFilePicker' in window)) {
-        alert('Seu navegador atual bloqueia gravação direta em pasta. Use o Chrome, Edge ou Brave no PC, ou utilize os botões Exportar/Importar e a Nuvem.');
+        uiToast('Este navegador não grava direto em pasta. Use Chrome ou Edge no PC, ou os botões de backup.', { type: 'warning', timeout: 6000 });
         return;
       }
       try {
@@ -251,7 +251,8 @@
       a.href = url;
       a.download = `meus_dados_${getLocalDateStr()}.json`;
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      uiToast('Backup exportado.', { type: 'success' });
     }
 
     function importBackupJson(event) {
@@ -262,15 +263,18 @@
         try {
           const imported = JSON.parse(e.target.result);
           if (imported && Array.isArray(imported.subjects)) {
-            appState = normalizeCloudData(imported);
-            await saveState();
-            refreshCharts();
-            alert('Backup carregado com sucesso!');
+            const ok = await uiConfirm(`Importar "${file.name}"? Isso substitui todos os dados atuais (${appState.subjects.length} matérias, ${appState.sessions.length} sessões) pelos do arquivo.`,
+              { title: 'Importar backup', okLabel: 'Importar e substituir', danger: true });
+            if (!ok) return;
+            undoable('Backup importado.', () => {
+              appState = normalizeCloudData(imported);
+              appState.lastUpdated = Date.now();
+            });
           } else {
-            alert('Arquivo JSON inválido.');
+            uiToast('Esse arquivo não é um backup do Nexus.', { type: 'error' });
           }
         } catch {
-          alert('Erro ao ler o arquivo JSON.');
+          uiToast('Não foi possível ler o arquivo JSON.', { type: 'error' });
         }
       };
       reader.readAsText(file);
@@ -334,50 +338,88 @@
       return streak;
     }
 
-    function changeDailyGoal() {
-      const val = prompt('Qual sua meta diária de estudo (em minutos)?', appState.settings.dailyGoalMinutes || 120);
-      if (val !== null && !isNaN(val) && Number(val) > 0) {
-        appState.settings.dailyGoalMinutes = Number(val);
-        saveState();
-      }
+    async function changeDailyGoal() {
+      const val = await uiPrompt('Quantos minutos você quer estudar por dia?', {
+        title: 'Meta diária de estudo', type: 'number', min: 5, step: 5,
+        value: appState.settings.dailyGoalMinutes || 120,
+        validate: v => (Number(v) > 0 ? '' : 'Digite um número maior que zero.')
+      });
+      if (val === null) return;
+      appState.settings.dailyGoalMinutes = Number(val);
+      saveState();
+      uiToast('Meta diária atualizada.', { type: 'success' });
+    }
+
+    // Executa uma alteração destrutiva oferecendo "Desfazer" por alguns segundos
+    function undoable(message, mutate) {
+      const snapshot = JSON.stringify(appState);
+      mutate();
+      saveState();
+      if (typeof refreshCharts === 'function') refreshCharts();
+      uiToast(message, {
+        actionLabel: 'Desfazer',
+        onAction: () => {
+          appState = normalizeCloudData(JSON.parse(snapshot));
+          saveState();
+          if (typeof refreshCharts === 'function') refreshCharts();
+          if (typeof renderFlashcardsTab === 'function') renderFlashcardsTab();
+          if (typeof renderScheduleUI === 'function') renderScheduleUI();
+          uiToast('Desfeito.', { type: 'success' });
+        }
+      });
     }
 
     // =========================================================================
     // ENGENHARIA DE PRODUTIVIDADE: FORMATURA & SONO/TURNOS
     // =========================================================================
-    function configureDegreeHours() {
-      const total = prompt('Carga horária total do seu curso na faculdade (em horas):', appState.settings.degreeTotalHours || 2400);
-      if (total === null) return;
-      const done = prompt('Quantas horas você já cumpriu em semestres anteriores?', appState.settings.degreeCompletedHours || 400);
-      if (done === null) return;
-
-      appState.settings.degreeTotalHours = Math.max(100, Number(total) || 2400);
-      appState.settings.degreeCompletedHours = Math.max(0, Number(done) || 0);
+    async function configureDegreeHours() {
+      const vals = await uiForm({
+        title: 'Carga horária do curso',
+        message: 'Informe as horas oficiais do curso. O tempo de foco do app aparece separado.',
+        okLabel: 'Salvar',
+        fields: [
+          { name: 'total', label: 'Carga horária total do curso (h)', type: 'number', min: 100, step: 10, value: appState.settings.degreeTotalHours || 2400 },
+          { name: 'done', label: 'Horas já cumpridas no curso (h)', type: 'number', min: 0, step: 1, value: appState.settings.degreeCompletedHours || 0 }
+        ],
+        validate: v => {
+          if (!(Number(v.total) >= 100)) return 'A carga total precisa ser de pelo menos 100 h.';
+          if (!(Number(v.done) >= 0)) return 'As horas cumpridas não podem ser negativas.';
+          if (Number(v.done) > Number(v.total)) return 'As horas cumpridas não podem passar da carga total.';
+          return '';
+        }
+      });
+      if (!vals) return;
+      appState.settings.degreeTotalHours = Number(vals.total);
+      appState.settings.degreeCompletedHours = Number(vals.done);
       saveState();
     }
 
-    function logSleepHoursToday() {
+    async function logSleepHoursToday() {
       const today = getLocalDateStr();
       const cur = appState.sleepLog?.[today] || 7;
-      const val = prompt('Quantas horas você dormiu no último ciclo de descanso?', cur);
-      if (val !== null && !isNaN(val) && Number(val) >= 0) {
-        if (!appState.sleepLog) appState.sleepLog = {};
-        appState.sleepLog[today] = Number(val);
-        saveState();
-      }
+      const val = await uiPrompt('Quantas horas você dormiu na última noite?', {
+        title: 'Registrar sono', type: 'number', min: 0, max: 24, step: 0.5, value: cur,
+        validate: v => (Number(v) >= 0 && Number(v) <= 24 ? '' : 'Digite um valor entre 0 e 24.')
+      });
+      if (val === null) return;
+      if (!appState.sleepLog) appState.sleepLog = {};
+      appState.sleepLog[today] = Number(val);
+      saveState();
     }
 
     function renderProductivityMetrics() {
       const focusHours = appState.sessions.reduce((a, s) => a + (Number(s.minutes) || 0), 0) / 60;
       const baseDone = Number(appState.settings.degreeCompletedHours) || 0;
       const totalCourse = Number(appState.settings.degreeTotalHours) || 2400;
-      const currentTotalDone = +(baseDone + focusHours).toFixed(1);
+      const currentTotalDone = +baseDone.toFixed(1);
       const pct = Math.min(100, Math.round((currentTotalDone / totalCourse) * 100));
       const remaining = Math.max(0, +(totalCourse - currentTotalDone).toFixed(1));
 
       document.getElementById('degreeProgressBar').style.width = `${pct}%`;
       document.getElementById('degreeCompletedLabel').textContent = `${currentTotalDone}h cumpridas (${pct}%)`;
       document.getElementById('degreeRemainingLabel').textContent = `Faltam ${remaining}h para a formatura`;
+      const degSub = document.getElementById('degreeSubtitleText');
+      if (degSub) degSub.textContent = `Horas oficiais do curso. Seu tempo de foco registrado no app: ${focusHours.toFixed(1)}h.`;
 
       const shifts = { dawn: 0, morning: 0, afternoon: 0, night: 0 };
       appState.sessions.forEach(s => {
@@ -410,37 +452,71 @@
       return Number(appState.hydration[today]) || 0;
     }
 
+    function getWaterCupMl() {
+      return Number(appState.settings?.waterCupMl) || 250;
+    }
+
     function addWaterMl(amount) {
       const today = getLocalDateStr();
       if (!appState.hydration) appState.hydration = {};
-      appState.hydration[today] = getTodayWaterMl() + Number(amount);
+      const added = Number(amount);
+      appState.hydration[today] = Math.max(0, getTodayWaterMl() + added);
       saveState();
+      uiToast(`+${added} ml registrados (hoje: ${appState.hydration[today]} ml)`, {
+        type: 'success',
+        actionLabel: 'Desfazer',
+        onAction: () => {
+          appState.hydration[today] = Math.max(0, getTodayWaterMl() - added);
+          saveState();
+        }
+      });
     }
 
-    function resetWaterToday() {
+    // Adiciona um "copo" no tamanho configurado
+    function addWaterCup(multiplier = 1) {
+      addWaterMl(getWaterCupMl() * multiplier);
+    }
+
+    async function resetWaterToday() {
+      const ok = await uiConfirm('Zerar a água registrada hoje?', { title: 'Zerar hoje', okLabel: 'Zerar', danger: true });
+      if (!ok) return;
       const today = getLocalDateStr();
       if (!appState.hydration) appState.hydration = {};
-      appState.hydration[today] = 0;
+      undoable('Água de hoje zerada.', () => { appState.hydration[today] = 0; });
+    }
+
+    async function changeWaterGoal() {
+      const vals = await uiForm({
+        title: 'Água',
+        okLabel: 'Salvar',
+        fields: [
+          { name: 'cup', label: 'Tamanho do copo (ml)', type: 'number', min: 50, max: 2000, step: 10, value: getWaterCupMl(),
+            hint: 'É o quanto cada toque no botão de água registra.' },
+          { name: 'goal', label: 'Meta diária (ml)', type: 'number', min: 500, step: 100, value: appState.settings.waterGoalMl || 3000 }
+        ],
+        validate: v => {
+          if (!(Number(v.cup) >= 50 && Number(v.cup) <= 2000)) return 'O copo precisa ter entre 50 e 2000 ml.';
+          if (!(Number(v.goal) >= 500)) return 'A meta precisa ser de pelo menos 500 ml.';
+          return '';
+        }
+      });
+      if (!vals) return;
+      appState.settings.waterCupMl = Number(vals.cup);
+      appState.settings.waterGoalMl = Number(vals.goal);
       saveState();
+      uiToast('Configurações de água salvas.', { type: 'success' });
     }
 
-    function changeWaterGoal() {
-      const current = appState.settings.waterGoalMl || 3000;
-      const val = prompt('Qual sua meta diária de hidratação (em ml)?', current);
-      if (val !== null && !isNaN(val) && Number(val) >= 500) {
-        appState.settings.waterGoalMl = Number(val);
-        saveState();
-      }
-    }
-
-    function promptEditWaterDate(dateStr, formattedLabel) {
+    async function promptEditWaterDate(dateStr, formattedLabel) {
       if (!appState.hydration) appState.hydration = {};
       const cur = Number(appState.hydration[dateStr]) || 0;
-      const val = prompt(`Registrar consumo de água em ${formattedLabel} (em ml):`, cur);
-      if (val !== null && !isNaN(val) && Number(val) >= 0) {
-        appState.hydration[dateStr] = Number(val);
-        saveState();
-      }
+      const val = await uiPrompt(`Quanto você bebeu em ${formattedLabel}? (ml)`, {
+        title: 'Registrar água', type: 'number', min: 0, step: 50, value: cur,
+        validate: v => (v !== '' && Number(v) >= 0 ? '' : 'Digite um valor em ml (0 ou mais).')
+      });
+      if (val === null) return;
+      appState.hydration[dateStr] = Number(val);
+      saveState();
     }
 
     function saveCustomDateWater() {
@@ -448,8 +524,8 @@
       const mlInput = document.getElementById('hydroCustomMlInput');
       const dateStr = dInput?.value;
       const ml = Number(mlInput?.value);
-      if (!dateStr || isNaN(ml) || ml < 0) {
-        alert('Selecione uma data válida e digite a quantidade em ml.');
+      if (!dateStr || mlInput?.value === '' || isNaN(ml) || ml < 0) {
+        uiToast('Escolha uma data e digite a quantidade em ml.', { type: 'warning' });
         return;
       }
       if (!appState.hydration) appState.hydration = {};
@@ -468,6 +544,7 @@
       // 1. Atualiza Header, Aba Pomodoro e Rótulo da Aba Início
       const headerEl = document.getElementById('uiHeaderWater');
       if (headerEl) headerEl.textContent = currentMl;
+      document.querySelectorAll('.js-cup-label').forEach(el => { el.textContent = getWaterCupMl(); });
 
       const statusEl = document.getElementById('hydrationStatusText');
       if (statusEl) statusEl.textContent = `${currentMl} / ${goalMl} ml (${pct}%)`;
@@ -496,7 +573,7 @@
           const isToday = (i === 0);
           const shortWeekday = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').toUpperCase();
           const dayMonthLabel = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-          const litersLabel = dayMl >= 1000 ? `${(dayMl / 1000).toFixed(1)}L` : `${dayMl}m`;
+          const litersLabel = dayMl >= 1000 ? `${(dayMl / 1000).toFixed(1)}L` : `${dayMl}ml`;
 
           colsHtml.push(`
             <div class="hydro-day-col" onclick="promptEditWaterDate('${dStr}', '${dayMonthLabel}')" title="${dayMonthLabel}: ${dayMl} ml / ${goalMl} ml (Clique para editar)">
@@ -580,11 +657,14 @@
       refreshCharts();
     }
 
-    function deleteSubject(subId) {
-      if (!confirm('Deseja realmente excluir esta matéria?')) return;
-      appState.subjects = appState.subjects.filter(s => s.id !== subId);
-      saveState();
-      refreshCharts();
+    async function deleteSubject(subId) {
+      const sub = appState.subjects.find(s => s.id === subId);
+      if (!sub) return;
+      const ok = await uiConfirm(`Excluir "${sub.name}" com todas as aulas, anotações e simulados?`, { title: 'Excluir matéria', okLabel: 'Excluir', danger: true });
+      if (!ok) return;
+      undoable(`"${sub.name}" excluída.`, () => {
+        appState.subjects = appState.subjects.filter(s => s.id !== subId);
+      });
     }
 
     function renameSubject(subId, newName) {
@@ -811,8 +891,9 @@
       const sub = appState.subjects.find(s => s.id === currentQuizTarget.subId);
       const unit = sub?.units.find(u => u.id === currentQuizTarget.unitId);
       if (!unit) return;
-      unit.quizQuestions = (unit.quizQuestions || []).filter(item => item.id !== qId);
-      saveState();
+      undoable('Questão excluída.', () => {
+        unit.quizQuestions = (unit.quizQuestions || []).filter(item => item.id !== qId);
+      });
       renderUnitQuizQuestions();
     }
 
@@ -930,154 +1011,282 @@
       saveState();
     }
 
-    function verifyGatekeeperChallenge() {
+    // ---------- Estado do Pomodoro salvo no navegador (sobrevive ao recarregar) ----------
+    const POMO_KEY = 'NEXUS_POMO_V1';
+    let pomoTargetEndTime = null;
+    let pomoLastErgoMark = 0;
+    let pendingSession = null; // { minutes, subjectId, taskId }
+
+    function persistPomoState() {
+      try {
+        localStorage.setItem(POMO_KEY, JSON.stringify({
+          mode: pomoMode,
+          totalSeconds: pomoTotalSeconds,
+          secondsLeft: pomoSecondsLeft,
+          running: Boolean(pomoInterval),
+          endTime: pomoTargetEndTime,
+          subjectId: document.getElementById('pomoSubjectSelect')?.value || '',
+          taskId: document.getElementById('pomoTaskSelect')?.value || '',
+          pending: pendingSession
+        }));
+      } catch {}
+    }
+
+    function readPomoState() {
+      try { return JSON.parse(localStorage.getItem(POMO_KEY) || 'null'); } catch { return null; }
+    }
+
+    function setModeButtons(mode) {
+      document.getElementById('modeBtnFocus').classList.toggle('active', mode === 'focus');
+      document.getElementById('modeBtnShort').classList.toggle('active', mode === 'short');
+      document.getElementById('modeBtnLong').classList.toggle('active', mode === 'long');
+      document.getElementById('breakHydrationBanner').classList.toggle('d-none', mode === 'focus');
+    }
+
+    function secondsForMode(mode) {
+      if (mode === 'short') return 5 * 60;
+      if (mode === 'long') return 15 * 60;
+      return (appState.settings.focusMinutes || 25) * 60;
+    }
+
+    // Restaura o timer depois de recarregar a página
+    function restorePomodoroFromStorage() {
+      const saved = readPomoState();
+      if (!saved) return;
+
+      pomoMode = ['focus', 'short', 'long'].includes(saved.mode) ? saved.mode : 'focus';
+      pomoTotalSeconds = Number(saved.totalSeconds) || secondsForMode(pomoMode);
+      setModeButtons(pomoMode);
+
+      const subSel = document.getElementById('pomoSubjectSelect');
+      if (subSel && saved.subjectId && [...subSel.options].some(o => o.value === saved.subjectId)) subSel.value = saved.subjectId;
+      const taskSel = document.getElementById('pomoTaskSelect');
+      if (taskSel && saved.taskId && [...taskSel.options].some(o => o.value === saved.taskId)) taskSel.value = saved.taskId;
+
+      if (saved.pending && Number(saved.pending.minutes) > 0) {
+        pomoSecondsLeft = 0;
+        updatePomodoroClockUI();
+        openSessionModal(Number(saved.pending.minutes), saved.pending);
+        return;
+      }
+
+      if (saved.running && saved.endTime) {
+        const left = Math.round((saved.endTime - Date.now()) / 1000);
+        if (left > 0) {
+          pomoSecondsLeft = left;
+          pomoLastErgoMark = Math.floor((pomoTotalSeconds - left) / 1200);
+          startPomodoro();
+          uiToast('Seu timer continuou de onde parou.', { type: 'info' });
+        } else {
+          // Terminou enquanto a página estava fechada
+          pomoSecondsLeft = 0;
+          onPomodoroFinished(true);
+        }
+        return;
+      }
+
+      pomoSecondsLeft = Math.min(pomoTotalSeconds, Math.max(0, Number(saved.secondsLeft) || pomoTotalSeconds));
+      updatePomodoroClockUI();
+    }
+
+    async function verifyGatekeeperChallenge() {
       if (!appState.settings?.gatekeeperEnabled || !pomoInterval || pomoMode !== 'focus') return true;
       const a = Math.floor(Math.random() * 12) + 4;
       const b = Math.floor(Math.random() * 9) + 3;
-      const ans = prompt(`🛡️ TRAVA ANTIPROCRASTINAÇÃO ATIVA!\nPara interromper o foco antes da hora, resolva:\nQuanto é (${a} × ${b}) + ${a}?`);
+      const ans = await uiPrompt(`Para interromper o foco antes da hora, resolva: (${a} × ${b}) + ${a}`, {
+        title: '🛡️ Trava de foco', type: 'number', okLabel: 'Responder'
+      });
       if (ans === null) return false;
       if (Number(ans) !== (a * b + a)) {
-        alert('Resposta incorreta! Mantenha o foco na sessão.');
+        uiToast('Resposta incorreta. Mantenha o foco!', { type: 'warning' });
         return false;
       }
       return true;
     }
 
-    function setPomodoroMode(mode) {
-      pausePomodoro(true);
-      pomoMode = mode;
-      document.getElementById('modeBtnFocus').classList.toggle('active', mode === 'focus');
-      document.getElementById('modeBtnShort').classList.toggle('active', mode === 'short');
-      document.getElementById('modeBtnLong').classList.toggle('active', mode === 'long');
-
-      const banner = document.getElementById('breakHydrationBanner');
-      if (mode === 'focus') {
-        const mins = appState.settings.focusMinutes || 25;
-        pomoTotalSeconds = mins * 60;
-        banner.classList.add('d-none');
-      } else if (mode === 'short') {
-        pomoTotalSeconds = 5 * 60;
-        banner.classList.remove('d-none');
-      } else {
-        pomoTotalSeconds = 15 * 60;
-        banner.classList.remove('d-none');
+    async function setPomodoroMode(mode, { force = false } = {}) {
+      const elapsed = pomoTotalSeconds - pomoSecondsLeft;
+      if (!force && pomoMode === 'focus' && elapsed >= 60 && mode !== pomoMode) {
+        const ok = await uiConfirm(`Você já tem ${Math.round(elapsed / 60)} min de foco nesta sessão. Trocar de modo descarta esse tempo.`,
+          { title: 'Trocar de modo?', okLabel: 'Descartar e trocar', danger: true });
+        if (!ok) return;
       }
+      stopPomoTicker();
+      pomoMode = mode;
+      setModeButtons(mode);
+      pomoTotalSeconds = secondsForMode(mode);
       pomoSecondsLeft = pomoTotalSeconds;
+      pomoLastErgoMark = 0;
       updatePomodoroClockUI();
+      persistPomoState();
     }
 
     function changeCustomFocusTime(mins) {
       appState.settings.focusMinutes = mins;
       document.getElementById('lblFocusMins').textContent = mins;
       saveState();
-      setPomodoroMode('focus');
+      setPomodoroMode('focus', { force: true });
     }
 
     function updatePomodoroClockUI() {
       const m = String(Math.floor(pomoSecondsLeft / 60)).padStart(2, '0');
       const s = String(pomoSecondsLeft % 60).padStart(2, '0');
       document.getElementById('pomoClockDisplay').textContent = `${m}:${s}`;
-      document.title = pomoInterval ? `(${m}:${s}) NEXUS // STUDY CLUB` : 'NEXUS // STUDY CLUB';
+      document.title = pomoInterval ? `(${m}:${s}) Nexus Study` : 'Nexus Study';
+      const btn = document.getElementById('pomoStartPauseBtn');
+      if (btn) {
+        const paused = pomoSecondsLeft > 0 && pomoSecondsLeft < pomoTotalSeconds;
+        btn.innerHTML = pomoInterval
+          ? `<i class="bi bi-pause-fill me-1"></i> Pausar`
+          : `<i class="bi bi-play-fill me-1"></i> ${paused ? 'Continuar' : 'Iniciar'}`;
+      }
     }
 
-    function togglePomodoro() {
+    async function togglePomodoro() {
       if (pomoInterval) {
-        if (!verifyGatekeeperChallenge()) return;
-        pausePomodoro(true);
+        if (!(await verifyGatekeeperChallenge())) return;
+        stopPomoTicker();
+        updatePomodoroClockUI();
+        persistPomoState();
       } else {
         startPomodoro();
       }
     }
 
-    let pomoTargetEndTime = null;
-    let microTargetEndTime = null;
+    function stopPomoTicker() {
+      clearInterval(pomoInterval);
+      pomoInterval = null;
+      pomoTargetEndTime = null;
+    }
 
     function startPomodoro() {
       if (pomoMode === 'focus' && appState.subjects.length === 0) {
-        alert('Cadastre pelo menos uma matéria antes de iniciar o Pomodoro!');
+        uiToast('Cadastre pelo menos uma matéria antes de iniciar o foco.', { type: 'warning' });
         return;
       }
-      const btn = document.getElementById('pomoStartPauseBtn');
-      if (btn) btn.innerHTML = `<i class="bi bi-pause-fill me-1"></i> Pausar`;
+      if (pomoSecondsLeft <= 0) pomoSecondsLeft = pomoTotalSeconds;
 
       pomoTargetEndTime = Date.now() + (pomoSecondsLeft * 1000);
       clearInterval(pomoInterval);
-
-      pomoInterval = setInterval(() => {
-        pomoSecondsLeft = Math.max(0, Math.round((pomoTargetEndTime - Date.now()) / 1000));
-        updatePomodoroClockUI();
-
-        const elapsed = pomoTotalSeconds - pomoSecondsLeft;
-        if (appState.settings?.ergo2020Enabled && elapsed > 0 && elapsed % 1200 === 0) {
-          playSoftErgoChime();
-          triggerHaptic([40, 60, 40]);
-          const ergoEl = document.getElementById('ergoPostureStatus');
-          if (ergoEl) {
-            ergoEl.innerHTML = `<span class="text-warning fw-bold">👀 Regra 20-20-20: Olhe a 6m por 20s e alinhe a coluna!</span>`;
-            setTimeout(() => { ergoEl.textContent = '🪑 Postura ereta • Olhos relaxados'; }, 20000);
-          }
-        }
-
-        if (pomoSecondsLeft <= 0) {
-          pomoTargetEndTime = null;
-          pausePomodoro(true);
-          playFinishBeep();
-          if (pomoMode === 'focus') {
-            openSessionModal(Math.round(pomoTotalSeconds / 60));
-          } else {
-            setPomodoroMode('focus');
-          }
-        }
-      }, 1000);
-    }
-
-    function pausePomodoro(skipGate = false) {
-      if (!skipGate && !verifyGatekeeperChallenge()) return;
-      pomoTargetEndTime = null;
-      clearInterval(pomoInterval);
-      pomoInterval = null;
-      document.getElementById('pomoStartPauseBtn').innerHTML = `<i class="bi bi-play-fill me-1"></i> Iniciar`;
+      pomoInterval = setInterval(pomoTick, 1000);
       updatePomodoroClockUI();
+      persistPomoState();
     }
 
-    function resetPomodoro() {
-      if (!verifyGatekeeperChallenge()) return;
-      pausePomodoro(true);
+    function pomoTick() {
+      pomoSecondsLeft = Math.max(0, Math.round((pomoTargetEndTime - Date.now()) / 1000));
+      updatePomodoroClockUI();
+
+      // Lembrete 20-20-20: dispara a cada 20 min de foco, mesmo se o navegador atrasar o timer
+      const elapsed = pomoTotalSeconds - pomoSecondsLeft;
+      const mark = Math.floor(elapsed / 1200);
+      if (pomoMode === 'focus' && appState.settings?.ergo2020Enabled && mark > pomoLastErgoMark && pomoSecondsLeft > 0) {
+        pomoLastErgoMark = mark;
+        playSoftErgoChime();
+        triggerHaptic([40, 60, 40]);
+        const ergoEl = document.getElementById('ergoPostureStatus');
+        if (ergoEl) {
+          ergoEl.innerHTML = `<span class="text-warning fw-bold">👀 Regra 20-20-20: olhe a 6 m por 20 s e alinhe a coluna!</span>`;
+          setTimeout(() => { ergoEl.textContent = '🪑 Postura ereta • Olhos relaxados'; }, 20000);
+        }
+      }
+
+      if (pomoSecondsLeft <= 0) onPomodoroFinished(false);
+    }
+
+    function onPomodoroFinished(whileAway) {
+      stopPomoTicker();
+      pomoLastErgoMark = 0;
+      playFinishBeep();
+      if (pomoMode === 'focus') {
+        openSessionModal(Math.round(pomoTotalSeconds / 60));
+        if (whileAway) uiToast('Seu foco terminou enquanto a página estava fechada.', { type: 'info' });
+      } else {
+        uiToast('Pausa encerrada. Bora voltar ao foco!', { type: 'info' });
+        setPomodoroMode('focus', { force: true });
+      }
+    }
+
+    async function pausePomodoro(skipGate = false) {
+      if (!skipGate && !(await verifyGatekeeperChallenge())) return;
+      stopPomoTicker();
+      updatePomodoroClockUI();
+      persistPomoState();
+    }
+
+    async function resetPomodoro() {
+      if (!(await verifyGatekeeperChallenge())) return;
+      stopPomoTicker();
       pomoSecondsLeft = pomoTotalSeconds;
+      pomoLastErgoMark = 0;
       updatePomodoroClockUI();
+      persistPomoState();
     }
 
-    function finishFocusSessionEarly() {
+    async function finishFocusSessionEarly() {
       if (pomoMode !== 'focus') return;
-      if (!verifyGatekeeperChallenge()) return;
-      pausePomodoro(true);
-      const elapsedMins = Math.max(1, Math.round((pomoTotalSeconds - pomoSecondsLeft) / 60));
-      openSessionModal(elapsedMins);
+      const elapsedSecs = pomoTotalSeconds - pomoSecondsLeft;
+      if (elapsedSecs < 60) {
+        uiToast('Estude pelo menos 1 minuto antes de salvar a sessão.', { type: 'warning' });
+        return;
+      }
+      if (!(await verifyGatekeeperChallenge())) return;
+      stopPomoTicker();
+      updatePomodoroClockUI();
+      openSessionModal(Math.round(elapsedSecs / 60));
     }
 
-    function openSessionModal(mins) {
+    function openSessionModal(mins, restored = null) {
+      pendingSession = {
+        minutes: mins,
+        subjectId: restored?.subjectId || document.getElementById('pomoSubjectSelect')?.value || '',
+        taskId: restored?.taskId || document.getElementById('pomoTaskSelect')?.value || ''
+      };
       pendingSessionMinutes = mins;
+      persistPomoState();
+
+      const subSel = document.getElementById('modalSessionSubject');
+      if (subSel) {
+        subSel.innerHTML = appState.subjects.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+        if (pendingSession.subjectId) subSel.value = pendingSession.subjectId;
+      }
+      const minsInput = document.getElementById('modalSessionMinsInput');
+      if (minsInput) minsInput.value = mins;
       document.getElementById('modalSessionMins').textContent = mins;
       document.getElementById('modalSessionNote').value = '';
-      const modal = new bootstrap.Modal(document.getElementById('sessionCompleteModal'));
-      modal.show();
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('sessionCompleteModal')).show();
+    }
+
+    function closeSessionModalAndReset() {
+      pendingSession = null;
+      pendingSessionMinutes = 0;
+      bootstrap.Modal.getInstance(document.getElementById('sessionCompleteModal'))?.hide();
+      stopPomoTicker();
+      pomoSecondsLeft = pomoTotalSeconds;
+      pomoLastErgoMark = 0;
+      updatePomodoroClockUI();
+      persistPomoState();
+    }
+
+    async function discardPendingSession() {
+      const ok = await uiConfirm(`Descartar ${pendingSessionMinutes} min de foco sem registrar?`,
+        { title: 'Descartar sessão', okLabel: 'Descartar', danger: true });
+      if (ok) closeSessionModalAndReset();
     }
 
     function confirmSaveSession() {
-      const subId = document.getElementById('pomoSubjectSelect').value;
-      const taskId = document.getElementById('pomoTaskSelect')?.value || '';
+      const subId = document.getElementById('modalSessionSubject')?.value || pendingSession?.subjectId || document.getElementById('pomoSubjectSelect').value;
+      const taskId = pendingSession?.taskId || '';
+      const minsVal = Number(document.getElementById('modalSessionMinsInput')?.value) || pendingSessionMinutes;
+      const minutes = Math.max(1, Math.min(600, Math.round(minsVal)));
       const note = document.getElementById('modalSessionNote').value.trim() || 'Sessão de foco Pomodoro';
       const sub = appState.subjects.find(s => s.id === subId);
 
-      if (sub) {
-        sub.minutesStudied = (Number(sub.minutesStudied) || 0) + pendingSessionMinutes;
-      }
+      if (sub) sub.minutesStudied = (Number(sub.minutesStudied) || 0) + minutes;
 
       if (taskId) {
         const linkedTask = appState.tasks.find(t => t.id === taskId);
-        if (linkedTask) {
-          linkedTask.actualMinutes = (Number(linkedTask.actualMinutes) || 0) + pendingSessionMinutes;
-        }
+        if (linkedTask) linkedTask.actualMinutes = (Number(linkedTask.actualMinutes) || 0) + minutes;
       }
 
       appState.sessions.unshift({
@@ -1086,15 +1295,14 @@
         timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         subjectId: subId,
         taskId,
-        minutes: pendingSessionMinutes,
+        minutes,
         note
       });
 
-      const modalEl = document.getElementById('sessionCompleteModal');
-      bootstrap.Modal.getInstance(modalEl).hide();
-      resetPomodoro();
+      closeSessionModalAndReset();
       saveState();
       refreshCharts();
+      uiToast(`Sessão de ${minutes} min registrada (+${minutes * 2} XP).`, { type: 'success' });
     }
 
     function toggleFocusMode() {
@@ -1349,8 +1557,9 @@
     }
 
     function deleteFlashcard(fcId) {
-      appState.flashcards = (appState.flashcards || []).filter(c => c.id !== fcId);
-      saveState();
+      undoable('Flashcard excluído.', () => {
+        appState.flashcards = (appState.flashcards || []).filter(c => c.id !== fcId);
+      });
       renderFlashcardsTab();
     }
 
@@ -1456,16 +1665,18 @@
     // =========================================================================
     // MODO MICRO-ESTUDO 10 MINUTOS
     // =========================================================================
-    let microSecondsLeft = 10 * 60;
+    const MICRO_TOTAL = 10 * 60;
+    let microSecondsLeft = MICRO_TOTAL;
     let microInterval = null;
+    let microTargetEndTime = null;
+    let microChallengeSubId = '';
 
     function openMicroStudyModal() {
       stopMicroTimer();
-      microSecondsLeft = 10 * 60;
+      microSecondsLeft = MICRO_TOTAL;
       updateMicroTimerUI();
       pickRandomMicroChallenge();
-      const modal = new bootstrap.Modal(document.getElementById('microStudyModal'));
-      modal.show();
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('microStudyModal')).show();
     }
 
     function updateMicroTimerUI() {
@@ -1473,31 +1684,43 @@
       const s = String(microSecondsLeft % 60).padStart(2, '0');
       const el = document.getElementById('microTimerDisplay');
       if (el) el.textContent = `${m}:${s}`;
+      const elapsedMin = Math.floor((MICRO_TOTAL - microSecondsLeft) / 60);
+      const finishBtn = document.getElementById('btnMicroFinish');
+      if (finishBtn) {
+        finishBtn.disabled = elapsedMin < 1;
+        finishBtn.textContent = elapsedMin < 1 ? 'Concluir (mín. 1 min)' : `Concluir ${elapsedMin} min (+${elapsedMin * 2} XP)`;
+      }
     }
 
     function toggleMicroTimer() {
       const btn = document.getElementById('btnMicroStart');
       if (microInterval) {
         stopMicroTimer();
-      } else {
-        if (btn) btn.textContent = 'Pausar';
-        microInterval = setInterval(() => {
-          microSecondsLeft--;
-          updateMicroTimerUI();
-          if (microSecondsLeft <= 0) {
-            stopMicroTimer();
-            playFinishBeep();
-            finishMicroStudySession();
-          }
-        }, 1000);
+        if (btn) btn.textContent = 'Continuar';
+        return;
+      }
+      if (btn) btn.textContent = 'Pausar';
+      microTargetEndTime = Date.now() + microSecondsLeft * 1000;
+      microInterval = setInterval(microTick, 1000);
+    }
+
+    function microTick() {
+      if (!microTargetEndTime) return;
+      microSecondsLeft = Math.max(0, Math.round((microTargetEndTime - Date.now()) / 1000));
+      updateMicroTimerUI();
+      if (microSecondsLeft <= 0) {
+        stopMicroTimer();
+        playFinishBeep();
+        finishMicroStudySession();
       }
     }
 
     function stopMicroTimer() {
       clearInterval(microInterval);
       microInterval = null;
+      microTargetEndTime = null;
       const btn = document.getElementById('btnMicroStart');
-      if (btn) btn.textContent = 'Iniciar 10m';
+      if (btn) btn.textContent = microSecondsLeft < MICRO_TOTAL && microSecondsLeft > 0 ? 'Continuar' : 'Iniciar 10 min';
     }
 
     function pickRandomMicroChallenge() {
@@ -1508,7 +1731,7 @@
       appState.subjects.forEach(s => {
         s.units.forEach(u => {
           u.lessons.forEach(l => {
-            if (!l.done) pendingLessons.push({ sub: s.name, unit: u.name, lesson: l.name, note: l.note });
+            if (!l.done) pendingLessons.push({ subId: s.id, sub: s.name, unit: u.name, lesson: l.name });
           });
         });
       });
@@ -1517,47 +1740,58 @@
       if (cards.length > 0 && Math.random() < 0.5) {
         const randCard = cards[Math.floor(Math.random() * cards.length)];
         const sub = appState.subjects.find(s => s.id === randCard.subjectId);
+        microChallengeSubId = sub?.id || '';
         box.innerHTML = `
-          <span class="badge mb-2" style="background:var(--accent-crimson);">Flashcard Rápido • ${escapeHtml(sub?.name || 'Estudo')}</span>
-          <h6 class="fw-bold text-white mb-2">Pergunta: ${escapeHtml(randCard.front)}</h6>
-          <details class="small text-info">
-            <summary style="cursor:pointer;">Ver Resposta</summary>
-            <div class="mt-2 p-2 bg-dark text-white">${escapeHtml(randCard.back)}</div>
+          <span class="badge mb-2" style="background:var(--accent);">Flashcard • ${escapeHtml(sub?.name || 'Estudo')}</span>
+          <h6 class="fw-bold text-white mb-2">${escapeHtml(randCard.front)}</h6>
+          <details class="small">
+            <summary style="cursor:pointer;">Ver resposta</summary>
+            <div class="mt-2 p-2 panel text-white">${escapeHtml(randCard.back)}</div>
           </details>
         `;
       } else if (pendingLessons.length > 0) {
         const randL = pendingLessons[Math.floor(Math.random() * pendingLessons.length)];
+        microChallengeSubId = randL.subId;
         box.innerHTML = `
-          <span class="badge bg-info text-dark mb-2" >Revisão de Aula Pendente</span>
+          <span class="badge bg-info text-dark mb-2">Aula pendente</span>
           <h6 class="fw-bold text-white mb-1">${escapeHtml(randL.sub)} — ${escapeHtml(randL.unit)}</h6>
-          <p class="small text-secondary mb-0">Foque 10 minutos no tópico: <strong class="text-white">${escapeHtml(randL.lesson)}</strong></p>
+          <p class="small text-secondary mb-0">Foque 10 minutos em: <strong class="text-white">${escapeHtml(randL.lesson)}</strong></p>
         `;
       } else {
+        microChallengeSubId = '';
         box.innerHTML = `<div class="text-secondary small">Revise seus Prompts e Fórmulas das matérias durante estes 10 minutos!</div>`;
       }
     }
 
     function finishMicroStudySession() {
+      const elapsedMin = Math.floor((MICRO_TOTAL - microSecondsLeft) / 60);
+      if (elapsedMin < 1) {
+        uiToast('Estude pelo menos 1 minuto para registrar.', { type: 'warning' });
+        return;
+      }
       stopMicroTimer();
-      const firstSub = appState.subjects[0];
-      if (firstSub) firstSub.minutesStudied = (Number(firstSub.minutesStudied) || 0) + 10;
+      const subId = microChallengeSubId || document.getElementById('pomoSubjectSelect')?.value || appState.subjects[0]?.id || '';
+      const sub = appState.subjects.find(s => s.id === subId);
+      if (sub) sub.minutesStudied = (Number(sub.minutesStudied) || 0) + elapsedMin;
 
       appState.sessions.unshift({
         id: 'sess_' + Date.now(),
         date: getLocalDateStr(),
         timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        subjectId: firstSub ? firstSub.id : '',
-        minutes: 10,
-        note: 'Sessão Rápida (Micro-Estudo 10m)'
+        subjectId: sub ? sub.id : '',
+        minutes: elapsedMin,
+        note: 'Micro-estudo'
       });
 
-      const modalEl = document.getElementById('microStudyModal');
-      bootstrap.Modal.getInstance(modalEl)?.hide();
+      microSecondsLeft = MICRO_TOTAL;
+      bootstrap.Modal.getInstance(document.getElementById('microStudyModal'))?.hide();
       saveState();
       refreshCharts();
+      uiToast(`Micro-estudo de ${elapsedMin} min registrado${sub ? ` em ${sub.name}` : ''}.`, { type: 'success' });
     }
 
     // =========================================================================
+
     // LABORATÓRIO: 1. GERADOR DE TABELAS-VERDADE
     // =========================================================================
     function insertTTToken(token) {
@@ -1567,15 +1801,121 @@
       inp.focus();
     }
 
+    // Parser de lógica proposicional (descida recursiva).
+    // Precedência (da mais forte para a mais fraca): ~  >  ^  >  v  >  ->  >  <->
+    // "->" é associativo à direita: P -> Q -> R = P -> (Q -> R)
+    function tokenizeProposition(expr) {
+      const tokens = [];
+      const s = expr.replace(/\s+/g, ' ');
+      let i = 0;
+      while (i < s.length) {
+        const ch = s[i];
+        if (ch === ' ') { i++; continue; }
+        if (s.startsWith('<->', i)) { tokens.push('<->'); i += 3; continue; }
+        if (s.startsWith('->', i)) { tokens.push('->'); i += 2; continue; }
+        if (ch === '↔') { tokens.push('<->'); i++; continue; }
+        if (ch === '→') { tokens.push('->'); i++; continue; }
+        if (ch === '~' || ch === '!' || ch === '¬') { tokens.push('~'); i++; continue; }
+        if (ch === '^' || ch === '&' || ch === '∧') { tokens.push('^'); i++; continue; }
+        if (ch === '|' || ch === '∨') { tokens.push('v'); i++; continue; }
+        if (ch === '(' || ch === ')') { tokens.push(ch); i++; continue; }
+        if (/[A-Za-z]/.test(ch)) {
+          const up = ch.toUpperCase();
+          // "v" sozinho é o operador OU
+          if (up === 'V' && !/[A-Za-z0-9]/.test(s[i + 1] || '')) { tokens.push('v'); i++; continue; }
+          if (/[A-Za-z0-9]/.test(s[i + 1] || '')) throw new Error(`Use variáveis de uma letra só (encontrei "${s.slice(i, i + 3)}...").`);
+          tokens.push({ v: up }); i++; continue;
+        }
+        throw new Error(`Símbolo não reconhecido: "${ch}"`);
+      }
+      return tokens;
+    }
+
+    function parseProposition(expr) {
+      const tokens = tokenizeProposition(expr);
+      let pos = 0;
+      const peek = () => tokens[pos];
+      const take = (t) => { if (peek() === t) { pos++; return true; } return false; };
+
+      function parseBicond() {
+        let left = parseImpl();
+        while (take('<->')) { const right = parseImpl(); const l = left; left = { op: 'iff', a: l, b: right }; }
+        return left;
+      }
+      function parseImpl() {
+        const left = parseOr();
+        if (take('->')) return { op: 'imp', a: left, b: parseImpl() };
+        return left;
+      }
+      function parseOr() {
+        let left = parseAnd();
+        while (take('v')) left = { op: 'or', a: left, b: parseAnd() };
+        return left;
+      }
+      function parseAnd() {
+        let left = parseNot();
+        while (take('^')) left = { op: 'and', a: left, b: parseNot() };
+        return left;
+      }
+      function parseNot() {
+        if (take('~')) return { op: 'not', a: parseNot() };
+        return parseAtom();
+      }
+      function parseAtom() {
+        const t = peek();
+        if (t === '(') {
+          pos++;
+          const inner = parseBicond();
+          if (!take(')')) throw new Error('Falta fechar um parêntese ")".');
+          return inner;
+        }
+        if (t && typeof t === 'object') { pos++; return { op: 'var', name: t.v }; }
+        if (t === undefined) throw new Error('A expressão terminou antes do esperado.');
+        throw new Error(`Operador "${t}" fora do lugar.`);
+      }
+
+      if (tokens.length === 0) throw new Error('Digite uma expressão.');
+      const ast = parseBicond();
+      if (pos < tokens.length) throw new Error(peek() === ')' ? 'Há um ")" sobrando.' : 'Faltou um operador entre duas partes.');
+      const vars = [...new Set(tokens.filter(t => typeof t === 'object').map(t => t.v))].sort();
+      return { ast, vars };
+    }
+
+    function evalPropositionAst(node, env) {
+      switch (node.op) {
+        case 'var': return Boolean(env[node.name]);
+        case 'not': return !evalPropositionAst(node.a, env);
+        case 'and': return evalPropositionAst(node.a, env) && evalPropositionAst(node.b, env);
+        case 'or': return evalPropositionAst(node.a, env) || evalPropositionAst(node.b, env);
+        case 'imp': return !evalPropositionAst(node.a, env) || evalPropositionAst(node.b, env);
+        case 'iff': return evalPropositionAst(node.a, env) === evalPropositionAst(node.b, env);
+      }
+      throw new Error('Nó inválido');
+    }
+
+    // Mantido com o mesmo nome por compatibilidade
+    function evaluatePropositionalFormula(expr, env) {
+      return evalPropositionAst(parseProposition(expr).ast, env);
+    }
+
     function generateTruthTable() {
       const raw = document.getElementById('ttExprInput').value.trim();
       const container = document.getElementById('ttOutputContainer');
       const badgeEl = document.getElementById('ttClassificationBadge');
       if (!raw) return;
 
-      const vars = Array.from(new Set((raw.toUpperCase().match(/\b[A-UW-Z]\b/g) || []))).sort();
+      let parsed;
+      try {
+        parsed = parseProposition(raw);
+      } catch (err) {
+        badgeEl.innerHTML = '';
+        container.innerHTML = `<div class="text-danger small">${escapeHtml(err.message)} Exemplo válido: <code>(P ^ Q) -> ~R</code></div>`;
+        return;
+      }
+
+      const { ast, vars } = parsed;
       if (vars.length === 0 || vars.length > 6) {
-        container.innerHTML = `<div class="text-warning small">Use de 1 a 6 variáveis proposicionais (ex: P, Q, R).</div>`;
+        container.innerHTML = `<div class="text-warning small">Use de 1 a 6 variáveis (ex: P, Q, R). A letra V é reservada para o OU.</div>`;
         badgeEl.innerHTML = '';
         return;
       }
@@ -1583,82 +1923,75 @@
       const numRows = Math.pow(2, vars.length);
       let trueCount = 0;
       let rowsHtml = '';
-
-      try {
-        for (let i = numRows - 1; i >= 0; i--) {
-          const env = {};
-          vars.forEach((v, idx) => {
-            env[v] = Boolean((i >> (vars.length - 1 - idx)) & 1);
-          });
-
-          const res = evaluatePropositionalFormula(raw.toUpperCase(), env);
-          if (res) trueCount++;
-
-          const cells = vars.map(v => `<td class="${env[v] ? 'text-info fw-bold' : 'text-secondary'}">${env[v] ? 'V' : 'F'}</td>`).join('');
-          rowsHtml += `<tr>${cells}<td class="fw-bold ${res ? 'text-success' : 'text-danger'}">${res ? 'V' : 'F'}</td></tr>`;
-        }
-
-        if (trueCount === numRows) {
-          badgeEl.innerHTML = `<span class="badge bg-success" >Classificação: TAUTOLOGIA (Sempre Verdadeiro)</span>`;
-        } else if (trueCount === 0) {
-          badgeEl.innerHTML = `<span class="badge bg-danger" >Classificação: CONTRADIÇÃO (Sempre Falso)</span>`;
-        } else {
-          badgeEl.innerHTML = `<span class="badge bg-info text-dark" >Classificação: CONTINGÊNCIA (${trueCount} V / ${numRows - trueCount} F)</span>`;
-        }
-
-        container.innerHTML = `
-          <table class="table table-dark table-sm table-bordered text-center align-middle mb-0 font-monospace">
-            <thead>
-              <tr class="text-secondary">
-                ${vars.map(v => `<th>${v}</th>`).join('')}
-                <th class="text-info">${escapeHtml(raw.toUpperCase())}</th>
-              </tr>
-            </thead>
-            <tbody>${rowsHtml}</tbody>
-          </table>
-        `;
-      } catch (err) {
-        badgeEl.innerHTML = '';
-        container.innerHTML = `<div class="text-danger small">Expressão inválida. Exemplo válido: <code>(P ^ Q) -> ~R</code></div>`;
+      for (let i = numRows - 1; i >= 0; i--) {
+        const env = {};
+        vars.forEach((v, idx) => { env[v] = Boolean((i >> (vars.length - 1 - idx)) & 1); });
+        const res = evalPropositionAst(ast, env);
+        if (res) trueCount++;
+        const cells = vars.map(v => `<td class="${env[v] ? 'text-info fw-bold' : 'text-secondary'}">${env[v] ? 'V' : 'F'}</td>`).join('');
+        rowsHtml += `<tr>${cells}<td class="fw-bold ${res ? 'text-success' : 'text-danger'}">${res ? 'V' : 'F'}</td></tr>`;
       }
-    }
 
-    function evaluatePropositionalFormula(expr, env) {
-      let s = expr;
-      Object.keys(env).forEach(k => {
-        const re = new RegExp(`\\b${k}\\b`, 'g');
-        s = s.replace(re, env[k] ? '1' : '0');
-      });
-      s = s.replace(/~/g, '!').replace(/!/g, '!');
-      s = s.replace(/\^/g, '&&').replace(/&+/g, '&&');
-      s = s.replace(/\bV\b/gi, '||').replace(/\|+/g, '||');
-      while (s.includes('<->')) {
-        s = s.replace(/([!01()&|^\s]+)<->([!01()&|^\s]+)/, '(Boolean($1) === Boolean($2))');
+      if (trueCount === numRows) {
+        badgeEl.innerHTML = `<span class="badge bg-success">Tautologia (sempre verdadeira)</span>`;
+      } else if (trueCount === 0) {
+        badgeEl.innerHTML = `<span class="badge bg-danger">Contradição (sempre falsa)</span>`;
+      } else {
+        badgeEl.innerHTML = `<span class="badge bg-info text-dark">Contingência (${trueCount} V / ${numRows - trueCount} F)</span>`;
       }
-      while (s.includes('->')) {
-        s = s.replace(/([^->]+)->(.+)/, '(!Boolean($1) || Boolean($2))');
-      }
-      return Boolean(Function(`"use strict"; return (${s});`)());
+
+      container.innerHTML = `
+        <table class="table table-dark table-sm table-bordered text-center align-middle mb-0 font-monospace">
+          <thead>
+            <tr class="text-secondary">
+              ${vars.map(v => `<th>${v}</th>`).join('')}
+              <th class="text-info">${escapeHtml(raw)}</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
     }
 
     // =========================================================================
     // LABORATÓRIO: 2. CONVERSOR DE BASES & CALCULADORA BITWISE
     // =========================================================================
+    const BASE_RULES = {
+      dec: { radix: 10n, re: /^[0-9]+$/, name: 'decimal', digits: '0 a 9' },
+      bin: { radix: 2n, re: /^[01]+$/, name: 'binário', digits: '0 e 1' },
+      hex: { radix: 16n, re: /^[0-9a-f]+$/i, name: 'hexadecimal', digits: '0 a 9 e A a F' },
+      oct: { radix: 8n, re: /^[0-7]+$/, name: 'octal', digits: '0 a 7' }
+    };
+    const BASE_INPUT_IDS = { dec: 'baseDec', bin: 'baseBin', hex: 'baseHex', oct: 'baseOct' };
+
+    function parseBigIntInBase(str, radix) {
+      let n = 0n;
+      for (const ch of str.toLowerCase()) n = n * radix + BigInt(parseInt(ch, 36));
+      return n;
+    }
+
     function handleBaseConversion(sourceBase, rawVal) {
-      const val = rawVal.trim();
+      const val = rawVal.trim().replace(/^0[xbo]/i, '').replace(/[\s_]/g, '');
+      const msgEl = document.getElementById('baseConvMsg');
+      const setMsg = (t) => { if (msgEl) { msgEl.textContent = t; msgEl.classList.toggle('d-none', !t); } };
+      Object.entries(BASE_INPUT_IDS).forEach(([k, id]) => document.getElementById(id).classList.remove('is-invalid'));
+
       if (!val) {
-        ['baseDec', 'baseBin', 'baseHex', 'baseOct'].forEach(id => document.getElementById(id).value = '');
+        Object.entries(BASE_INPUT_IDS).forEach(([k, id]) => { if (k !== sourceBase) document.getElementById(id).value = ''; });
+        setMsg('');
         return;
       }
 
-      let num = NaN;
-      if (sourceBase === 'dec') num = parseInt(val, 10);
-      else if (sourceBase === 'bin') num = parseInt(val, 2);
-      else if (sourceBase === 'hex') num = parseInt(val, 16);
-      else if (sourceBase === 'oct') num = parseInt(val, 8);
+      const rule = BASE_RULES[sourceBase];
+      if (!rule.re.test(val)) {
+        document.getElementById(BASE_INPUT_IDS[sourceBase]).classList.add('is-invalid');
+        Object.entries(BASE_INPUT_IDS).forEach(([k, id]) => { if (k !== sourceBase) document.getElementById(id).value = ''; });
+        setMsg(`Valor inválido em ${rule.name}: use apenas ${rule.digits}.`);
+        return;
+      }
 
-      if (isNaN(num) || num < 0) return;
-
+      const num = parseBigIntInBase(val, rule.radix);
+      setMsg('');
       if (sourceBase !== 'dec') document.getElementById('baseDec').value = num.toString(10);
       if (sourceBase !== 'bin') document.getElementById('baseBin').value = num.toString(2);
       if (sourceBase !== 'hex') document.getElementById('baseHex').value = num.toString(16).toUpperCase();
@@ -1678,11 +2011,15 @@
       else if (op === 'RSHIFT') res = a >> b;
       else if (op === 'NOT') res = ~a;
 
+      // Mostra 8 bits quando cabe; senão os 32 bits do inteiro (complemento de dois)
+      const fits8 = res >= -128 && res <= 255;
+      const bits = fits8 ? 8 : 32;
+      const unsigned = fits8 ? (res & 0xff) : (res >>> 0);
       const box = document.getElementById('bwResultBox');
       if (box) {
         box.innerHTML = `
-          <div>Resultado Decimal: <strong class="text-info">${res}</strong></div>
-          <div>Binário (8-bit): <strong class="text-warning">${(res >>> 0).toString(2).padStart(8, '0')}</strong> | Hex: <strong class="text-success">0x${(res >>> 0).toString(16).toUpperCase()}</strong></div>
+          <div>Resultado decimal: <strong class="text-info">${res}</strong></div>
+          <div>Binário (${bits} bits${res < 0 ? ', complemento de dois' : ''}): <strong class="text-warning">${unsigned.toString(2).padStart(bits, '0')}</strong> · Hex: <strong class="text-success">0x${unsigned.toString(16).toUpperCase()}</strong></div>
         `;
       }
     }
@@ -1774,8 +2111,11 @@
     }
 
     function deleteTask(taskId) {
-      appState.tasks = appState.tasks.filter(t => t.id !== taskId);
-      saveState();
+      const t = appState.tasks.find(x => x.id === taskId);
+      if (!t) return;
+      undoable(`"${t.title}" excluído.`, () => {
+        appState.tasks = appState.tasks.filter(x => x.id !== taskId);
+      });
     }
 
     function getDaysRemainingBadge(dueDateStr, status) {
@@ -2259,18 +2599,21 @@
     function deleteRepoItem(itemId) {
       const sub = appState.subjects.find(s => s.id === currentRepo.subId);
       if (sub) {
-        if (currentRepo.type === 'prompts') sub.prompts = sub.prompts.filter(i => i.id !== itemId);
-        else sub.formulas = sub.formulas.filter(i => i.id !== itemId);
-        saveState();
+        undoable('Item excluído.', () => {
+          const s = appState.subjects.find(x => x.id === currentRepo.subId);
+          if (currentRepo.type === 'prompts') s.prompts = s.prompts.filter(i => i.id !== itemId);
+          else s.formulas = s.formulas.filter(i => i.id !== itemId);
+        });
         renderRepoItemsList();
       }
     }
 
     function copyRepoItemContent(encodedText) {
       const text = decodeURIComponent(encodedText);
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Copiado para a área de transferência!');
-      });
+      navigator.clipboard.writeText(text).then(
+        () => uiToast('Copiado!', { type: 'success' }),
+        () => uiToast('Não foi possível copiar.', { type: 'error' })
+      );
     }
 
     function renderRepoItemsList() {
@@ -2443,7 +2786,7 @@
 
     function autoDistributeSchedule() {
       if (!appState.subjects || appState.subjects.length === 0) {
-        alert('Cadastre pelo menos uma matéria antes de distribuir o cronograma!');
+        uiToast('Cadastre pelo menos uma matéria antes de distribuir o cronograma.', { type: 'warning' });
         return;
       }
       if (!appState.schedule) appState.schedule = {};
@@ -2459,8 +2802,8 @@
       renderScheduleUI();
     }
 
-    function clearEntireSchedule() {
-      if (!confirm('Deseja limpar todas as matérias agendadas na semana?')) return;
+    async function clearEntireSchedule() {
+      if (!(await uiConfirm('Limpar o cronograma da semana inteira?', { title: 'Limpar cronograma', okLabel: 'Limpar', danger: true }))) return;
       appState.schedule = { 'Segunda': '', 'Terça': '', 'Quarta': '', 'Quinta': '', 'Sexta': '', 'Sábado': '', 'Domingo': '' };
       saveState();
       renderScheduleUI();
@@ -2772,7 +3115,10 @@
       document.getElementById('lblFocusMins').textContent = appState.settings.focusMinutes || 25;
       document.getElementById('btnErgo2020')?.classList.toggle('active', appState.settings.ergo2020Enabled !== false);
       document.getElementById('btnGatekeeper')?.classList.toggle('active', Boolean(appState.settings.gatekeeperEnabled));
-      setPomodoroMode('focus');
+      pomoMode = 'focus';
+      pomoTotalSeconds = secondsForMode('focus');
+      pomoSecondsLeft = pomoTotalSeconds;
+      updatePomodoroClockUI();
       document.getElementById('taskDate').value = getLocalDateStr();
 
       setTimeout(() => {
@@ -2803,6 +3149,9 @@
       }, 400);
 
       updateAllUI();
+      restorePomodoroFromStorage();
+      document.getElementById('pomoSubjectSelect')?.addEventListener('change', persistPomoState);
+      document.getElementById('pomoTaskSelect')?.addEventListener('change', persistPomoState);
       refreshCharts();
       generateTruthTable();
       calcBitwise();
@@ -3043,14 +3392,8 @@
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        if (pomoInterval && pomoTargetEndTime) {
-          pomoSecondsLeft = Math.max(0, Math.round((pomoTargetEndTime - Date.now()) / 1000));
-          updatePomodoroClockUI();
-        }
-        if (microInterval && microTargetEndTime) {
-          microSecondsLeft = Math.max(0, Math.round((microTargetEndTime - Date.now()) / 1000));
-          updateMicroTimerUI();
-        }
+        if (pomoInterval && pomoTargetEndTime) pomoTick();
+        if (microInterval && microTargetEndTime) microTick();
       }
     });
 
