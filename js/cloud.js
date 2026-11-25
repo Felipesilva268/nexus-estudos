@@ -9,11 +9,13 @@
   // Config pública do app web do Firebase (não é segredo; a segurança vem das regras do banco).
   // apiKey/appId vêm de: Console do Firebase → Configurações do projeto → Seus apps → Web.
   const FIREBASE_CONFIG = {
-    apiKey: '',
+    apiKey: 'AIzaSyAmeY90LCLcEOEAqayKRqNS-8M7Q7t6E5I',
     authDomain: 'nexus-estudos-98c43.firebaseapp.com',
     databaseURL: 'https://nexus-estudos-98c43-default-rtdb.firebaseio.com',
     projectId: 'nexus-estudos-98c43',
-    appId: ''
+    storageBucket: 'nexus-estudos-98c43.firebasestorage.app',
+    messagingSenderId: '258260611879',
+    appId: '1:258260611879:web:87527ca09bcdae41e32f02'
   };
 
   const SDK_VERSION = '10.12.2';
