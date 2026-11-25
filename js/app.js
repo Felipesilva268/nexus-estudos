@@ -126,10 +126,13 @@
       }
     }
 
-    async function saveState() {
+    // Salva no navegador, atualiza a tela e agenda o envio para a nuvem.
+    // { render: false } evita redesenhar a tela (ex.: ao renomear, para não perder o foco do campo).
+    async function saveState(opts = {}) {
+      appState.lastUpdated = Date.now();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-      updateAllUI();
-      pushStateToCloud();
+      if (opts.render !== false) updateAllUI();
+      if (window.NexusCloud) NexusCloud.schedulePush();
       if (fileHandle) {
         await writeToLinkedFile();
       }
@@ -671,7 +674,7 @@
       const sub = appState.subjects.find(s => s.id === subId);
       if (sub && newName.trim()) {
         sub.name = newName.trim();
-        saveState();
+        saveState({ render: false });
         refreshCharts();
       }
     }
@@ -681,7 +684,7 @@
       const unit = sub?.units.find(u => u.id === unitId);
       if (unit && newName.trim()) {
         unit.name = newName.trim();
-        saveState();
+        saveState({ render: false });
       }
     }
 
@@ -691,7 +694,7 @@
       const lesson = unit?.lessons.find(l => l.id === lessonId);
       if (lesson && newName.trim()) {
         lesson.name = newName.trim();
-        saveState();
+        saveState({ render: false });
       }
     }
 
@@ -3156,139 +3159,9 @@
       generateTruthTable();
       calcBitwise();
       await initFolderSyncStatus();
-
-      if (localStorage.getItem(CLOUD_URL_KEY)) {
-        pullStateFromCloud();
-      }
     });
 
-    window.addEventListener('focus', () => {
-      if (localStorage.getItem(CLOUD_URL_KEY)) {
-        pullStateFromCloud();
-      }
-    });
-    // =========================================================================
-    // SINCRONIZAÇÃO EM TEMPO REAL NA NUVEM (FIREBASE REST API)
-    // =========================================================================
-    const CLOUD_URL_KEY = 'nexus_firebase_db_url';
-    let isSyncingFromCloud = false;
-
-    function getCleanCloudUrl() {
-      let url = localStorage.getItem(CLOUD_URL_KEY) || '';
-      if (!url) return '';
-      url = url.trim().replace(/\/+$/, '');
-      return `${url}/nexus_state.json`;
-    }
-
-    function updateCloudUIStatus(status) {
-      const btn = document.getElementById('btnCloudSync');
-      const icon = document.getElementById('cloudSyncIcon');
-      const text = document.getElementById('cloudSyncText');
-      if (!btn || !icon || !text) return;
-
-      if (status === 'connected') {
-        btn.className = 'cloud-btn is-on';
-        icon.className = 'bi bi-cloud-check-fill';
-        text.textContent = 'Nuvem ativa';
-      } else if (status === 'syncing') {
-        btn.className = 'cloud-btn is-syncing';
-        icon.className = 'bi bi-arrow-repeat';
-        text.textContent = 'Sincronizando…';
-      } else if (status === 'error') {
-        btn.className = 'cloud-btn is-error';
-        icon.className = 'bi bi-cloud-slash-fill';
-        text.textContent = 'Erro na nuvem';
-      } else {
-        btn.className = 'cloud-btn';
-        icon.className = 'bi bi-cloud-plus';
-        text.textContent = 'Conectar nuvem';
-      }
-    }
-
-    async function configureCloudSync() {
-      const current = localStorage.getItem(CLOUD_URL_KEY) || '';
-      const input = prompt(
-        'Cole a URL do seu Firebase Realtime Database (ex: https://seu-projeto-default-rtdb.firebaseio.com/):\n\n(Deixe em branco para desconectar)',
-        current
-      );
-
-      if (input === null) return;
-      const clean = input.trim();
-
-      if (!clean) {
-        localStorage.removeItem(CLOUD_URL_KEY);
-        updateCloudUIStatus('disconnected');
-        return;
-      }
-
-      localStorage.setItem(CLOUD_URL_KEY, clean);
-      await pullStateFromCloud(true);
-    }
-
-    async function pushStateToCloud() {
-      const endpoint = getCleanCloudUrl();
-      if (!endpoint || isSyncingFromCloud) return;
-
-      try {
-        updateCloudUIStatus('syncing');
-        appState.lastUpdated = Date.now();
-        const res = await fetch(endpoint, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(appState)
-        });
-        if (res.ok) updateCloudUIStatus('connected');
-        else updateCloudUIStatus('error');
-      } catch (err) {
-        console.error('Falha ao enviar para a nuvem:', err);
-        updateCloudUIStatus('error');
-      }
-    }
-
-    async function pullStateFromCloud(isInitialSetup = false) {
-      const endpoint = getCleanCloudUrl();
-      if (!endpoint) {
-        updateCloudUIStatus('disconnected');
-        return;
-      }
-
-      try {
-        updateCloudUIStatus('syncing');
-        const res = await fetch(endpoint);
-        if (!res.ok) throw new Error('Status ' + res.status);
-        const cloudData = await res.json();
-
-        if (cloudData && (cloudData.subjects || cloudData.settings)) {
-          isSyncingFromCloud = true;
-          appState = normalizeCloudData(cloudData);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-          
-          try {
-            if (typeof writeToLinkedFile === 'function' && fileHandle) {
-              await writeToLinkedFile();
-            }
-          } catch (fileErr) {}
-
-          try {
-            updateAllUI();
-            if (typeof refreshCharts === 'function') refreshCharts();
-            if (typeof renderScheduleUI === 'function') renderScheduleUI();
-            if (typeof renderFlashcardsTab === 'function') renderFlashcardsTab();
-          } catch (uiErr) {}
-
-          isSyncingFromCloud = false;
-          updateCloudUIStatus('connected');
-        } else if (isInitialSetup) {
-          await pushStateToCloud();
-        } else {
-          updateCloudUIStatus('connected');
-        }
-      } catch (err) {
-        isSyncingFromCloud = false;
-        console.error('Erro ao puxar dados da nuvem:', err);
-        updateCloudUIStatus('error');
-      }
-    };
+    // Sincronização na nuvem: ver js/cloud.js (login com Google + Firebase)
 
     // =========================================================================
     // ETAPA 1 MOBILE: AUTO-HIDE HEADER AO ROLAR A TELA
@@ -3438,7 +3311,7 @@
         if (isPullingTop && dy > 95 && Math.abs(dy) > Math.abs(dx) * 2) {
           triggerHaptic([15, 40, 20]);
           document.getElementById('ptrText').textContent = 'Sincronizando dados...';
-          if (localStorage.getItem(CLOUD_URL_KEY)) await pullStateFromCloud();
+          if (window.NexusCloud && NexusCloud.isSignedIn()) await NexusCloud.syncNow();
           else updateAllUI();
           setTimeout(() => ptrEl.classList.remove('show'), 700);
           return;

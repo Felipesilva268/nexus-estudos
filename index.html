@@ -64,28 +64,29 @@
 
           <!-- Menu: perfil, dados e sincronização -->
           <div class="dropdown">
-            <button class="icon-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Perfil, dados e sincronização">
+            <button class="icon-btn" id="settingsMenuBtn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Conta, dados e configurações">
               <i class="bi bi-gear"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end nexus-menu">
+              <!-- Conta Google + status da nuvem (preenchido por js/cloud.js) -->
+              <div class="menu-label">Conta</div>
+              <div id="cloudAccountBox" class="cloud-box"></div>
+              <div class="dropdown-divider"></div>
+
               <div class="menu-profile">
-                <div class="rank" id="uiRankTitle">Iniciante</div>
-                <div class="xp" id="uiXpText">0 / 250 XP</div>
+                <div class="d-flex justify-content-between align-items-baseline">
+                  <div class="rank" id="uiRankTitle">Iniciante</div>
+                  <div class="xp" id="uiXpText">0 / 250 XP</div>
+                </div>
                 <span class="mini-progress"><span id="uiXpBarMenu"></span></span>
               </div>
               <div class="dropdown-divider"></div>
 
-              <div class="menu-label">Sincronização</div>
-              <button type="button" id="syncStatusBtn" class="sync-badge sync-disconnected" onclick="handleFolderSyncClick()" title="Vincular o arquivo meus_dados.json na pasta">
+              <div class="menu-label">Backup</div>
+              <button type="button" id="syncStatusBtn" class="sync-badge sync-disconnected" onclick="handleFolderSyncClick()" title="Salvar automaticamente num arquivo .json do computador">
                 <span id="syncDot">⚪</span>
                 <span id="syncText">Pasta</span>
               </button>
-              <button type="button" class="cloud-btn" onclick="configureCloudSync()" id="btnCloudSync" title="Sincronização em tempo real (PC e celular)">
-                <i class="bi bi-cloud-check-fill" id="cloudSyncIcon"></i>
-                <span id="cloudSyncText">Nuvem</span>
-              </button>
-
-              <div class="menu-label">Backup</div>
               <button type="button" class="dropdown-item" onclick="exportBackupJson()"><i class="bi bi-download"></i> Exportar backup (.json)</button>
               <label class="dropdown-item mb-0"><i class="bi bi-upload"></i> Importar backup
                 <input type="file" accept=".json" hidden onchange="importBackupJson(event)">
@@ -1245,5 +1246,6 @@
 
   <script src="js/ui.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/cloud.js"></script>
 </body>
 </html>

@@ -97,6 +97,10 @@
       okBtn.className = `btn px-4 ${config.danger ? 'btn-danger' : 'btn-nexus'}`;
       cancelBtn.classList.toggle('d-none', config.hideCancel === true);
       cancelBtn.textContent = config.cancelLabel || 'Cancelar';
+      const headerClose = modalEl.querySelector('.modal-header .btn-close');
+      if (headerClose) headerClose.classList.toggle('d-none', config.noClose === true);
+      const msgText = document.getElementById('uiDialogMsg');
+      msgText.style.whiteSpace = 'pre-line';
 
       const fields = config.fields || [];
       fieldsEl.innerHTML = fields.map((f, i) => {
@@ -161,7 +165,7 @@
   }
 
   async function uiConfirm(message, opts = {}) {
-    const r = await uiDialog({ title: opts.title || 'Confirmar', message, okLabel: opts.okLabel || 'Confirmar', danger: opts.danger });
+    const r = await uiDialog({ title: opts.title || 'Confirmar', message, okLabel: opts.okLabel || 'Confirmar', cancelLabel: opts.cancelLabel, danger: opts.danger, noClose: opts.noClose });
     return r.ok;
   }
 
